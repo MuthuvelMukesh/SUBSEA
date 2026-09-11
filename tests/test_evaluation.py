@@ -17,6 +17,16 @@ def test_apply_attack_is_immutable_and_records_metadata():
     assert vessel.position == (1.0, 1.0)
 
 
+def test_zero_severity_attack_is_the_unmodified_baseline():
+    vessel = VesselObservation("v", 1.0, (1.0, 1.0), 2.0, 90.0)
+    assert apply_attack(vessel, "ais_spoofing", severity=0.0) == vessel
+
+
+def test_attack_metadata_contains_severity():
+    vessel = VesselObservation("v", 1.0, (1.0, 1.0), 2.0, 90.0)
+    assert apply_attack(vessel, "ais_spoofing", severity=0.5).metadata["severity"] == 0.5
+
+
 def test_run_trials_records_attack_and_is_reproducible(tmp_path):
     first_path = run_trials("S04", trials=3, seed=10, output=tmp_path / "first", attack="ais_spoofing", attack_severity=0.5)
     second_path = run_trials("S04", trials=3, seed=10, output=tmp_path / "second", attack="ais_spoofing", attack_severity=0.5)
@@ -25,6 +35,7 @@ def test_run_trials_records_attack_and_is_reproducible(tmp_path):
     assert first["status"] == "EXECUTED"
     assert first["predictions"] == second["predictions"]
     assert all(item["attack"] == "ais_spoofing" for item in first["predictions"])
+    assert all(item["attack_requested"] for item in first["predictions"])
     assert all(item["attack_applied"] for item in first["predictions"])
     assert first["metrics"]["AER"]["status"] == "EXECUTED"
     assert first["metrics"]["FHER"]["status"] == "NOT EXECUTED"

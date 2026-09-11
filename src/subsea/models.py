@@ -106,3 +106,12 @@ class Scenario:
     packet_loss: float = 0.0
     spoofing: bool = False
     timestamp_manipulation: bool = False
+    mechanical_event: bool = False
+    communication_failure: bool = False
+    noise_stress: bool = False
+    spatial_mismatch: bool = False
+    temporal_mismatch: bool = False
+    conflicting_evidence: bool = False
+    counter_evidence: bool = False
+    absence_corroboration: bool = False
+    multiple_targets: bool = False

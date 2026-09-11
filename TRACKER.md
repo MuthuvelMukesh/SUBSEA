@@ -1,6 +1,6 @@
 # Project Tracker
 
-Last updated: 2026-09-10
+Last updated: 2026-09-11
 
 This tracker distinguishes implemented software from results that require an executed experiment, real hardware, or an external dataset. A checked implementation item does not imply scientific validation.
 
@@ -26,13 +26,13 @@ This tracker distinguishes implemented software from results that require an exe
 - [x] Baseline and ablation evaluator with aligned trials.
 - [x] Streamlit prototype dashboard.
 - [x] CLI commands for simulation, adversarial trials, and baseline comparisons.
-- [x] Focused regression suite: 39 tests passing, with 1 optional HDF5 test skipped when `h5py` is unavailable.
+- [x] Focused regression suite: 60 tests passing, with 2 optional HDF5 tests skipped when `h5py` is unavailable.
 
 ## Current Phase: Real Data, Metrics, and Paper Outputs
 
 - [x] Real-data boundary contracts: read-only CSV/JSON/HDF5 loaders with source hashes and timestamp normalization.
-- [~] Generic HDF5 loader exists; DAS-specific feature/channel metadata mapping remains.
-- [ ] AIS-like trajectory loader with vessel metadata and timestamp normalization.
+- [~] DAS-specific HDF5 adapter reads configured signal, timestamp, and distance paths; Marlinks schema mapping remains dataset-specific.
+- [x] AIS-like trajectory loader with ordering, timestamp normalization, uncertainty, and explicit interpolation policy.
 - [ ] Real-data association validation without causal attribution claims.
 - [x] Expanded classification metrics: precision, recall, F1, confusion matrix, and per-class support.
 - [x] Brier score and calibration curve support with explicit binary/multiclass semantics.
@@ -46,10 +46,10 @@ This tracker distinguishes implemented software from results that require an exe
 ## Hardware and Operations Gaps
 
 - [~] ESP32/MPU6050 packet schema exists.
-- [ ] MQTT receiver.
-- [ ] HTTP receiver.
-- [ ] Serial receiver.
-- [ ] Raw packet recorder with append-only behavior.
+- [x] MQTT receiver adapter.
+- [x] HTTP receiver adapter.
+- [x] Serial receiver adapter.
+- [x] Raw packet recorder with append-only behavior.
 - [ ] LIVE, SIMULATION, and REPLAY mode coordinator.
 - [ ] Hardware experiment workflows H01-H08.
 - [ ] Hardware-in-the-loop latency measurement.
@@ -57,11 +57,11 @@ This tracker distinguishes implemented software from results that require an exe
 
 ## Simulation and Adversarial Gaps
 
-- [~] S01, S02, S04, S05, S07, S17, S18, and S19 are supported.
+- [~] S01-S22 scenario identifiers and explicit truth flags are supported; basic multi-vessel S22 evaluation exists, while multi-node generation remains partial.
 - [ ] Remaining scenario matrix S03, S06, S08-S16, S20-S22.
 - [ ] Multi-node and multi-vessel generation.
 - [ ] Packet-loss/noise/position-uncertainty parameter sweeps.
-- [ ] Adversarial severity sweep with AER curves.
+- [~] Adversarial severity sweep with AER/FHER curves.
 - [ ] FHER by benign operating condition.
 - [ ] Monte Carlo result tables with explicit trial counts.
 
@@ -97,7 +97,16 @@ This tracker distinguishes implemented software from results that require an exe
 - Added executed-manifest paper CSV/LaTeX table and Matplotlib figure generation with provenance output.
 - Hardened paper generation against unverified manifests, invalid metric ranges, ambiguous timestamps, and partial figure output.
 - Added record-level summary recomputation and rejected unsupported/non-finite timestamp values.
+- Added `subsea.das` and `subsea.ais` adapters with provenance and causal-ground-truth safeguards.
+- Added polyline cable geometry, nearest-segment distance, CPA, dwell, crossing, and separated behaviour components.
+- Added explicit S01-S22 scenario identifiers and deterministic condition flags; multi-node/multi-vessel generation remains partial.
+- Added MQTT/HTTP/serial packet adapters, append-only raw recording, auditable trial components, latency records, and attack severity sweeps.
+- Corrected DAS channel orientation, communication-failure simulation, AIS physical bounds, multi-segment crossing, and global timestamp ordering.
+- Corrected zero-severity adversarial baselines, exercised S13-S15 conditions, hardened DAS/AIS boundaries, and made sweep paths collision-safe.
+- Hardened severity/audit fields, DAS/recording timestamps, and malformed geometry rejection.
+- Added explicit S22 two-vessel generation while retaining multi-node generation as partial.
+- Added shared MQTT/HTTP/serial packet adapters and append-only raw packet recording.
 
 ## Next Smallest Deliverable
 
-Implement DAS-specific HDF5 channel/feature mapping and AIS trajectory normalization on top of the validated generic loaders. Preserve raw input files, record preprocessing parameters, and label unavailable metadata rather than infer causal truth.
+Implement multi-node/multi-vessel generation and full spatial/temporal manipulation experiments on top of the validated geometry and trajectory components. Preserve raw input files, record preprocessing parameters, and label unavailable metadata rather than infer causal truth.

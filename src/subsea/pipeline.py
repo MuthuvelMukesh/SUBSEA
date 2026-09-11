@@ -8,6 +8,7 @@ from .association import associate
 from .decision import decide
 from .features import physical_confidence, spectral_features
 from .fusion import score_hypotheses, weighted_fusion
+from .geometry import distance_to_polyline
 from .health import estimate_health
 from .models import DecisionResult, Evidence, Hypothesis, SensorObservation, VesselObservation
 
@@ -25,12 +26,15 @@ def run_pipeline(
     packet_timeout: float = 1.0,
     environmental_event: bool = False,
     now: float | None = None,
+    cable_geometry: tuple[tuple[float, float], ...] | None = None,
 ) -> DecisionResult:
     if not observations:
         raise ValueError("at least one observation is required")
     ordered = tuple(sorted(observations, key=lambda item: item.timestamp))
     if any(not np.isfinite(item.timestamp) or not np.all(np.isfinite(item.acceleration)) for item in ordered):
         raise ValueError("observations must contain finite timestamps and acceleration values")
+    if vessel is not None and (not np.isfinite(vessel.timestamp) or not np.all(np.isfinite(vessel.position)) or not np.isfinite(vessel.speed) or not np.isfinite(vessel.heading) or vessel.position_uncertainty < 0):
+        raise ValueError("vessel observation contains invalid numeric values")
     usable = tuple(item for item in ordered if item.packet_received)
     health = estimate_health(ordered, expected_interval=expected_interval, packet_timeout=packet_timeout, now=now)
     features = spectral_features([item.acceleration for item in usable], sampling_rate) if usable else {}
@@ -44,7 +48,10 @@ def run_pipeline(
         missing.append("reported vessel corroboration")
         counter.append("no AIS-like corroboration")
     else:
-        distance = float(np.linalg.norm(np.asarray(vessel.position) - np.asarray(ordered[-1].position)))
+        if cable_geometry is not None:
+            distance = distance_to_polyline(vessel.position, cable_geometry)
+        else:
+            distance = float(np.linalg.norm(np.asarray(vessel.position) - np.asarray(ordered[-1].position)))
         association = associate(vessel, ordered[-1].timestamp, distance, interaction_radius=interaction_radius, temporal_tolerance=temporal_tolerance)
         association_confidence = association.confidence
         association_components = {"spatial": association.spatial_confidence, "temporal": association.temporal_confidence, "behaviour": association.behaviour_confidence}
@@ -67,4 +74,4 @@ def run_pipeline(
     uncertainty_without_counter = float(np.clip(0.25 * (missing_component + health_component + float(np.std(list(scores_without_counter.values()))) + association_component), 0, 1))
     decision = decide(physical_confidence=cp, association_confidence=association_confidence, reliability=reliability, uncertainty=uncertainty)
     rationale = (f"CP={cp:.3f}", f"CA={association_confidence:.3f}", f"reliability={reliability:.3f}", f"U={uncertainty:.3f}")
-    return DecisionResult(decision, cp, association_confidence, reliability, uncertainty, scores, tuple(item.name for item in evidence), tuple(counter), tuple(missing), rationale, {"features": features, "health": health.__dict__, "fused_score": fused, "counter_penalty": counter_penalty, "association_components": association_components, "uncertainty_components": uncertainty_components, "uncertainty_without_counter_evidence": uncertainty_without_counter, "environmental_event": environmental_event})
+    return DecisionResult(decision, cp, association_confidence, reliability, uncertainty, scores, tuple(item.name for item in evidence), tuple(counter), tuple(missing), rationale, {"features": features, "health": health.__dict__, "fused_score": fused, "counter_penalty": counter_penalty, "association_components": association_components, "uncertainty_components": uncertainty_components, "uncertainty_without_counter_evidence": uncertainty_without_counter, "environmental_event": environmental_event, "cable_geometry": cable_geometry})

@@ -25,13 +25,16 @@ def apply_attack(vessel: VesselObservation, attack: str, severity: float = 1.0) 
         raise ValueError("severity must be in [0, 1]")
     if attack not in SUPPORTED_ATTACKS:
         raise ValueError(f"unsupported attack: {attack}")
+    if severity == 0.0 or attack == "none":
+        return vessel
     if attack == "ais_spoofing":
         distance = 10.0 + 20.0 * severity
-        return spoof_position(vessel, (distance, distance))
+        return replace(spoof_position(vessel, (distance, distance)), metadata={**vessel.metadata, "attack": "ais_position_spoofing", "attack_family": attack, "severity": severity})
     if attack == "transponder_suppression":
-        return suppress_transponder(vessel)
+        return replace(suppress_transponder(vessel), metadata={**vessel.metadata, "attack": attack, "severity": severity})
     if attack == "timestamp_manipulation":
-        return manipulate_timestamp(vessel, 10.0 * severity)
+        manipulated = manipulate_timestamp(vessel, 10.0 * severity)
+        return replace(manipulated, metadata={**manipulated.metadata, "attack_family": attack, "severity": severity})
     if attack == "none":
         return vessel
     return vessel

@@ -1,0 +1,2058 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+The content has been processed where security check has been disabled.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Security check has been disabled - content may contain sensitive information
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+config/
+  system.yaml
+dashboard/
+  app.py
+scripts/
+  generate_paper_results.py
+  run_adversarial.py
+  run_baselines.py
+  run_simulation.py
+src/
+  subsea/
+    __init__.py
+    acquisition.py
+    adversarial.py
+    association.py
+    baselines.py
+    cli.py
+    decision.py
+    experiments.py
+    features.py
+    fusion.py
+    health.py
+    metrics.py
+    models.py
+    pipeline.py
+    real_data.py
+    reporting.py
+    simulation.py
+tests/
+  test_baselines.py
+  test_core.py
+  test_evaluation.py
+  test_metrics.py
+  test_real_data.py
+  test_reporting.py
+.gitignore
+pyproject.toml
+README.md
+requirements.txt
+TRACKER.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="config/system.yaml">
+system:
+  mode: simulation
+  random_seed: 42
+  result_policy: never_overwrite
+sensor:
+  sampling_rate_hz: 50.0
+  packet_timeout_s: 1.0
+fusion:
+  alpha: 0.34
+  beta: 0.33
+  gamma: 0.33
+uncertainty:
+  lambda_missing: 0.25
+  lambda_health: 0.25
+  lambda_conflict: 0.25
+  lambda_association: 0.25
+decision:
+  tx_uncertainty: 0.65
+  tx_reliability: 0.35
+simulation:
+  trials: 100
+</file>
+
+<file path="dashboard/app.py">
+from __future__ import annotations
+
+import streamlit as st
+
+from subsea.pipeline import run_pipeline
+from subsea.simulation import generate_observations, make_scenario
+
+st.set_page_config(page_title="Subsea Evidence Fusion", layout="wide")
+st.title("Subsea Disturbance Assessment")
+st.caption("Research prototype. Synthetic results are not operational evidence.")
+scenario_id = st.sidebar.selectbox("Scenario", ["S01", "S02", "S04", "S05", "S07", "S17", "S18"])
+seed = st.sidebar.number_input("Random seed", min_value=0, value=42, step=1)
+scenario = make_scenario(scenario_id, int(seed))
+observations, vessel = generate_observations(scenario)
+result = run_pipeline(observations, vessel, environmental_event=scenario.environmental_event)
+
+columns = st.columns(5)
+for column, label, value in zip(columns, ["Decision", "CP", "CA", "Reliability", "Uncertainty"], [result.decision, result.physical_confidence, result.association_confidence, result.reliability, result.uncertainty]):
+    column.metric(label, f"{value:.3f}" if isinstance(value, float) else value)
+st.subheader("Hypotheses")
+st.bar_chart(result.hypothesis_scores)
+st.subheader("Audit trail")
+st.json({"positive_evidence": result.positive_evidence, "counter_evidence": result.counter_evidence, "missing_corroboration": result.missing_corroboration, "rationale": result.rationale})
+</file>
+
+<file path="scripts/generate_paper_results.py">
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from subsea.reporting import generate_paper_outputs
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate tables and figures from an executed method manifest")
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    print(generate_paper_outputs(args.manifest, args.output))
+
+
+if __name__ == "__main__":
+    main()
+</file>
+
+<file path="scripts/run_adversarial.py">
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from subsea.experiments import run_trials
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run a seeded vessel-side adversarial experiment")
+    parser.add_argument("--scenario", default="S04")
+    parser.add_argument("--attack", choices=["none", "ais_spoofing", "transponder_suppression", "timestamp_manipulation"] , default="ais_spoofing")
+    parser.add_argument("--severity", type=float, default=1.0)
+    parser.add_argument("--trials", type=int, default=100)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    manifest = run_trials(args.scenario, args.trials, args.seed, args.output, attack=args.attack, attack_severity=args.severity)
+    print(manifest)
+
+
+if __name__ == "__main__":
+    main()
+</file>
+
+<file path="scripts/run_baselines.py">
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from subsea.baselines import METHODS
+from subsea.experiments import run_method_comparison
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Compare interpretable baselines and ablations")
+    parser.add_argument("--scenario", action="append", dest="scenarios", default=None)
+    parser.add_argument("--trials", type=int, default=100)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--method", action="append", dest="methods", choices=sorted(METHODS), default=None)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    scenarios = args.scenarios or ["S01", "S02", "S04", "S05"]
+    methods = tuple(args.methods or sorted(METHODS))
+    print(run_method_comparison(scenarios, args.trials, args.seed, args.output, methods=methods))
+
+
+if __name__ == "__main__":
+    main()
+</file>
+
+<file path="scripts/run_simulation.py">
+from subsea.cli import main
+
+
+if __name__ == "__main__":
+    main()
+</file>
+
+<file path="src/subsea/__init__.py">
+"""Uncertainty-aware subsea cable disturbance research prototype."""
+
+__version__ = "0.1.0"
+</file>
+
+<file path="src/subsea/acquisition.py">
+from __future__ import annotations
+
+from datetime import datetime
+
+from pydantic import BaseModel, Field, validator
+
+from .models import SensorObservation
+
+
+class Mpu6050Packet(BaseModel):
+    node_id: str = Field(min_length=1)
+    timestamp: datetime | float
+    ax: float
+    ay: float
+    az: float
+    gx: float = 0.0
+    gy: float = 0.0
+    gz: float = 0.0
+
+    class Config:
+        extra = "forbid"
+
+    @validator("ax", "ay", "az", "gx", "gy", "gz")
+    @classmethod
+    def finite_value(cls, value: float) -> float:
+        if not float("-inf") < value < float("inf"):
+            raise ValueError("sensor values must be finite")
+        return value
+
+    def to_observation(self, position: tuple[float, float] = (0.0, 0.0)) -> SensorObservation:
+        timestamp = self.timestamp.timestamp() if isinstance(self.timestamp, datetime) else float(self.timestamp)
+        return SensorObservation(self.node_id, timestamp, (self.ax, self.ay, self.az), position, source="mpu6050")
+
+
+def parse_packet(payload: str | bytes | dict[str, object]) -> SensorObservation:
+    if isinstance(payload, (str, bytes)):
+        packet = Mpu6050Packet.parse_raw(payload)
+    else:
+        packet = Mpu6050Packet.parse_obj(payload)
+    return packet.to_observation()
+</file>
+
+<file path="src/subsea/adversarial.py">
+from __future__ import annotations
+
+from dataclasses import replace
+from typing import Iterable
+
+from .models import VesselObservation
+
+SUPPORTED_ATTACKS = frozenset({"none", "ais_spoofing", "transponder_suppression", "timestamp_manipulation"})
+
+
+def spoof_position(vessel: VesselObservation, position: tuple[float, float]) -> VesselObservation:
+    return replace(vessel, position=position, metadata={**vessel.metadata, "attack": "ais_position_spoofing"})
+
+
+def suppress_transponder(vessel: VesselObservation) -> VesselObservation:
+    return replace(vessel, reported=False, metadata={**vessel.metadata, "attack": "transponder_suppression"})
+
+
+def manipulate_timestamp(vessel: VesselObservation, offset: float) -> VesselObservation:
+    return replace(vessel, timestamp=vessel.timestamp + offset, metadata={**vessel.metadata, "attack": "timestamp_manipulation", "offset": offset})
+
+
+def apply_attack(vessel: VesselObservation, attack: str, severity: float = 1.0) -> VesselObservation:
+    if not 0 <= severity <= 1:
+        raise ValueError("severity must be in [0, 1]")
+    if attack not in SUPPORTED_ATTACKS:
+        raise ValueError(f"unsupported attack: {attack}")
+    if attack == "ais_spoofing":
+        distance = 10.0 + 20.0 * severity
+        return spoof_position(vessel, (distance, distance))
+    if attack == "transponder_suppression":
+        return suppress_transponder(vessel)
+    if attack == "timestamp_manipulation":
+        return manipulate_timestamp(vessel, 10.0 * severity)
+    if attack == "none":
+        return vessel
+    return vessel
+</file>
+
+<file path="src/subsea/association.py">
+from __future__ import annotations
+
+import math
+
+from .models import Association, VesselObservation
+
+
+def spatial_association(distance: float, interaction_radius: float, position_uncertainty: float = 0.0) -> float:
+    if distance < 0 or interaction_radius <= 0 or position_uncertainty < 0:
+        raise ValueError("distance and uncertainty must be non-negative; radius must be positive")
+    effective_radius = interaction_radius + position_uncertainty
+    return float(max(0.0, 1.0 - distance / effective_radius))
+
+
+def temporal_association(time_offset: float, tolerance: float, timestamp_uncertainty: float = 0.0) -> float:
+    if time_offset < 0 or tolerance <= 0 or timestamp_uncertainty < 0:
+        raise ValueError("time offset and uncertainty must be non-negative; tolerance must be positive")
+    effective_tolerance = tolerance + timestamp_uncertainty
+    return float(max(0.0, 1.0 - time_offset / effective_tolerance))
+
+
+def behaviour_confidence(vessel: VesselObservation, distance: float, interaction_radius: float) -> float:
+    proximity = spatial_association(distance, interaction_radius, vessel.position_uncertainty)
+    speed_factor = 1.0 if vessel.speed > 0 else 0.4
+    return float(min(1.0, proximity * speed_factor))
+
+
+def associate(
+    vessel: VesselObservation,
+    disturbance_time: float,
+    distance: float,
+    *,
+    interaction_radius: float,
+    temporal_tolerance: float,
+    spatial_weight: float = 0.34,
+    temporal_weight: float = 0.33,
+    behaviour_weight: float = 0.33,
+) -> Association:
+    weights = (spatial_weight, temporal_weight, behaviour_weight)
+    if any(weight < 0 for weight in weights) or not math.isclose(sum(weights), 1.0, abs_tol=1e-9):
+        raise ValueError("association weights must be non-negative and sum to one")
+    spatial = spatial_association(distance, interaction_radius, vessel.position_uncertainty)
+    offset = abs(vessel.timestamp - disturbance_time)
+    temporal = temporal_association(offset, temporal_tolerance)
+    behaviour = behaviour_confidence(vessel, distance, interaction_radius)
+    explanation = []
+    if spatial < 0.5:
+        explanation.append("vessel outside strong interaction region")
+    if temporal < 0.5:
+        explanation.append("vessel and disturbance are weakly time-aligned")
+    if not vessel.reported:
+        explanation.append("no reported vessel corroboration")
+    return Association(spatial, temporal, behaviour, distance, offset, tuple(explanation))
+</file>
+
+<file path="src/subsea/baselines.py">
+from __future__ import annotations
+
+from typing import Any
+
+from .decision import decide
+from .models import DecisionResult, Scenario
+
+METHODS = frozenset({
+    "physical_only",
+    "vessel_only",
+    "weighted",
+    "proposed",
+    "without_uncertainty",
+    "without_health",
+    "without_counter_evidence",
+    "without_spatial_temporal_association",
+    "without_behaviour",
+})
+
+
+def _truth(scenario: Scenario) -> dict[str, bool]:
+    return {
+        "vessel_present": scenario.vessel_present,
+        "disturbance_present": scenario.disturbance_present,
+        "environmental_event": scenario.environmental_event,
+        "sensor_failure": scenario.sensor_failure,
+        "spoofing": scenario.spoofing,
+        "timestamp_manipulation": scenario.timestamp_manipulation,
+    }
+
+
+def _inputs(result: DecisionResult) -> dict[str, Any]:
+    return {
+        "physical_confidence": result.physical_confidence,
+        "association_confidence": result.association_confidence,
+        "reliability": result.reliability,
+        "uncertainty": result.uncertainty,
+        "hypothesis_scores": dict(result.hypothesis_scores),
+    }
+
+
+def _uncertainty(result: DecisionResult, *, excluded: set[str] | None = None) -> float:
+    components = result.audit.get("uncertainty_components", {})
+    kept = [value for name, value in components.items() if name not in (excluded or set())]
+    return min(1.0, 0.25 * sum(kept))
+
+
+def _association_without(result: DecisionResult, excluded: set[str]) -> float:
+    components = result.audit.get("association_components", {})
+    kept = [components[name] for name in ("spatial", "temporal", "behaviour") if name not in excluded]
+    return sum(kept) / len(kept) if kept else 0.0
+
+
+def evaluate_method(method: str, result: DecisionResult, scenario: Scenario) -> dict[str, Any]:
+    if method not in METHODS:
+        raise ValueError(f"unsupported evaluation method: {method}")
+    effective = {
+        "physical_confidence": result.physical_confidence,
+        "association_confidence": result.association_confidence,
+        "reliability": result.reliability,
+        "uncertainty": result.uncertainty,
+    }
+    decision = result.decision
+    changed: tuple[str, ...] = ()
+    if method == "physical_only":
+        effective.update(association_confidence=0.0, reliability=1.0, uncertainty=0.0)
+        changed = ("association", "health", "uncertainty")
+    elif method == "vessel_only":
+        effective["physical_confidence"] = 0.0
+        changed = ("physical",)
+    elif method == "weighted":
+        pass
+    elif method == "without_uncertainty":
+        effective["uncertainty"] = 0.0
+        changed = ("uncertainty",)
+    elif method == "without_health":
+        effective.update(reliability=1.0, uncertainty=_uncertainty(result, excluded={"health"}))
+        changed = ("health",)
+    elif method == "without_counter_evidence":
+        effective["uncertainty"] = float(result.audit.get("uncertainty_without_counter_evidence", result.uncertainty))
+        changed = ("counter_evidence",)
+    elif method == "without_spatial_temporal_association":
+        effective["association_confidence"] = float(result.audit.get("association_components", {}).get("behaviour", 0.0))
+        changed = ("spatial_temporal_association",)
+    elif method == "without_behaviour":
+        effective["association_confidence"] = _association_without(result, {"behaviour"})
+        changed = ("behaviour",)
+    if method != "proposed":
+        decision = decide(**effective)
+    return {
+        "method": method,
+        "method_version": "0.1",
+        "scenario_id": scenario.scenario_id,
+        "seed": scenario.seed,
+        "decision": decision.value,
+        "source_decision": result.decision.value,
+        "truth": _truth(scenario),
+        "inputs": {**_inputs(result), "effective_decision_inputs": effective},
+        "changed_components": changed,
+        "status": "EXECUTED",
+    }
+</file>
+
+<file path="src/subsea/cli.py">
+from __future__ import annotations
+
+import argparse
+import json
+from dataclasses import asdict
+from pathlib import Path
+
+from .pipeline import run_pipeline
+from .simulation import generate_observations, make_scenario, scenario_manifest
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run a reproducible subsea disturbance simulation")
+    parser.add_argument("--scenario", default="S04")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--output")
+    args = parser.parse_args()
+    scenario = make_scenario(args.scenario, args.seed)
+    observations, vessel = generate_observations(scenario)
+    result = run_pipeline(observations, vessel, environmental_event=scenario.environmental_event)
+    payload = {"scenario": scenario_manifest(scenario), "decision": asdict(result)}
+    text = json.dumps(payload, indent=2, default=str)
+    if args.output:
+        output_path = Path(args.output)
+        if output_path.exists():
+            raise FileExistsError(f"refusing to overwrite existing result: {output_path}")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_path.open("w", encoding="utf-8") as output:
+            output.write(text + "\n")
+    else:
+        print(text)
+
+
+if __name__ == "__main__":
+    main()
+</file>
+
+<file path="src/subsea/decision.py">
+from __future__ import annotations
+
+from .models import DecisionState
+
+
+def decide(
+    *,
+    physical_confidence: float,
+    association_confidence: float,
+    reliability: float,
+    uncertainty: float,
+    thresholds: dict[str, float] | None = None,
+) -> DecisionState:
+    limits = {
+        "physical": 0.55,
+        "association": 0.60,
+        "t2": 0.65,
+        "t3": 0.85,
+        "tx_uncertainty": 0.65,
+        "tx_reliability": 0.35,
+        **(thresholds or {}),
+    }
+    if uncertainty >= limits["tx_uncertainty"] or reliability <= limits["tx_reliability"]:
+        return DecisionState.TX
+    if physical_confidence < limits["physical"]:
+        return DecisionState.T0
+    if association_confidence < limits["association"]:
+        return DecisionState.T1
+    score = 0.5 * physical_confidence + 0.5 * association_confidence
+    return DecisionState.T3 if score >= limits["t3"] and uncertainty < 0.35 else DecisionState.T2
+</file>
+
+<file path="src/subsea/experiments.py">
+from __future__ import annotations
+
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from tempfile import NamedTemporaryFile
+
+from .adversarial import SUPPORTED_ATTACKS, apply_attack
+from .baselines import METHODS, evaluate_method
+from .metrics import adversarial_error_rate, false_high_escalation_rate, pending_result
+from .pipeline import run_pipeline
+from .simulation import generate_observations, make_scenario, scenario_manifest
+
+
+def run_trials(
+    scenario_id: str,
+    trials: int,
+    seed: int,
+    output: Path,
+    *,
+    attack: str = "none",
+    attack_severity: float = 1.0,
+) -> Path:
+    if trials <= 0:
+        raise ValueError("trials must be positive")
+    if attack not in SUPPORTED_ATTACKS:
+        raise ValueError(f"unsupported attack: {attack}")
+    if not 0 <= attack_severity <= 1:
+        raise ValueError("attack_severity must be in [0, 1]")
+    output.mkdir(parents=True, exist_ok=False)
+    predictions = []
+    for trial in range(trials):
+        scenario = make_scenario(scenario_id, seed + trial)
+        observations, vessel = generate_observations(scenario)
+        if vessel is not None:
+            vessel = apply_attack(vessel, attack, attack_severity)
+        result = run_pipeline(observations, vessel, environmental_event=scenario.environmental_event)
+        predictions.append({
+            "trial": trial,
+            "seed": seed + trial,
+            "decision": result.decision.value,
+            "confidence": result.reliability,
+            "uncertainty": result.uncertainty,
+            "attack": attack,
+            "attack_severity": attack_severity,
+            "true_h1": scenario.vessel_present and scenario.disturbance_present and not scenario.environmental_event,
+            "attack_applied": attack != "none" and scenario.vessel_present and scenario.disturbance_present and not scenario.environmental_event,
+            "benign": not scenario.vessel_present and not scenario.environmental_event,
+        })
+    decisions = [item["decision"] for item in predictions]
+    adversarial_h1 = [item["true_h1"] and item["attack_applied"] for item in predictions]
+    benign = [item["benign"] for item in predictions]
+    try:
+        aer: dict[str, object] = {"status": "EXECUTED", "value": adversarial_error_rate(decisions, adversarial_h1), "reason": None}
+    except ValueError as error:
+        aer = pending_result(str(error))
+    try:
+        fher: dict[str, object] = {"status": "EXECUTED", "value": false_high_escalation_rate(decisions, benign), "reason": None}
+    except ValueError as error:
+        fher = pending_result(str(error))
+    manifest = {
+        "status": "EXECUTED",
+        "data_kind": "synthetic",
+        "causal_ground_truth": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "scenario": scenario_manifest(make_scenario(scenario_id, seed)),
+        "trials": trials,
+        "seed": seed,
+        "attack": attack,
+        "attack_severity": attack_severity,
+        "metrics": {"AER": aer, "FHER": fher},
+        "predictions": predictions,
+    }
+    manifest_path = output / "experiment_manifest.json"
+    with NamedTemporaryFile("w", encoding="utf-8", dir=output, prefix=".manifest-", delete=False) as temporary:
+        temporary.write(json.dumps(manifest, indent=2) + "\n")
+        temporary_path = Path(temporary.name)
+    temporary_path.replace(manifest_path)
+    return manifest_path
+
+
+def run_method_comparison(
+    scenario_ids: list[str],
+    trials: int,
+    seed: int,
+    output: Path,
+    *,
+    methods: tuple[str, ...] = tuple(sorted(METHODS)),
+) -> Path:
+    if not scenario_ids or trials <= 0:
+        raise ValueError("scenario_ids must be non-empty and trials must be positive")
+    if any(method not in METHODS for method in methods) or not methods:
+        raise ValueError("methods must be a non-empty subset of supported methods")
+    output.mkdir(parents=True, exist_ok=False)
+    records: list[dict[str, object]] = []
+    for scenario_index, scenario_id in enumerate(scenario_ids):
+        for trial in range(trials):
+            trial_seed = seed + scenario_index * trials + trial
+            scenario = make_scenario(scenario_id, trial_seed)
+            observations, vessel = generate_observations(scenario)
+            result = run_pipeline(observations, vessel, environmental_event=scenario.environmental_event)
+            records.extend(evaluate_method(method, result, scenario) for method in methods)
+    summaries = {method: _method_summary([record for record in records if record["method"] == method]) for method in methods}
+    manifest = {
+        "status": "EXECUTED",
+        "data_kind": "synthetic",
+        "causal_ground_truth": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "scenario_ids": scenario_ids,
+        "trials": trials,
+        "seed": seed,
+        "methods": list(methods),
+        "summaries": summaries,
+        "records": records,
+    }
+    manifest_path = output / "method_comparison.json"
+    with NamedTemporaryFile("w", encoding="utf-8", dir=output, prefix=".comparison-", delete=False) as temporary:
+        temporary.write(json.dumps(manifest, indent=2) + "\n")
+        temporary_path = Path(temporary.name)
+    temporary_path.replace(manifest_path)
+    return manifest_path
+
+
+def _method_summary(records: list[dict[str, object]]) -> dict[str, object]:
+    if not records:
+        return {"status": "NOT EXECUTED", "value": None, "reason": "method has no records"}
+    actual = [bool(record["truth"]["vessel_present"] and record["truth"]["disturbance_present"] and not record["truth"]["environmental_event"]) for record in records]
+    predicted = [record["decision"] in {"T2", "T3"} for record in records]
+    true_positive = sum(left and right for left, right in zip(actual, predicted))
+    false_positive = sum(not left and right for left, right in zip(actual, predicted))
+    false_negative = sum(left and not right for left, right in zip(actual, predicted))
+    accuracy = sum(left == right for left, right in zip(actual, predicted)) / len(actual)
+    precision = true_positive / (true_positive + false_positive) if true_positive + false_positive else 0.0
+    recall = true_positive / (true_positive + false_negative) if true_positive + false_negative else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+    return {"status": "EXECUTED", "value": {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1, "trials": len(records)}, "reason": None}
+</file>
+
+<file path="src/subsea/features.py">
+from __future__ import annotations
+
+import math
+from typing import Iterable
+
+import numpy as np
+
+
+def acceleration_magnitude(samples: Iterable[Iterable[float]]) -> np.ndarray:
+    values = np.asarray(list(samples), dtype=float)
+    if values.ndim != 2 or values.shape[1] < 3:
+        raise ValueError("samples must contain at least three acceleration axes")
+    return np.linalg.norm(values[:, :3], axis=1)
+
+
+def spectral_features(samples: Iterable[Iterable[float]], sampling_rate: float) -> dict[str, float]:
+    magnitude = acceleration_magnitude(samples)
+    if sampling_rate <= 0 or magnitude.size == 0:
+        raise ValueError("sampling_rate must be positive and samples must not be empty")
+    centered = magnitude - np.mean(magnitude)
+    spectrum = np.abs(np.fft.rfft(centered)) ** 2
+    frequencies = np.fft.rfftfreq(centered.size, 1.0 / sampling_rate)
+    if spectrum.size > 1:
+        spectrum[0] = 0.0
+    total = float(np.sum(spectrum))
+    probabilities = spectrum / total if total > 0 else np.zeros_like(spectrum)
+    entropy = float(-np.sum(probabilities[probabilities > 0] * np.log2(probabilities[probabilities > 0])))
+    dominant = float(frequencies[int(np.argmax(spectrum))]) if total > 0 else 0.0
+    return {
+        "mean": float(np.mean(magnitude)),
+        "rms": float(np.sqrt(np.mean(magnitude**2))),
+        "variance": float(np.var(magnitude)),
+        "std": float(np.std(magnitude)),
+        "peak": float(np.max(magnitude)),
+        "peak_to_rms": float(np.max(magnitude) / max(np.sqrt(np.mean(magnitude**2)), 1e-12)),
+        "spectral_energy": total,
+        "dominant_frequency": dominant,
+        "spectral_entropy": entropy,
+    }
+
+
+def physical_confidence(features: dict[str, float], *, baseline_rms: float, disturbance_rms: float) -> float:
+    if disturbance_rms <= baseline_rms:
+        raise ValueError("disturbance_rms must exceed baseline_rms")
+    confidence = (features["rms"] - baseline_rms) / (disturbance_rms - baseline_rms)
+    return float(np.clip(confidence, 0.0, 1.0))
+</file>
+
+<file path="src/subsea/fusion.py">
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+import numpy as np
+
+from .models import Evidence, Hypothesis
+
+
+def weighted_fusion(evidence: Iterable[Evidence], epsilon: float = 1e-12) -> tuple[float, float]:
+    values = tuple(evidence)
+    if not values:
+        return 0.0, 1.0
+    numerator = sum(item.weight * item.health * item.availability * item.value for item in values)
+    denominator = sum(item.weight * item.health * item.availability for item in values) + epsilon
+    reliability = float(np.clip(denominator / (sum(item.weight for item in values) + epsilon), 0, 1))
+    return float(np.clip(numerator / denominator, 0, 1)), reliability
+
+
+def score_hypotheses(
+    physical_confidence: float,
+    association_confidence: float,
+    reliability: float,
+    *,
+    environmental: float = 0.0,
+    mechanical: float = 0.0,
+    sensor_fault: float = 0.0,
+    counter_evidence: float = 0.0,
+) -> dict[str, float]:
+    vessel = np.clip((0.45 * physical_confidence + 0.55 * association_confidence) * reliability - counter_evidence, 0, 1)
+    scores = {
+        Hypothesis.VESSEL_DISTURBANCE.value: float(vessel),
+        Hypothesis.ENVIRONMENTAL.value: float(np.clip(environmental, 0, 1)),
+        Hypothesis.MECHANICAL.value: float(np.clip(mechanical, 0, 1)),
+        Hypothesis.SENSOR_FAULT.value: float(np.clip(sensor_fault + (1 - reliability), 0, 1)),
+    }
+    total = sum(scores.values())
+    return {key: float(value / total) for key, value in scores.items()} if total else {key: 0.0 for key in scores}
+</file>
+
+<file path="src/subsea/health.py">
+from __future__ import annotations
+
+from collections.abc import Iterable
+
+import numpy as np
+
+from .models import SensorHealth, SensorObservation
+
+
+def estimate_health(
+    observations: Iterable[SensorObservation],
+    *,
+    expected_interval: float,
+    packet_timeout: float,
+    now: float | None = None,
+) -> SensorHealth:
+    values = tuple(observations)
+    if not values or expected_interval <= 0 or packet_timeout <= 0:
+        raise ValueError("observations and positive timing parameters are required")
+    last = values[-1]
+    timestamps = np.asarray([item.timestamp for item in values], dtype=float)
+    accelerations = np.asarray([item.acceleration for item in values], dtype=float)
+    missing = sum(not item.packet_received for item in values)
+    stale = now is not None and now - last.timestamp > packet_timeout
+    constant = bool(np.all(np.std(accelerations, axis=0) < 1e-9))
+    intervals = np.diff(timestamps)
+    irregular = bool(intervals.size and np.max(np.abs(intervals - expected_interval)) > expected_interval)
+    communication_ok = missing == 0 and not stale
+    availability = max(0.0, 1.0 - missing / len(values))
+    health = availability
+    reasons: list[str] = []
+    if stale:
+        health = 0.0
+        reasons.append("stale timestamp")
+    if constant:
+        health *= 0.7
+        reasons.append("constant-value behaviour")
+    if irregular:
+        health *= 0.8
+        reasons.append("irregular sampling interval")
+    if not communication_ok:
+        reasons.append("communication degradation")
+    return SensorHealth(last.node_id, float(np.clip(health, 0, 1)), availability, bool(stale), constant, communication_ok, tuple(reasons))
+</file>
+
+<file path="src/subsea/metrics.py">
+from __future__ import annotations
+
+from typing import Iterable
+
+import numpy as np
+
+
+def classification_metrics(truth: Iterable[str], prediction: Iterable[str]) -> dict[str, object]:
+    actual = list(truth)
+    predicted = list(prediction)
+    if len(actual) != len(predicted) or not actual:
+        raise ValueError("truth and prediction must be non-empty and equal length")
+    labels = sorted(set(actual) | set(predicted))
+    correct = sum(left == right for left, right in zip(actual, predicted))
+    per_class: dict[str, dict[str, float | int]] = {}
+    for label in labels:
+        true_positive = sum(a == label and p == label for a, p in zip(actual, predicted))
+        false_positive = sum(a != label and p == label for a, p in zip(actual, predicted))
+        false_negative = sum(a == label and p != label for a, p in zip(actual, predicted))
+        support = sum(a == label for a in actual)
+        precision = true_positive / (true_positive + false_positive) if true_positive + false_positive else 0.0
+        recall = true_positive / (true_positive + false_negative) if true_positive + false_negative else 0.0
+        f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+        per_class[label] = {"precision": precision, "recall": recall, "f1": f1, "support": support}
+    macro_precision = float(np.mean([item["precision"] for item in per_class.values()]))
+    macro_recall = float(np.mean([item["recall"] for item in per_class.values()]))
+    macro_f1 = float(np.mean([item["f1"] for item in per_class.values()]))
+    return {"accuracy": correct / len(actual), "labels": labels, "confusion_matrix": [[sum(a == label_a and p == label_p for a, p in zip(actual, predicted)) for label_p in labels] for label_a in labels], "per_class": per_class, "macro_precision": macro_precision, "macro_recall": macro_recall, "macro_f1": macro_f1, "status": "EXECUTED"}
+
+
+def brier_score(labels: Iterable[int], probabilities: Iterable[float]) -> float:
+    actual = np.asarray(list(labels), dtype=float)
+    confidence = np.asarray(list(probabilities), dtype=float)
+    if actual.size == 0 or actual.size != confidence.size:
+        raise ValueError("labels and probabilities must be non-empty and equal length")
+    if not np.all(np.isin(actual, (0, 1))) or not np.all(np.isfinite(confidence)) or np.any((confidence < 0) | (confidence > 1)):
+        raise ValueError("binary labels and probabilities in [0, 1] are required")
+    return float(np.mean((confidence - actual) ** 2))
+
+
+def calibration_curve(labels: Iterable[int], probabilities: Iterable[float], bins: int = 10) -> list[dict[str, float | int]]:
+    actual = np.asarray(list(labels), dtype=float)
+    confidence = np.asarray(list(probabilities), dtype=float)
+    if not isinstance(bins, int) or isinstance(bins, bool) or bins <= 0 or actual.size == 0 or actual.size != confidence.size:
+        raise ValueError("positive bins and non-empty equal-length inputs are required")
+    if not np.all(np.isin(actual, (0, 1))) or not np.all(np.isfinite(confidence)) or np.any((confidence < 0) | (confidence > 1)):
+        raise ValueError("binary labels and probabilities in [0, 1] are required")
+    edges = np.linspace(0, 1, bins + 1)
+    curve: list[dict[str, float | int]] = []
+    for index, (lower, upper) in enumerate(zip(edges[:-1], edges[1:])):
+        mask = (confidence >= lower) & (confidence <= upper if index == bins - 1 else confidence < upper)
+        count = int(np.sum(mask))
+        curve.append({"lower": float(lower), "upper": float(upper), "count": count, "mean_confidence": float(np.mean(confidence[mask])) if count else 0.0, "empirical_rate": float(np.mean(actual[mask])) if count else 0.0})
+    return curve
+
+
+def bootstrap_confidence_interval(values: Iterable[float], *, statistic: str = "mean", resamples: int = 1000, seed: int = 42) -> dict[str, object]:
+    observations = np.asarray(list(values), dtype=float)
+    if not np.all(np.isfinite(observations)) or not isinstance(resamples, int) or isinstance(resamples, bool) or resamples <= 0:
+        raise ValueError("finite observations and positive resamples are required")
+    if statistic != "mean":
+        raise ValueError("only mean bootstrap intervals are currently supported")
+    if observations.size < 2:
+        return pending_result("at least two observations are required")
+    rng = np.random.default_rng(seed)
+    samples = rng.choice(observations, size=(resamples, observations.size), replace=True)
+    estimates = np.mean(samples, axis=1)
+    return {"status": "EXECUTED", "estimate": float(np.mean(observations)), "lower": float(np.percentile(estimates, 2.5)), "upper": float(np.percentile(estimates, 97.5)), "observations": int(observations.size), "resamples": resamples, "seed": seed, "reason": None}
+
+
+def expected_calibration_error(labels: Iterable[int], probabilities: Iterable[float], bins: int = 10) -> float:
+    actual = np.asarray(list(labels), dtype=float)
+    confidence = np.asarray(list(probabilities), dtype=float)
+    if not isinstance(bins, int) or isinstance(bins, bool) or bins <= 0 or actual.size == 0 or actual.size != confidence.size:
+        raise ValueError("positive bins and non-empty equal-length inputs are required")
+    if not np.all(np.isin(actual, (0, 1))) or not np.all(np.isfinite(confidence)) or np.any((confidence < 0) | (confidence > 1)):
+        raise ValueError("binary labels and probabilities in [0, 1] are required")
+    edges = np.linspace(0, 1, bins + 1)
+    error = 0.0
+    for lower, upper in zip(edges[:-1], edges[1:]):
+        mask = (confidence >= lower) & (confidence <= upper if upper == 1 else confidence < upper)
+        if np.any(mask):
+            error += np.mean(mask) * abs(float(np.mean(confidence[mask])) - float(np.mean(actual[mask])))
+    return float(error)
+
+
+def pending_result(reason: str) -> dict[str, object]:
+    return {"status": "NOT EXECUTED", "value": None, "reason": reason}
+
+
+def _cohort_rate(predictions: Iterable[str], cohort: Iterable[bool], predicate: object) -> float:
+    decisions = list(predictions)
+    members = list(cohort)
+    if not decisions or len(decisions) != len(members):
+        raise ValueError("predictions and cohort must be non-empty and equal length")
+    selected = [decision for decision, included in zip(decisions, members) if included]
+    if not selected:
+        raise ValueError("cohort must contain at least one trial")
+    return float(sum(predicate(decision) for decision in selected) / len(selected))
+
+
+def adversarial_error_rate(predictions: Iterable[str], adversarial_h1: Iterable[bool]) -> float:
+    """Fraction of true adversarial H1 trials incorrectly decided as T0."""
+
+    return _cohort_rate(predictions, adversarial_h1, lambda decision: decision == "T0")
+
+
+def false_high_escalation_rate(predictions: Iterable[str], benign: Iterable[bool]) -> float:
+    """Fraction of benign/non-vessel trials incorrectly decided as T2 or T3."""
+
+    return _cohort_rate(predictions, benign, lambda decision: decision in {"T2", "T3"})
+</file>
+
+<file path="src/subsea/models.py">
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import StrEnum
+from typing import Any
+
+
+class DecisionState(StrEnum):
+    T0 = "T0"
+    T1 = "T1"
+    T2 = "T2"
+    T3 = "T3"
+    TX = "TX"
+
+
+class Hypothesis(StrEnum):
+    VESSEL_DISTURBANCE = "vessel_associated_disturbance"
+    ENVIRONMENTAL = "environmental_disturbance"
+    MECHANICAL = "non_vessel_mechanical_disturbance"
+    SENSOR_FAULT = "sensor_system_fault"
+
+
+@dataclass(frozen=True)
+class SensorObservation:
+    node_id: str
+    timestamp: float
+    acceleration: tuple[float, ...]
+    position: tuple[float, float]
+    packet_received: bool = True
+    source: str = "simulation"
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class VesselObservation:
+    vessel_id: str
+    timestamp: float
+    position: tuple[float, float]
+    speed: float
+    heading: float
+    reported: bool = True
+    position_uncertainty: float = 0.0
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class SensorHealth:
+    node_id: str
+    health: float
+    availability: float
+    stale: bool
+    constant_value: bool
+    communication_ok: bool
+    reasons: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class Association:
+    spatial_confidence: float
+    temporal_confidence: float
+    behaviour_confidence: float
+    distance: float
+    time_offset: float
+    explanation: tuple[str, ...] = ()
+
+    @property
+    def confidence(self) -> float:
+        return (self.spatial_confidence + self.temporal_confidence + self.behaviour_confidence) / 3.0
+
+
+@dataclass(frozen=True)
+class Evidence:
+    name: str
+    value: float
+    weight: float
+    health: float
+    availability: float
+    supports: Hypothesis | None
+    explanation: str
+
+
+@dataclass(frozen=True)
+class DecisionResult:
+    decision: DecisionState
+    physical_confidence: float
+    association_confidence: float
+    reliability: float
+    uncertainty: float
+    hypothesis_scores: dict[str, float]
+    positive_evidence: tuple[str, ...]
+    counter_evidence: tuple[str, ...]
+    missing_corroboration: tuple[str, ...]
+    rationale: tuple[str, ...]
+    audit: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class Scenario:
+    scenario_id: str
+    description: str
+    seed: int
+    vessel_present: bool
+    disturbance_present: bool
+    environmental_event: bool = False
+    sensor_failure: bool = False
+    packet_loss: float = 0.0
+    spoofing: bool = False
+    timestamp_manipulation: bool = False
+</file>
+
+<file path="src/subsea/pipeline.py">
+from __future__ import annotations
+
+from collections.abc import Sequence
+
+import numpy as np
+
+from .association import associate
+from .decision import decide
+from .features import physical_confidence, spectral_features
+from .fusion import score_hypotheses, weighted_fusion
+from .health import estimate_health
+from .models import DecisionResult, Evidence, Hypothesis, SensorObservation, VesselObservation
+
+
+def run_pipeline(
+    observations: Sequence[SensorObservation],
+    vessel: VesselObservation | None,
+    *,
+    sampling_rate: float = 50.0,
+    baseline_rms: float = 1.0,
+    disturbance_rms: float = 1.8,
+    interaction_radius: float = 10.0,
+    temporal_tolerance: float = 5.0,
+    expected_interval: float = 0.02,
+    packet_timeout: float = 1.0,
+    environmental_event: bool = False,
+    now: float | None = None,
+) -> DecisionResult:
+    if not observations:
+        raise ValueError("at least one observation is required")
+    ordered = tuple(sorted(observations, key=lambda item: item.timestamp))
+    if any(not np.isfinite(item.timestamp) or not np.all(np.isfinite(item.acceleration)) for item in ordered):
+        raise ValueError("observations must contain finite timestamps and acceleration values")
+    usable = tuple(item for item in ordered if item.packet_received)
+    health = estimate_health(ordered, expected_interval=expected_interval, packet_timeout=packet_timeout, now=now)
+    features = spectral_features([item.acceleration for item in usable], sampling_rate) if usable else {}
+    cp = physical_confidence(features, baseline_rms=baseline_rms, disturbance_rms=disturbance_rms) if usable else 0.0
+    evidence = [Evidence("physical disturbance", cp, 1.0, health.health, health.availability, Hypothesis.VESSEL_DISTURBANCE, "MPU6050 acceleration features")]
+    counter: list[str] = []
+    missing: list[str] = []
+    if vessel is None or not vessel.reported:
+        association_confidence = 0.0
+        association_components = {"spatial": 0.0, "temporal": 0.0, "behaviour": 0.0}
+        missing.append("reported vessel corroboration")
+        counter.append("no AIS-like corroboration")
+    else:
+        distance = float(np.linalg.norm(np.asarray(vessel.position) - np.asarray(ordered[-1].position)))
+        association = associate(vessel, ordered[-1].timestamp, distance, interaction_radius=interaction_radius, temporal_tolerance=temporal_tolerance)
+        association_confidence = association.confidence
+        association_components = {"spatial": association.spatial_confidence, "temporal": association.temporal_confidence, "behaviour": association.behaviour_confidence}
+        evidence.extend([
+            Evidence("spatial association", association.spatial_confidence, 1.0, health.health, health.availability, Hypothesis.VESSEL_DISTURBANCE, "distance to cable path origin"),
+            Evidence("temporal association", association.temporal_confidence, 1.0, health.health, health.availability, Hypothesis.VESSEL_DISTURBANCE, "timestamp alignment"),
+            Evidence("vessel behaviour", association.behaviour_confidence, 1.0, health.health, health.availability, Hypothesis.VESSEL_DISTURBANCE, "proximity and motion"),
+        ])
+        counter.extend(association.explanation)
+    fused, reliability = weighted_fusion(evidence)
+    counter_penalty = min(0.6, 0.15 * len(counter))
+    scores = score_hypotheses(cp, association_confidence, reliability, environmental=0.7 if environmental_event else 0.0, counter_evidence=counter_penalty)
+    missing_component = min(1.0, len(missing) / 2)
+    health_component = 1.0 - health.health
+    conflict_component = float(np.std(list(scores.values())))
+    association_component = 1.0 - association_confidence
+    uncertainty_components = {"missing": missing_component, "health": health_component, "conflict": conflict_component, "association": association_component}
+    uncertainty = float(np.clip(0.25 * sum(uncertainty_components.values()), 0, 1))
+    scores_without_counter = score_hypotheses(cp, association_confidence, reliability, environmental=0.7 if environmental_event else 0.0, counter_evidence=0.0)
+    uncertainty_without_counter = float(np.clip(0.25 * (missing_component + health_component + float(np.std(list(scores_without_counter.values()))) + association_component), 0, 1))
+    decision = decide(physical_confidence=cp, association_confidence=association_confidence, reliability=reliability, uncertainty=uncertainty)
+    rationale = (f"CP={cp:.3f}", f"CA={association_confidence:.3f}", f"reliability={reliability:.3f}", f"U={uncertainty:.3f}")
+    return DecisionResult(decision, cp, association_confidence, reliability, uncertainty, scores, tuple(item.name for item in evidence), tuple(counter), tuple(missing), rationale, {"features": features, "health": health.__dict__, "fused_score": fused, "counter_penalty": counter_penalty, "association_components": association_components, "uncertainty_components": uncertainty_components, "uncertainty_without_counter_evidence": uncertainty_without_counter, "environmental_event": environmental_event})
+</file>
+
+<file path="src/subsea/real_data.py">
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import math
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+@dataclass(frozen=True)
+class DataProvenance:
+    path: str
+    format: str
+    sha256: str
+    rows: int
+    causal_ground_truth: bool = False
+    status: str = "EXECUTED"
+
+
+@dataclass(frozen=True)
+class LoadedDataset:
+    records: tuple[dict[str, Any], ...]
+    provenance: DataProvenance
+
+
+def _normalize_timestamp(value: Any) -> Any:
+    if isinstance(value, bool):
+        raise ValueError("timestamp must be finite and non-boolean")
+    if isinstance(value, (int, float)):
+        if not math.isfinite(float(value)):
+            raise ValueError("timestamp must be finite")
+        return float(value)
+    if not isinstance(value, str):
+        raise ValueError("unsupported timestamp type")
+    try:
+        numeric = float(value)
+        if not math.isfinite(numeric):
+            raise ValueError("timestamp must be finite")
+        return numeric
+    except ValueError as error:
+        if str(error) == "timestamp must be finite":
+            raise
+        try:
+            normalized = value.replace("Z", "+00:00")
+            parsed = datetime.fromisoformat(normalized)
+        except ValueError as error:
+            raise ValueError(f"unsupported timestamp value: {value}") from error
+        if parsed.tzinfo is None:
+            raise ValueError("timestamp must include an explicit timezone")
+        return parsed.timestamp()
+
+
+def _normalize_records(records: list[dict[str, Any]], timestamp_column: str | None) -> tuple[dict[str, Any], ...]:
+    normalized: list[dict[str, Any]] = []
+    for record in records:
+        copied = dict(record)
+        if timestamp_column and timestamp_column in copied:
+            copied[timestamp_column] = _normalize_timestamp(copied[timestamp_column])
+        normalized.append(copied)
+    return tuple(normalized)
+
+
+def _read_csv(path: Path, timestamp_column: str | None) -> tuple[dict[str, Any], ...]:
+    with path.open(newline="", encoding="utf-8") as handle:
+        return _normalize_records(list(csv.DictReader(handle)), timestamp_column)
+
+
+def _read_json(path: Path, timestamp_column: str | None) -> tuple[dict[str, Any], ...]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    records = payload.get("records") if isinstance(payload, dict) else payload
+    if not isinstance(records, list) or not all(isinstance(record, dict) for record in records):
+        raise ValueError("JSON input must contain a list of record objects")
+    return _normalize_records(records, timestamp_column)
+
+
+def _read_hdf5(path: Path, dataset_name: str | None, timestamp_column: str | None) -> tuple[dict[str, Any], ...]:
+    if not dataset_name:
+        raise ValueError("hdf5_dataset is required for HDF5 input")
+    try:
+        import h5py
+    except ImportError as error:
+        raise RuntimeError("HDF5 support requires h5py") from error
+    with h5py.File(path, "r") as handle:
+        if dataset_name not in handle:
+            raise KeyError(f"HDF5 dataset not found: {dataset_name}")
+        values = handle[dataset_name][()]
+    rows = values.tolist()
+    if not isinstance(rows, list):
+        rows = [rows]
+    records = [{"value": row if isinstance(row, list) else [row]} for row in rows]
+    return _normalize_records(records, timestamp_column)
+
+
+def load_dataset(path: str | Path, *, timestamp_column: str | None = "timestamp", hdf5_dataset: str | None = None) -> LoadedDataset:
+    source = Path(path)
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    suffix = source.suffix.lower()
+    formats = {".csv": "csv", ".json": "json", ".h5": "hdf5", ".hdf5": "hdf5"}
+    if suffix not in formats:
+        raise ValueError(f"unsupported data format: {suffix or 'unknown'}")
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    data_format = formats[suffix]
+    if data_format == "csv":
+        records = _read_csv(source, timestamp_column)
+    elif data_format == "json":
+        records = _read_json(source, timestamp_column)
+    else:
+        records = _read_hdf5(source, hdf5_dataset, timestamp_column)
+    provenance = DataProvenance(str(source), data_format, digest, len(records))
+    return LoadedDataset(records, provenance)
+</file>
+
+<file path="src/subsea/reporting.py">
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import math
+from pathlib import Path
+from typing import Any
+
+from . import __version__
+
+
+def _latex(value: object) -> str:
+    replacements = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_", "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}", "^": r"\textasciicircum{}"}
+    return "".join(replacements.get(character, character) for character in str(value))
+
+
+def _read_manifest(path: Path) -> dict[str, Any]:
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    if manifest.get("status") != "EXECUTED":
+        raise ValueError("paper outputs require an EXECUTED source manifest")
+    required = {"data_kind", "causal_ground_truth", "seed", "trials", "scenario_ids", "summaries", "methods", "records"}
+    if not required <= manifest.keys() or manifest["data_kind"] != "synthetic" or manifest["causal_ground_truth"] is not False:
+        raise ValueError("source manifest is missing verified provenance")
+    if not isinstance(manifest["seed"], int) or isinstance(manifest["seed"], bool) or not isinstance(manifest["trials"], int) or isinstance(manifest["trials"], bool) or manifest["trials"] <= 0:
+        raise ValueError("source manifest has invalid provenance")
+    if not isinstance(manifest["scenario_ids"], list) or not manifest["scenario_ids"] or not isinstance(manifest["records"], list) or len(manifest["records"]) != len(manifest["methods"]) * len(manifest["scenario_ids"]) * manifest["trials"]:
+        raise ValueError("source manifest has incomplete method records")
+    allowed_decisions = {"T0", "T1", "T2", "T3", "TX"}
+    records_by_method: dict[str, list[dict[str, Any]]] = {method: [] for method in manifest["methods"]}
+    expected_keys = {(method, scenario_id, manifest["seed"] + scenario_index * manifest["trials"] + trial) for method in manifest["methods"] for scenario_index, scenario_id in enumerate(manifest["scenario_ids"]) for trial in range(manifest["trials"])}
+    observed_keys: set[tuple[str, str, int]] = set()
+    for record in manifest["records"]:
+        truth = record.get("truth", {}) if isinstance(record, dict) else {}
+        truth_fields = ("vessel_present", "disturbance_present", "environmental_event", "sensor_failure", "spoofing", "timestamp_manipulation")
+        if not isinstance(record, dict) or record.get("method") not in records_by_method or record.get("scenario_id") not in manifest["scenario_ids"] or not isinstance(record.get("seed"), int) or record.get("decision") not in allowed_decisions or record.get("status") != "EXECUTED" or not isinstance(truth, dict) or any(not isinstance(truth.get(field), bool) for field in truth_fields):
+            raise ValueError("source manifest has invalid method records")
+        key = (record["method"], record["scenario_id"], record["seed"])
+        if key in observed_keys or key not in expected_keys:
+            raise ValueError("source manifest has invalid record coverage")
+        observed_keys.add(key)
+        records_by_method[record["method"]].append(record)
+    for method in manifest["methods"]:
+        summary = manifest["summaries"].get(method, {})
+        if summary.get("status") == "EXECUTED":
+            values = summary.get("value", {})
+            if any(not isinstance(values.get(name), (int, float)) or isinstance(values[name], bool) or not 0 <= values[name] <= 1 for name in ("accuracy", "precision", "recall", "f1")):
+                raise ValueError("source manifest has invalid metric values")
+            expected = _summary_values(records_by_method[method])
+            if any(not math.isclose(float(values[name]), expected[name], rel_tol=1e-12, abs_tol=1e-12) for name in ("accuracy", "precision", "recall", "f1")):
+                raise ValueError("source manifest summary does not match records")
+    return manifest
+
+
+def _summary_values(records: list[dict[str, Any]]) -> dict[str, float]:
+    actual = [bool(record["truth"]["vessel_present"] and record["truth"]["disturbance_present"] and not record["truth"]["environmental_event"]) for record in records]
+    predicted = [record["decision"] in {"T2", "T3"} for record in records]
+    true_positive = sum(left and right for left, right in zip(actual, predicted))
+    false_positive = sum(not left and right for left, right in zip(actual, predicted))
+    false_negative = sum(left and not right for left, right in zip(actual, predicted))
+    accuracy = sum(left == right for left, right in zip(actual, predicted)) / len(actual)
+    precision = true_positive / (true_positive + false_positive) if true_positive + false_positive else 0.0
+    recall = true_positive / (true_positive + false_negative) if true_positive + false_negative else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+    return {"accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1}
+
+
+def _summary_rows(manifest: dict[str, Any]) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for method in manifest["methods"]:
+        summary = manifest["summaries"].get(method, {})
+        values = summary.get("value") or {}
+        rows.append({
+            "method": method,
+            "status": summary.get("status", "NOT EXECUTED"),
+            "accuracy": values.get("accuracy"),
+            "precision": values.get("precision"),
+            "recall": values.get("recall"),
+            "f1": values.get("f1"),
+            "trials": values.get("trials"),
+            "reason": summary.get("reason"),
+        })
+    return rows
+
+
+def _write_csv(rows: list[dict[str, object]], path: Path) -> None:
+    fields = ["method", "status", "accuracy", "precision", "recall", "f1", "trials", "reason"]
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def _write_latex(rows: list[dict[str, object]], path: Path) -> None:
+    columns = ("method", "status", "accuracy", "precision", "recall", "f1", "trials")
+    lines = ["\\begin{tabular}{lrrrrrr}", "\\toprule", "Method & Status & Accuracy & Precision & Recall & F1 & Trials \\\\", "\\midrule"]
+    for row in rows:
+        values = [_latex(row[column]) for column in columns]
+        lines.append(" & ".join(values) + " \\\\")
+    lines.extend(["\\bottomrule", "\\end{tabular}", ""])
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _write_figure(rows: list[dict[str, object]], path: Path) -> str:
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        return "NOT EXECUTED: matplotlib is not installed"
+    executed = [row for row in rows if row["status"] == "EXECUTED" and row["f1"] is not None]
+    if not executed:
+        return "NOT EXECUTED: no executed F1 summaries"
+    figure, axis = plt.subplots(figsize=(8, 4.5))
+    axis.bar([str(row["method"]) for row in executed], [float(row["f1"]) for row in executed], color="#176b87")
+    axis.set_ylim(0, 1)
+    axis.set_ylabel("F1 score")
+    axis.set_title("Executed synthetic method comparison")
+    axis.tick_params(axis="x", rotation=35)
+    figure.tight_layout()
+    figure.savefig(path, dpi=180)
+    plt.close(figure)
+    return "EXECUTED"
+
+
+def generate_paper_outputs(manifest_path: str | Path, output: str | Path) -> dict[str, object]:
+    source = Path(manifest_path)
+    destination = Path(output)
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    destination.mkdir(parents=True, exist_ok=False)
+    manifest = _read_manifest(source)
+    rows = _summary_rows(manifest)
+    _write_csv(rows, destination / "table_methods.csv")
+    _write_latex(rows, destination / "table_methods.tex")
+    figure_status = _write_figure(rows, destination / "figure_method_comparison.png")
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    result = {"status": "EXECUTED" if figure_status == "EXECUTED" else "PARTIAL", "data_kind": manifest["data_kind"], "source_manifest": str(source), "source_sha256": source_hash, "software_version": __version__, "seed": manifest["seed"], "scenario_ids": manifest["scenario_ids"], "methods": manifest["methods"], "figure_status": figure_status, "tables": ["table_methods.csv", "table_methods.tex"]}
+    (destination / "paper_output_manifest.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    return result
+</file>
+
+<file path="src/subsea/simulation.py">
+from __future__ import annotations
+
+from dataclasses import asdict
+
+import numpy as np
+
+from .models import Scenario, SensorObservation, VesselObservation
+
+SUPPORTED_SCENARIOS = frozenset({"S01", "S02", "S04", "S05", "S07", "S17", "S18", "S19"})
+
+
+def make_scenario(scenario_id: str = "S04", seed: int = 42) -> Scenario:
+    definitions = {
+        "S01": ("normal", False, False),
+        "S02": ("physical disturbance", False, True),
+        "S04": ("vessel plus disturbance", True, True),
+        "S05": ("environmental event", False, True),
+        "S07": ("sensor failure", True, True),
+        "S17": ("AIS spoofing", True, True),
+        "S18": ("transponder suppression", True, True),
+        "S19": ("timestamp manipulation", True, True),
+    }
+    if scenario_id not in SUPPORTED_SCENARIOS:
+        raise ValueError(f"unsupported scenario: {scenario_id}")
+    description, vessel, disturbance = definitions[scenario_id]
+    return Scenario(scenario_id, description, seed, vessel, disturbance, environmental_event=scenario_id == "S05", sensor_failure=scenario_id == "S07", spoofing=scenario_id == "S17", timestamp_manipulation=scenario_id == "S19")
+
+
+def generate_observations(scenario: Scenario, *, samples: int = 256, sampling_rate: float = 50.0) -> tuple[list[SensorObservation], VesselObservation | None]:
+    rng = np.random.default_rng(scenario.seed)
+    timestamps = np.arange(samples) / sampling_rate
+    amplitude = 0.15 if not scenario.disturbance_present else 1.8
+    signal = amplitude * np.sin(2 * np.pi * 8 * timestamps)
+    if scenario.environmental_event:
+        signal = 0.55 * np.sin(2 * np.pi * 2 * timestamps)
+    observations: list[SensorObservation] = []
+    for index, timestamp in enumerate(timestamps):
+        packet_received = not scenario.sensor_failure and rng.random() >= scenario.packet_loss
+        vector = (1.0 + signal[index] + rng.normal(0, 0.03), rng.normal(0, 0.03), rng.normal(0, 0.03))
+        observations.append(SensorObservation("sim-node-01", float(timestamp), vector, (0.0, 0.0), packet_received=packet_received))
+    vessel = None
+    if scenario.vessel_present:
+        vessel_timestamp = float(timestamps[-1]) + (10.0 if scenario.timestamp_manipulation else 0.0)
+        position = (2.0, 1.0)
+        if scenario.spoofing:
+            position = (25.0, 25.0)
+        vessel = VesselObservation("vessel-01", vessel_timestamp, position, 4.0, 90.0, reported=not scenario.scenario_id == "S18")
+    return observations, vessel
+
+
+def scenario_manifest(scenario: Scenario) -> dict[str, object]:
+    return asdict(scenario)
+</file>
+
+<file path="tests/test_baselines.py">
+import copy
+
+import pytest
+
+from subsea.baselines import evaluate_method
+from subsea.experiments import run_method_comparison
+from subsea.models import DecisionState
+from subsea.pipeline import run_pipeline
+from subsea.simulation import generate_observations, make_scenario
+
+
+@pytest.fixture
+def sample_case():
+    scenario = make_scenario("S04", seed=9)
+    observations, vessel = generate_observations(scenario)
+    return scenario, run_pipeline(observations, vessel)
+
+
+def test_baselines_return_stable_records(sample_case):
+    scenario, result = sample_case
+    methods = ["physical_only", "vessel_only", "weighted", "proposed"]
+    records = [evaluate_method(method, result, scenario) for method in methods]
+    assert {record["method"] for record in records} == set(methods)
+    assert all(record["status"] == "EXECUTED" for record in records)
+    assert all(record["decision"] in {state.value for state in DecisionState} for record in records)
+    assert records[-1]["decision"] == result.decision.value
+    assert records[0]["truth"]["vessel_present"] is True
+
+
+def test_ablation_records_are_pure_and_auditable(sample_case):
+    scenario, result = sample_case
+    original = copy.deepcopy(result)
+    record = evaluate_method("without_uncertainty", result, scenario)
+    assert record["changed_components"] == ("uncertainty",)
+    assert record["inputs"]["uncertainty"] == result.uncertainty
+    assert result == original
+
+
+@pytest.mark.parametrize(
+    ("method", "component"),
+    [
+        ("without_health", "health"),
+        ("without_counter_evidence", "counter_evidence"),
+        ("without_spatial_temporal_association", "spatial_temporal_association"),
+        ("without_behaviour", "behaviour"),
+    ],
+)
+def test_supported_ablations_are_explicit(sample_case, method, component):
+    scenario, result = sample_case
+    record = evaluate_method(method, result, scenario)
+    assert record["changed_components"] == (component,)
+
+
+def test_unknown_method_is_rejected(sample_case):
+    scenario, result = sample_case
+    with pytest.raises(ValueError):
+        evaluate_method("neural_magic", result, scenario)
+
+
+def test_unknown_scenario_is_rejected():
+    with pytest.raises(ValueError):
+        make_scenario("TYPO", seed=1)
+
+
+def test_timestamp_manipulation_scenario_is_supported():
+    scenario = make_scenario("S19", seed=1)
+    observations, vessel = generate_observations(scenario)
+    assert scenario.timestamp_manipulation is True
+    assert vessel is not None
+    assert vessel.timestamp == observations[-1].timestamp + 10.0
+
+
+def test_method_comparison_uses_aligned_trials(tmp_path):
+    path = run_method_comparison(
+        ["S01", "S04"],
+        trials=2,
+        seed=4,
+        output=tmp_path / "comparison",
+        methods=("proposed", "physical_only"),
+    )
+    payload = path.read_text()
+    assert '"status": "EXECUTED"' in payload
+    assert '"method": "proposed"' in payload
+    assert '"method": "physical_only"' in payload
+</file>
+
+<file path="tests/test_core.py">
+import numpy as np
+
+from subsea.association import spatial_association, temporal_association
+from subsea.features import acceleration_magnitude, physical_confidence, spectral_features
+from subsea.metrics import expected_calibration_error
+from subsea.pipeline import run_pipeline
+from subsea.simulation import generate_observations, make_scenario
+
+
+def test_acceleration_magnitude_and_spectral_features():
+    samples = np.tile([1.0, 0.0, 0.0], (64, 1))
+    assert np.allclose(acceleration_magnitude(samples), 1.0)
+    features = spectral_features(samples, 50.0)
+    assert features["rms"] == 1.0
+    assert physical_confidence(features, baseline_rms=0.5, disturbance_rms=1.5) == 0.5
+
+
+def test_association_is_bounded_and_decreases():
+    assert spatial_association(0, 10) == 1
+    assert spatial_association(20, 10) == 0
+    assert temporal_association(0, 5) == 1
+    assert temporal_association(10, 5) == 0
+
+
+def test_seeded_end_to_end_scenario_is_reproducible():
+    scenario = make_scenario("S04", seed=7)
+    observations, vessel = generate_observations(scenario)
+    first = run_pipeline(observations, vessel)
+    observations_again, vessel_again = generate_observations(scenario)
+    second = run_pipeline(observations_again, vessel_again)
+    assert first == second
+    assert first.decision.value in {"T0", "T1", "T2", "T3", "TX"}
+    assert first.audit["health"]["health"] <= 1.0
+
+
+def test_missing_corroboration_is_auditable():
+    scenario = make_scenario("S18", seed=7)
+    observations, vessel = generate_observations(scenario)
+    result = run_pipeline(observations, vessel)
+    assert "reported vessel corroboration" in result.missing_corroboration
+    assert "no AIS-like corroboration" in result.counter_evidence
+
+
+def test_stale_sensor_fails_closed_to_tx():
+    from subsea.models import SensorObservation
+
+    result = run_pipeline([SensorObservation("n", 0.0, (1.0, 0.0, 0.0), (0.0, 0.0))], None, now=10.0, packet_timeout=1.0)
+    assert result.decision.value == "TX"
+
+
+def test_calibration_metric_is_bounded():
+    value = expected_calibration_error([1, 0, 1, 1], [0.9, 0.1, 0.8, 0.4])
+    assert 0 <= value <= 1
+</file>
+
+<file path="tests/test_evaluation.py">
+import json
+
+import pytest
+
+from subsea.adversarial import apply_attack
+from subsea.experiments import run_trials
+from subsea.metrics import adversarial_error_rate, false_high_escalation_rate
+from subsea.models import VesselObservation
+
+
+def test_apply_attack_is_immutable_and_records_metadata():
+    vessel = VesselObservation("v", 1.0, (1.0, 1.0), 2.0, 90.0)
+    attacked = apply_attack(vessel, "ais_spoofing", severity=0.5)
+    assert attacked is not vessel
+    assert attacked.position != vessel.position
+    assert attacked.metadata["attack"] == "ais_position_spoofing"
+    assert vessel.position == (1.0, 1.0)
+
+
+def test_run_trials_records_attack_and_is_reproducible(tmp_path):
+    first_path = run_trials("S04", trials=3, seed=10, output=tmp_path / "first", attack="ais_spoofing", attack_severity=0.5)
+    second_path = run_trials("S04", trials=3, seed=10, output=tmp_path / "second", attack="ais_spoofing", attack_severity=0.5)
+    first = json.loads(first_path.read_text())
+    second = json.loads(second_path.read_text())
+    assert first["status"] == "EXECUTED"
+    assert first["predictions"] == second["predictions"]
+    assert all(item["attack"] == "ais_spoofing" for item in first["predictions"])
+    assert all(item["attack_applied"] for item in first["predictions"])
+    assert first["metrics"]["AER"]["status"] == "EXECUTED"
+    assert first["metrics"]["FHER"]["status"] == "NOT EXECUTED"
+
+
+def test_no_attack_does_not_report_aer(tmp_path):
+    path = run_trials("S04", trials=2, seed=10, output=tmp_path / "no-attack", attack="none")
+    manifest = json.loads(path.read_text())
+    assert manifest["metrics"]["AER"] == {
+        "status": "NOT EXECUTED",
+        "value": None,
+        "reason": "cohort must contain at least one trial",
+    }
+
+
+def test_run_trials_executes_fher_for_benign_scenario(tmp_path):
+    path = run_trials("S01", trials=2, seed=10, output=tmp_path / "benign")
+    manifest = json.loads(path.read_text())
+    assert manifest["metrics"]["AER"]["status"] == "NOT EXECUTED"
+    assert manifest["metrics"]["FHER"]["status"] == "EXECUTED"
+
+
+def test_run_trials_rejects_invalid_count_and_overwrite(tmp_path):
+    with pytest.raises(ValueError):
+        run_trials("S04", trials=0, seed=1, output=tmp_path / "zero")
+    output = tmp_path / "existing"
+    output.mkdir()
+    with pytest.raises(FileExistsError):
+        run_trials("S04", trials=1, seed=1, output=output)
+    with pytest.raises(ValueError):
+        run_trials("S01", trials=1, seed=1, output=tmp_path / "invalid-attack", attack="invalid")
+
+
+def test_aer_and_fher_use_explicit_cohorts():
+    assert adversarial_error_rate(["T0", "TX", "T2"], [True, True, True]) == pytest.approx(1 / 3)
+    assert false_high_escalation_rate(["T3", "T2", "T1"], [True, True, True]) == pytest.approx(2 / 3)
+    with pytest.raises(ValueError):
+        adversarial_error_rate(["T0"], [False])
+    with pytest.raises(ValueError):
+        false_high_escalation_rate(["T0"], [False])
+
+
+def test_aer_and_fher_reject_invalid_cohorts():
+    with pytest.raises(ValueError):
+        adversarial_error_rate([], [])
+    with pytest.raises(ValueError):
+        false_high_escalation_rate(["T0"], [])
+    with pytest.raises(ValueError):
+        adversarial_error_rate(["T0"], [True, False])
+</file>
+
+<file path="tests/test_metrics.py">
+import pytest
+
+from subsea.metrics import (
+    brier_score,
+    bootstrap_confidence_interval,
+    calibration_curve,
+    classification_metrics,
+)
+
+
+def test_classification_metrics_include_per_class_scores():
+    result = classification_metrics(["positive", "positive", "negative"], ["positive", "negative", "negative"])
+    assert result["accuracy"] == pytest.approx(2 / 3)
+    assert result["per_class"]["positive"]["recall"] == pytest.approx(0.5)
+    assert result["macro_f1"] == pytest.approx(2 / 3)
+
+
+def test_brier_score_is_bounded():
+    assert brier_score([1, 0], [0.9, 0.1]) == pytest.approx(0.01)
+    with pytest.raises(ValueError):
+        brier_score([1], [1.2])
+
+
+def test_calibration_curve_is_explicit_about_bins():
+    curve = calibration_curve([1, 0, 1], [0.9, 0.1, 0.8], bins=2)
+    assert sum(point["count"] for point in curve) == 3
+    assert all(set(("lower", "upper", "count", "mean_confidence", "empirical_rate")) <= point.keys() for point in curve)
+
+
+def test_ece_rejects_invalid_binary_inputs():
+    from subsea.metrics import expected_calibration_error
+
+    with pytest.raises(ValueError):
+        expected_calibration_error([0.5], [0.5])
+    with pytest.raises(ValueError):
+        expected_calibration_error([0], [1.2])
+    with pytest.raises(ValueError):
+        expected_calibration_error([0], [0.5], bins=0)
+    with pytest.raises(ValueError):
+        expected_calibration_error([0], [0.5], bins=2.5)
+
+
+def test_bootstrap_ci_requires_enough_observations_and_is_seeded():
+    assert bootstrap_confidence_interval([0.5], seed=1)["status"] == "NOT EXECUTED"
+    with pytest.raises(ValueError):
+        bootstrap_confidence_interval([float("nan")])
+    with pytest.raises(ValueError):
+        bootstrap_confidence_interval([0.0, 1.0], resamples=2.5)
+    first = bootstrap_confidence_interval([0.0, 1.0, 1.0, 0.0], resamples=200, seed=4)
+    second = bootstrap_confidence_interval([0.0, 1.0, 1.0, 0.0], resamples=200, seed=4)
+    assert first == second
+    assert first["status"] == "EXECUTED"
+    assert first["lower"] <= first["estimate"] <= first["upper"]
+</file>
+
+<file path="tests/test_real_data.py">
+import hashlib
+import json
+
+import pytest
+
+from subsea.real_data import load_dataset
+
+
+def test_csv_loader_normalizes_timestamps_and_preserves_raw(tmp_path):
+    path = tmp_path / "ais.csv"
+    path.write_text("timestamp,vessel_id,lat\n2026-01-01T00:00:00Z,v1,1.5\n", encoding="utf-8")
+    before = hashlib.sha256(path.read_bytes()).hexdigest()
+
+    dataset = load_dataset(path, timestamp_column="timestamp")
+
+    assert dataset.records[0]["timestamp"] == 1767225600.0
+    assert dataset.records[0]["vessel_id"] == "v1"
+    assert dataset.provenance.format == "csv"
+    assert dataset.provenance.sha256 == before
+    assert dataset.provenance.causal_ground_truth is False
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == before
+
+
+def test_json_loader_requires_record_objects(tmp_path):
+    path = tmp_path / "data.json"
+    path.write_text(json.dumps([{"timestamp": 1, "value": 2}]), encoding="utf-8")
+    dataset = load_dataset(path)
+    assert dataset.records == ({"timestamp": 1.0, "value": 2},)
+
+    invalid = tmp_path / "invalid.json"
+    invalid.write_text(json.dumps([1, 2]), encoding="utf-8")
+    with pytest.raises(ValueError, match="record objects"):
+        load_dataset(invalid)
+
+
+def test_unsupported_format_is_rejected(tmp_path):
+    path = tmp_path / "data.txt"
+    path.write_text("data", encoding="utf-8")
+    with pytest.raises(ValueError, match="unsupported data format"):
+        load_dataset(path)
+
+
+def test_naive_timestamp_is_rejected(tmp_path):
+    path = tmp_path / "naive.json"
+    path.write_text(json.dumps([{"timestamp": "2026-01-01T00:00:00", "value": 1}]), encoding="utf-8")
+    with pytest.raises(ValueError, match="timezone"):
+        load_dataset(path)
+
+
+def test_non_finite_timestamp_is_rejected(tmp_path):
+    path = tmp_path / "nonfinite.json"
+    path.write_text(json.dumps([{"timestamp": "nan", "value": 1}]), encoding="utf-8")
+    with pytest.raises(ValueError, match="finite"):
+        load_dataset(path)
+
+
+def test_boolean_timestamp_is_rejected(tmp_path):
+    path = tmp_path / "boolean.json"
+    path.write_text(json.dumps([{"timestamp": True, "value": 1}]), encoding="utf-8")
+    with pytest.raises(ValueError, match="non-boolean"):
+        load_dataset(path)
+
+
+def test_unsupported_timestamp_type_is_rejected(tmp_path):
+    path = tmp_path / "object.json"
+    path.write_text(json.dumps([{"timestamp": None, "value": 1}]), encoding="utf-8")
+    with pytest.raises(ValueError, match="timestamp type"):
+        load_dataset(path)
+
+
+def test_hdf5_loader_reads_named_dataset_without_mutation(tmp_path):
+    h5py = pytest.importorskip("h5py")
+    path = tmp_path / "das.h5"
+    with h5py.File(path, "w") as handle:
+        handle.create_dataset("signal", data=[[1.0, 2.0], [3.0, 4.0]])
+    before = hashlib.sha256(path.read_bytes()).hexdigest()
+
+    dataset = load_dataset(path, hdf5_dataset="signal")
+
+    assert dataset.records == ({"value": [1.0, 2.0]}, {"value": [3.0, 4.0]})
+    assert dataset.provenance.format == "hdf5"
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == before
+</file>
+
+<file path="tests/test_reporting.py">
+import json
+
+import pytest
+
+from subsea.experiments import run_method_comparison
+from subsea.reporting import generate_paper_outputs
+
+
+def test_paper_outputs_are_generated_from_executed_manifest(tmp_path):
+    manifest_path = run_method_comparison(["S01", "S04"], trials=1, seed=2, output=tmp_path / "experiment", methods=("proposed", "physical_only"))
+    output = tmp_path / "paper"
+    generated = generate_paper_outputs(manifest_path, output)
+    assert generated["status"] == "EXECUTED"
+    assert (output / "table_methods.csv").is_file()
+    assert (output / "table_methods.tex").is_file()
+    if pytest.importorskip("matplotlib"):
+        assert (output / "figure_method_comparison.png").is_file()
+    payload = json.loads((output / "paper_output_manifest.json").read_text())
+    assert payload["source_manifest"] == str(manifest_path)
+    assert payload["source_sha256"]
+    assert payload["seed"] == 2
+
+
+def test_paper_outputs_reject_unverified_manifest(tmp_path):
+    manifest = tmp_path / "fabricated.json"
+    manifest.write_text(json.dumps({"status": "EXECUTED", "methods": ["proposed"], "summaries": {"proposed": {"status": "EXECUTED", "value": {"f1": 0.9}}}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="provenance"):
+        generate_paper_outputs(manifest, tmp_path / "paper")
+
+
+def test_paper_outputs_recompute_summary_values(tmp_path):
+    manifest_path = run_method_comparison(["S01", "S04"], trials=1, seed=2, output=tmp_path / "experiment")
+    manifest = json.loads(manifest_path.read_text())
+    manifest["summaries"]["proposed"]["value"]["f1"] = 0.99
+    tampered = tmp_path / "tampered.json"
+    tampered.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(ValueError, match="does not match"):
+        generate_paper_outputs(tampered, tmp_path / "paper")
+
+
+def test_paper_outputs_reject_duplicate_records(tmp_path):
+    manifest_path = run_method_comparison(["S01", "S04"], trials=1, seed=2, output=tmp_path / "experiment")
+    manifest = json.loads(manifest_path.read_text())
+    manifest["records"][-1] = manifest["records"][0]
+    tampered = tmp_path / "duplicate.json"
+    tampered.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(ValueError, match="coverage"):
+        generate_paper_outputs(tampered, tmp_path / "paper")
+</file>
+
+<file path=".gitignore">
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+results/*
+!results/.gitkeep
+.streamlit/
+</file>
+
+<file path="pyproject.toml">
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "subsea-cable-disturbance"
+version = "0.1.0"
+description = "Reproducible uncertainty-aware multimodal evidence fusion research prototype"
+requires-python = ">=3.12"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "pydantic>=1.10",
+  "pyyaml>=6.0",
+  "scipy>=1.11",
+  "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+ui = ["streamlit>=1.30", "plotly>=5.18"]
+test = ["pytest>=8.0"]
+ml = ["scikit-learn>=1.4", "xgboost>=2.0"]
+realdata = ["h5py>=3.10"]
+
+[project.scripts]
+subsea-simulate = "subsea.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+</file>
+
+<file path="README.md">
+# Subsea Cable Disturbance Assessment
+
+A reproducible research prototype for uncertainty-aware multimodal evidence fusion under adversarial uncertainty. The current implementation is intentionally interpretable and separates physical detection, association, attribution, uncertainty, and decision.
+
+## Research integrity
+
+Synthetic outputs are experiment outputs, not scientific claims. No accuracy, F1, AER, FHER, latency, confidence interval, or causal result is included unless generated by an executed experiment. Unsupported capabilities are marked `NOT EXECUTED` or remain explicit adapters.
+
+## Current architecture
+
+- `src/subsea/features.py`: MPU6050 acceleration magnitude and spectral features.
+- `src/subsea/health.py`: availability, freshness, constant-value, and sampling health.
+- `src/subsea/association.py`: configurable spatial, temporal, and behaviour confidence.
+- `src/subsea/fusion.py`: transparent health/availability-weighted evidence fusion and competing hypotheses.
+- `src/subsea/pipeline.py`: auditable end-to-end decision pipeline.
+- `src/subsea/simulation.py`: deterministic synthetic scenarios.
+- `src/subsea/adversarial.py`: vessel-side spoofing, suppression, and timestamp transforms.
+- `src/subsea/acquisition.py`: validated ESP32/MPU6050 packet contract.
+- `src/subsea/experiments.py`: non-overwriting seeded trial manifests with attack cohorts.
+- `src/subsea/metrics.py`: explicit AER and FHER cohort metrics.
+- `src/subsea/real_data.py`: read-only CSV/JSON/HDF5 loading with timestamp normalization and source hashes.
+- `dashboard/app.py`: Streamlit research view.
+
+## Install and test
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pytest -q
+```
+
+## Run a simulation
+
+```bash
+python -m subsea.cli --scenario S04 --seed 42 --output results/s04.json
+PYTHONPATH=src python scripts/run_adversarial.py --scenario S04 --attack ais_spoofing --trials 100 --output results/adversarial-s04
+PYTHONPATH=src python scripts/run_baselines.py --scenario S01 --scenario S04 --trials 100 --output results/baselines-s01-s04
+PYTHONPATH=src python scripts/generate_paper_results.py --manifest results/baselines-s01-s04/method_comparison.json --output results/paper-s01-s04
+python -m streamlit run dashboard/app.py
+```
+
+The CLI emits intermediate features, health, fusion, hypotheses, uncertainty, decision, counter-evidence, and missing corroboration. Use a new output directory for each experiment; raw data is never overwritten by the experiment runner.
+
+Adversarial trials record `true_h1` and `benign` cohort membership explicitly. Each manifest computes AER and FHER when its denominator cohort exists; otherwise that metric is recorded as `NOT EXECUTED` with a reason. AER is the fraction of true adversarial H1 trials decided as `T0`; FHER is the fraction of benign/non-vessel trials decided as `T2` or `T3`. Empty cohorts are rejected, and these synthetic metrics are not claims about operational resilience. Manifest timestamps are provenance metadata; seeds and records are the deterministic experiment content.
+
+## Configuration
+
+The initial configuration is in `config/system.yaml`. Thresholds and weights are intentionally visible and should be justified by calibration experiments before being used for claims.
+
+## Hardware and real data status
+
+`Mpu6050Packet` validates the expected ESP32 payload and converts it into the common observation model. MQTT, HTTP, serial transport, DAS/HDF5 loading, and hardware-in-the-loop timing are not yet executed in this prototype. The Marlinks-NS distance labels, when integrated, must be treated as association/localization evidence rather than causal attribution ground truth.
+
+## Limitations
+
+The simulator is not an operational ocean model. MPU6050 is a laboratory inertial/vibration sensor, not operational DAS. The adversarial model currently manipulates vessel-side observations while treating cable-side sensing as trusted. Real deployment requires underwater-qualified sensing, synchronization, communications, calibration, and validation. Decision labels are configurable research states, not safety authorization.
+</file>
+
+<file path="requirements.txt">
+-e .[test,ui,realdata]
+</file>
+
+<file path="TRACKER.md">
+# Project Tracker
+
+Last updated: 2026-09-10
+
+This tracker distinguishes implemented software from results that require an executed experiment, real hardware, or an external dataset. A checked implementation item does not imply scientific validation.
+
+## Status Legend
+
+- `[x]` Implemented and covered by tests.
+- `[~]` Partial prototype or adapter; more work is required.
+- `[ ]` Not implemented.
+- `PENDING` Experiment or dataset required; never treated as zero or success.
+
+## Completed
+
+- [x] Python package and reproducible source layout.
+- [x] Typed sensor, vessel, evidence, hypothesis, health, and decision contracts.
+- [x] MPU6050 acceleration magnitude and spectral features.
+- [x] Spatial, temporal, and behaviour association outputs.
+- [x] Sensor health, availability, stale-data handling, and fail-closed `TX` behavior.
+- [x] Positive evidence, counter-evidence, missing corroboration, and competing hypotheses.
+- [x] Interpretable weighted fusion with auditable intermediate values.
+- [x] Deterministic synthetic scenarios and seeded experiment manifests.
+- [x] Vessel-side AIS spoofing, transponder suppression, and timestamp manipulation hooks.
+- [x] Explicit AER/FHER cohort metrics with `NOT EXECUTED` handling.
+- [x] Baseline and ablation evaluator with aligned trials.
+- [x] Streamlit prototype dashboard.
+- [x] CLI commands for simulation, adversarial trials, and baseline comparisons.
+- [x] Focused regression suite: 39 tests passing, with 1 optional HDF5 test skipped when `h5py` is unavailable.
+
+## Current Phase: Real Data, Metrics, and Paper Outputs
+
+- [x] Real-data boundary contracts: read-only CSV/JSON/HDF5 loaders with source hashes and timestamp normalization.
+- [~] Generic HDF5 loader exists; DAS-specific feature/channel metadata mapping remains.
+- [ ] AIS-like trajectory loader with vessel metadata and timestamp normalization.
+- [ ] Real-data association validation without causal attribution claims.
+- [x] Expanded classification metrics: precision, recall, F1, confusion matrix, and per-class support.
+- [x] Brier score and calibration curve support with explicit binary/multiclass semantics.
+- [x] ECE validation and bin-policy documentation.
+- [x] Bootstrap confidence intervals with sample-size/status safeguards.
+- [ ] Statistical comparison utilities selected by study design.
+- [x] Publication-quality figure generation for method comparisons.
+- [x] CSV and LaTeX table generation from executed manifests.
+- [~] Paper-result manifest links source hash, seed, software version, scenarios, and methods; configuration capture remains.
+
+## Hardware and Operations Gaps
+
+- [~] ESP32/MPU6050 packet schema exists.
+- [ ] MQTT receiver.
+- [ ] HTTP receiver.
+- [ ] Serial receiver.
+- [ ] Raw packet recorder with append-only behavior.
+- [ ] LIVE, SIMULATION, and REPLAY mode coordinator.
+- [ ] Hardware experiment workflows H01-H08.
+- [ ] Hardware-in-the-loop latency measurement.
+- [ ] ESP32 firmware source and wiring documentation.
+
+## Simulation and Adversarial Gaps
+
+- [~] S01, S02, S04, S05, S07, S17, S18, and S19 are supported.
+- [ ] Remaining scenario matrix S03, S06, S08-S16, S20-S22.
+- [ ] Multi-node and multi-vessel generation.
+- [ ] Packet-loss/noise/position-uncertainty parameter sweeps.
+- [ ] Adversarial severity sweep with AER curves.
+- [ ] FHER by benign operating condition.
+- [ ] Monte Carlo result tables with explicit trial counts.
+
+## Dashboard Gaps
+
+- [~] Overview, scenario selection, hypothesis chart, and audit summary.
+- [ ] Sensor-health timeline.
+- [ ] Vibration waveform and FFT views.
+- [ ] Vessel/cable spatial view.
+- [ ] Evidence and uncertainty timelines.
+- [ ] Adversarial severity and baseline comparison views.
+- [ ] Paper figure browser.
+
+## Scientific Integrity Gates
+
+- [x] No fabricated experiment results in source or documentation.
+- [x] Empty cohorts remain `NOT EXECUTED`.
+- [x] Synthetic results are labeled and are not causal attribution ground truth.
+- [ ] Real-data validation executed with a versioned dataset.
+- [ ] Hardware experiments executed and archived.
+- [ ] Thresholds and weights calibrated from documented experiments.
+- [ ] Confidence intervals/statistical tests justified by study design.
+
+## Iteration Log
+
+### 2026-09-10
+
+- Added this tracker as the project status source of truth.
+- Recorded the next phase: real-data loaders, richer metrics/calibration, and paper outputs.
+- Baseline/ablation phase completed with 23 passing tests.
+- Added `subsea.real_data` loaders for CSV/JSON/HDF5 boundary validation; HDF5 execution is pending `h5py` installation.
+- Added richer classification, Brier, calibration-curve, and seeded bootstrap metrics; insufficient samples remain `NOT EXECUTED`.
+- Added executed-manifest paper CSV/LaTeX table and Matplotlib figure generation with provenance output.
+- Hardened paper generation against unverified manifests, invalid metric ranges, ambiguous timestamps, and partial figure output.
+- Added record-level summary recomputation and rejected unsupported/non-finite timestamp values.
+
+## Next Smallest Deliverable
+
+Implement DAS-specific HDF5 channel/feature mapping and AIS trajectory normalization on top of the validated generic loaders. Preserve raw input files, record preprocessing parameters, and label unavailable metadata rather than infer causal truth.
+</file>
+
+</files>
