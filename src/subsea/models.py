@@ -115,3 +115,27 @@ class Scenario:
     counter_evidence: bool = False
     absence_corroboration: bool = False
     multiple_targets: bool = False
+    noise_level: float = 0.03
+    n_nodes: int = 1
+    position_uncertainty_level: float = 0.0
+    high_uncertainty: bool = False
+    spatial_manipulation: bool = False
+
+
+@dataclass(frozen=True)
+class MultiNodeResult:
+    """Aggregated result from multiple sensor nodes along a cable."""
+    node_results: tuple[DecisionResult, ...]
+    fused_physical_confidence: float
+    fused_uncertainty: float
+    node_ids: tuple[str, ...]
+    cable_positions: tuple[tuple[float, float], ...]
+
+
+@dataclass(frozen=True)
+class MultiVesselResult:
+    """Result evaluating multiple candidate vessels."""
+    vessel_results: tuple[tuple[str, DecisionResult], ...]
+    selected_vessel_id: str | None
+    selected_decision: DecisionResult
+    competing_associations: dict[str, float]
