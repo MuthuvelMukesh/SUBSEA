@@ -1,0 +1,59 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "synthetic",
+  "source_manifest": "artifacts\\paper_evaluation\\manifest_baselines\\method_comparison.json",
+  "source_sha256": "42cd8a9a42b8b73e22d7fdadba473f71e6c2528f6b929a723f04aa1d8addf9a4",
+  "software_version": "0.1.0",
+  "seed": 42,
+  "scenario_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "S09",
+    "S10",
+    "S11",
+    "S12",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S18",
+    "S19",
+    "S20",
+    "S21",
+    "S22"
+  ],
+  "methods": [
+    "physical_only",
+    "proposed",
+    "vessel_only",
+    "weighted",
+    "without_behaviour",
+    "without_counter_evidence",
+    "without_health",
+    "without_spatial_temporal_association",
+    "without_uncertainty"
+  ],
+  "figures": {
+    "Figure_1_Architecture": "EXECUTED",
+    "Figure_2_Pipeline": "EXECUTED",
+    "Figure_3_Scenario_Performance": "EXECUTED",
+    "Figure_4_Method_Comparison": "EXECUTED",
+    "Figure_10_DAS_AIS_Association": "EXECUTED",
+    "Figure_11_Competing_Hypotheses": "EXECUTED",
+    "Figure_12_Decision_Distribution": "EXECUTED"
+  },
+  "tables": {
+    "Table_I_Scenarios": "EXECUTED",
+    "Table_II_Dataset_Characteristics": "EXECUTED",
+    "Table_III_Methods": "EXECUTED",
+    "Table_IV_Scenario_Performance": "EXECUTED",
+    "Table_IX_Real_Data_Association": "EXECUTED"
+  }
+}

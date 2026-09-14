@@ -1,0 +1,23 @@
+scenario_id,description,vessel_present,disturbance_present,environmental,adversarial
+S01,normal,False,False,False,False
+S02,physical disturbance,False,True,False,False
+S03,vessel only,True,False,False,False
+S04,vessel plus disturbance,True,True,False,False
+S05,environmental event,False,True,True,False
+S06,non-vessel mechanical event,False,True,False,False
+S07,sensor failure,True,True,False,False
+S08,communication failure,True,True,False,False
+S09,noise stress,False,True,False,False
+S10,packet loss,False,True,False,False
+S11,spatial mismatch,True,True,False,False
+S12,temporal mismatch,True,True,False,False
+S13,conflicting evidence,True,True,False,False
+S14,counter evidence,True,True,False,False
+S15,high uncertainty,True,True,False,False
+S16,absence of corroboration,True,True,False,False
+S17,AIS spoofing,True,True,False,True
+S18,transponder suppression,True,True,False,False
+S19,timestamp manipulation,True,True,False,True
+S20,spatial manipulation,True,True,False,True
+S21,combined adversarial evasion,True,True,False,True
+S22,multiple vessels and disturbances,True,True,False,False

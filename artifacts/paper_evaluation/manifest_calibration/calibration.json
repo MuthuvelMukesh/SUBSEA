@@ -1,0 +1,120 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "synthetic",
+  "causal_ground_truth": false,
+  "software_version": "0.1.0",
+  "git_commit": "d85b701",
+  "created_at": "2026-09-14T02:58:04.791808+00:00",
+  "experiment_type": "calibration",
+  "scenario_ids": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "S09",
+    "S10",
+    "S11",
+    "S12",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S18",
+    "S19",
+    "S20",
+    "S21",
+    "S22"
+  ],
+  "trials": 2,
+  "seed": 42,
+  "total_samples": 44,
+  "brier_score": 0.40522542690050256,
+  "ECE": 0.4244280728426728,
+  "calibration_curve": [
+    {
+      "lower": 0.0,
+      "upper": 0.1,
+      "count": 4,
+      "mean_confidence": 2.499999999999375e-13,
+      "empirical_rate": 1.0
+    },
+    {
+      "lower": 0.1,
+      "upper": 0.2,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.2,
+      "upper": 0.30000000000000004,
+      "count": 2,
+      "mean_confidence": 0.23109436035175474,
+      "empirical_rate": 1.0
+    },
+    {
+      "lower": 0.30000000000000004,
+      "upper": 0.4,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.4,
+      "upper": 0.5,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.5,
+      "upper": 0.6000000000000001,
+      "count": 2,
+      "mean_confidence": 0.5685119628910564,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.6000000000000001,
+      "upper": 0.7000000000000001,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.7000000000000001,
+      "upper": 0.8,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.8,
+      "upper": 0.9,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.9,
+      "upper": 1.0,
+      "count": 36,
+      "mean_confidence": 1.0,
+      "empirical_rate": 0.6666666666666666
+    }
+  ],
+  "confidence_interval": {
+    "status": "EXECUTED",
+    "estimate": 0.8545275601474231,
+    "lower": 0.7486799500206,
+    "upper": 0.9430382641879139,
+    "observations": 44,
+    "resamples": 1000,
+    "seed": 42,
+    "reason": null
+  }
+}

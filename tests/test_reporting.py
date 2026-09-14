@@ -46,3 +46,65 @@ def test_paper_outputs_reject_duplicate_records(tmp_path):
     tampered.write_text(json.dumps(manifest), encoding="utf-8")
     with pytest.raises(ValueError, match="coverage"):
         generate_paper_outputs(tampered, tmp_path / "paper")
+
+
+def test_individual_figures_and_tables_generation(tmp_path):
+    from subsea.reporting import (
+        generate_architecture_figure,
+        generate_fusion_pipeline_figure,
+        generate_das_ais_figure,
+        generate_dataset_characteristics_table,
+        generate_scenario_performance_table,
+        generate_ablation_figure,
+        generate_ablation_table,
+        generate_calibration_table,
+        generate_real_data_association_table,
+    )
+    from subsea.experiments import run_ablation_study, run_calibration_analysis
+
+    out = tmp_path / "figs_and_tbls"
+    out.mkdir()
+
+    # Figures 1, 2, 10
+    assert generate_architecture_figure(out) == "EXECUTED"
+    assert (out / "figure_architecture.png").is_file()
+
+    assert generate_fusion_pipeline_figure(out) == "EXECUTED"
+    assert (out / "figure_fusion_pipeline.png").is_file()
+
+    assert generate_das_ais_figure(out) == "EXECUTED"
+    assert (out / "figure_das_ais_association.png").is_file()
+
+    # Table II
+    assert generate_dataset_characteristics_table(out) == "EXECUTED"
+    assert (out / "table_dataset_characteristics.csv").is_file()
+    assert (out / "table_dataset_characteristics.tex").is_file()
+
+    # Table IV from method comparison manifest
+    manifest_path = run_method_comparison(["S01", "S04"], trials=1, seed=2, output=tmp_path / "comp")
+    assert generate_scenario_performance_table(manifest_path, out) == "EXECUTED"
+    assert (out / "table_scenario_performance.csv").is_file()
+    assert (out / "table_scenario_performance.tex").is_file()
+
+    # Figure 5 & Table V from ablation manifest
+    abl_path = run_ablation_study(["S01", "S04"], trials=1, seed=2, output=tmp_path / "abl")
+    assert generate_ablation_figure(abl_path, out) == "EXECUTED"
+    assert (out / "figure_ablation_study.png").is_file()
+    assert generate_ablation_table(abl_path, out) == "EXECUTED"
+    assert (out / "table_ablation.csv").is_file()
+    assert (out / "table_ablation.tex").is_file()
+
+    # Table VIII from calibration manifest
+    cal_path = run_calibration_analysis(["S01", "S04"], trials=1, seed=2, output=tmp_path / "cal")
+    assert generate_calibration_table(cal_path, out) == "EXECUTED"
+    assert (out / "table_calibration.csv").is_file()
+    assert (out / "table_calibration.tex").is_file()
+
+    # Table IX (Real-data association, marked NOT EXECUTED if external data missing)
+    assert generate_real_data_association_table(out) == "EXECUTED"
+    assert (out / "table_real_data_association.csv").is_file()
+    assert (out / "table_real_data_association.tex").is_file()
+    # Ensure it states NOT EXECUTED
+    content = (out / "table_real_data_association.csv").read_text()
+    assert "NOT EXECUTED" in content
+

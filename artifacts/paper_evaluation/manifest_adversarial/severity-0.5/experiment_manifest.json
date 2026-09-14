@@ -1,0 +1,116 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "synthetic",
+  "causal_ground_truth": false,
+  "software_version": "0.1.0",
+  "git_commit": "d85b701",
+  "created_at": "2026-09-14T02:58:04.985990+00:00",
+  "scenario": {
+    "scenario_id": "S04",
+    "description": "vessel plus disturbance",
+    "seed": 42,
+    "vessel_present": true,
+    "disturbance_present": true,
+    "environmental_event": false,
+    "sensor_failure": false,
+    "packet_loss": 0.0,
+    "spoofing": false,
+    "timestamp_manipulation": false,
+    "mechanical_event": false,
+    "communication_failure": false,
+    "noise_stress": false,
+    "spatial_mismatch": false,
+    "temporal_mismatch": false,
+    "conflicting_evidence": false,
+    "counter_evidence": false,
+    "absence_corroboration": false,
+    "multiple_targets": false,
+    "noise_level": 0.03,
+    "n_nodes": 1,
+    "position_uncertainty_level": 0.0,
+    "high_uncertainty": false,
+    "spatial_manipulation": false
+  },
+  "trials": 2,
+  "seed": 42,
+  "attack": "ais_spoofing",
+  "attack_severity": 0.5,
+  "metrics": {
+    "AER": {
+      "status": "EXECUTED",
+      "value": 0.0,
+      "reason": null
+    },
+    "FHER": {
+      "status": "NOT EXECUTED",
+      "value": null,
+      "reason": "cohort must contain at least one trial"
+    }
+  },
+  "latencies": [
+    {
+      "trial": 0,
+      "seed": 42,
+      "latency_ms": 1.6458000000056927
+    },
+    {
+      "trial": 1,
+      "seed": 43,
+      "latency_ms": 1.4561000007233815
+    }
+  ],
+  "predictions": [
+    {
+      "trial": 0,
+      "seed": 42,
+      "decision": "T1",
+      "confidence": 1.0,
+      "uncertainty": 0.27491984213972154,
+      "physical_confidence": 0.7738966170863911,
+      "association_confidence": 0.3333333333333333,
+      "reliability": 1.0,
+      "hypothesis_scores": {
+        "vessel_associated_disturbance": 1.0,
+        "environmental_disturbance": 0.0,
+        "non_vessel_mechanical_disturbance": 0.0,
+        "sensor_system_fault": 0.0
+      },
+      "attack": "ais_spoofing",
+      "attack_severity": 0.5,
+      "true_h1": true,
+      "attack_requested": true,
+      "attack_applied": true,
+      "vessel_count": 1,
+      "vessel_ids": [
+        "vessel-01"
+      ],
+      "benign": false
+    },
+    {
+      "trial": 1,
+      "seed": 43,
+      "decision": "T1",
+      "confidence": 1.0,
+      "uncertainty": 0.27491984213972154,
+      "physical_confidence": 0.7799237465741357,
+      "association_confidence": 0.3333333333333333,
+      "reliability": 1.0,
+      "hypothesis_scores": {
+        "vessel_associated_disturbance": 1.0,
+        "environmental_disturbance": 0.0,
+        "non_vessel_mechanical_disturbance": 0.0,
+        "sensor_system_fault": 0.0
+      },
+      "attack": "ais_spoofing",
+      "attack_severity": 0.5,
+      "true_h1": true,
+      "attack_requested": true,
+      "attack_applied": true,
+      "vessel_count": 1,
+      "vessel_ids": [
+        "vessel-01"
+      ],
+      "benign": false
+    }
+  ]
+}

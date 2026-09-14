@@ -1,0 +1,4 @@
+Metric,Value,Description
+Brier Score,0.405225,Mean squared probability error (lower is better)
+Expected Calibration Error (ECE),0.0,Weighted confidence-accuracy discrepancy
+Optimal Threshold,0.5,Calibrated decision cutoff minimizing Brier loss

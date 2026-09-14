@@ -1,0 +1,77 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "synthetic",
+  "causal_ground_truth": false,
+  "software_version": "0.1.0",
+  "git_commit": "d85b701",
+  "created_at": "2026-09-14T02:58:05.342570+00:00",
+  "scenario_id": "S04",
+  "sweep_type": "packet_loss",
+  "trials": 2,
+  "seed": 42,
+  "rows": [
+    {
+      "packet_loss_rate": 0.0,
+      "f1": 1.0,
+      "FHER": null,
+      "TX_rate": 0.0,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_reliability": 1.0,
+      "trials": 2
+    },
+    {
+      "packet_loss_rate": 0.05,
+      "f1": 1.0,
+      "FHER": null,
+      "TX_rate": 0.0,
+      "mean_uncertainty": 0.1416826374373145,
+      "mean_reliability": 0.861000061035191,
+      "trials": 2
+    },
+    {
+      "packet_loss_rate": 0.1,
+      "f1": 1.0,
+      "FHER": null,
+      "TX_rate": 0.0,
+      "mean_uncertainty": 0.14251521958163604,
+      "mean_reliability": 0.7759475708008372,
+      "trials": 2
+    },
+    {
+      "packet_loss_rate": 0.2,
+      "f1": 1.0,
+      "FHER": null,
+      "TX_rate": 0.0,
+      "mean_uncertainty": 0.15790468983107803,
+      "mean_reliability": 0.5923156738282269,
+      "trials": 2
+    },
+    {
+      "packet_loss_rate": 0.3,
+      "f1": 1.0,
+      "FHER": null,
+      "TX_rate": 0.0,
+      "mean_uncertainty": 0.1829852704167079,
+      "mean_reliability": 0.45669555664076084,
+      "trials": 2
+    },
+    {
+      "packet_loss_rate": 0.5,
+      "f1": 0.0,
+      "FHER": null,
+      "TX_rate": 1.0,
+      "mean_uncertainty": 0.25311927458122996,
+      "mean_reliability": 0.22174835205097582,
+      "trials": 2
+    },
+    {
+      "packet_loss_rate": 0.7,
+      "f1": 0.0,
+      "FHER": null,
+      "TX_rate": 1.0,
+      "mean_uncertainty": 0.3123771030466287,
+      "mean_reliability": 0.08584594726585354,
+      "trials": 2
+    }
+  ]
+}

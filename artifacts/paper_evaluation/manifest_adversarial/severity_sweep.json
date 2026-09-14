@@ -1,0 +1,114 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "synthetic",
+  "causal_ground_truth": false,
+  "software_version": "0.1.0",
+  "git_commit": "d85b701",
+  "created_at": "2026-09-14T02:58:05.152543+00:00",
+  "scenario_id": "S04",
+  "attack": "ais_spoofing",
+  "trials": 2,
+  "seed": 42,
+  "rows": [
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.0,
+      "AER": {
+        "status": "NOT EXECUTED",
+        "value": null,
+        "reason": "cohort must contain at least one trial"
+      },
+      "FHER": {
+        "status": "NOT EXECUTED",
+        "value": null,
+        "reason": "cohort must contain at least one trial"
+      },
+      "decision_distribution": {
+        "T2": 2
+      },
+      "mean_uncertainty": 0.14552097509805131,
+      "trials": 2,
+      "seed": 42
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.25,
+      "AER": {
+        "status": "EXECUTED",
+        "value": 0.0,
+        "reason": null
+      },
+      "FHER": {
+        "status": "NOT EXECUTED",
+        "value": null,
+        "reason": "cohort must contain at least one trial"
+      },
+      "decision_distribution": {
+        "T1": 2
+      },
+      "mean_uncertainty": 0.27491984213972154,
+      "trials": 2,
+      "seed": 42
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.5,
+      "AER": {
+        "status": "EXECUTED",
+        "value": 0.0,
+        "reason": null
+      },
+      "FHER": {
+        "status": "NOT EXECUTED",
+        "value": null,
+        "reason": "cohort must contain at least one trial"
+      },
+      "decision_distribution": {
+        "T1": 2
+      },
+      "mean_uncertainty": 0.27491984213972154,
+      "trials": 2,
+      "seed": 42
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.75,
+      "AER": {
+        "status": "EXECUTED",
+        "value": 0.0,
+        "reason": null
+      },
+      "FHER": {
+        "status": "NOT EXECUTED",
+        "value": null,
+        "reason": "cohort must contain at least one trial"
+      },
+      "decision_distribution": {
+        "T1": 2
+      },
+      "mean_uncertainty": 0.27491984213972154,
+      "trials": 2,
+      "seed": 42
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 1.0,
+      "AER": {
+        "status": "EXECUTED",
+        "value": 0.0,
+        "reason": null
+      },
+      "FHER": {
+        "status": "NOT EXECUTED",
+        "value": null,
+        "reason": "cohort must contain at least one trial"
+      },
+      "decision_distribution": {
+        "T1": 2
+      },
+      "mean_uncertainty": 0.27491984213972154,
+      "trials": 2,
+      "seed": 42
+    }
+  ]
+}
