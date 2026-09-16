@@ -94,7 +94,8 @@ def evaluate_method(method: str, result: DecisionResult, scenario: Scenario) -> 
         effective["association_confidence"] = _association_without(result, {"behaviour"})
         changed = ("behaviour",)
     elif method == "weighted":
-        pass
+        effective.update(reliability=1.0, uncertainty=0.0)
+        changed = ("health", "uncertainty")
     elif method == "without_uncertainty":
         effective["uncertainty"] = 0.0
         changed = ("uncertainty",)

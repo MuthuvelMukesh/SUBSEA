@@ -1,0 +1,47 @@
+{
+  "status": "EXECUTED",
+  "configuration": {
+    "dataset": "EMSO Western Ionian Seafloor Observatory DAS",
+    "sampling_rate_hz": 10.0,
+    "n_stability_windows": 10
+  },
+  "results": {
+    "dataset_name": "EMSO Western Ionian Seafloor Observatory DAS",
+    "file_path": "data\\emso_ionian\\decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
+    "sha256": "8af2afac41b9ff9acee4e9f02ff782508398537a5643a331dd47f19e5f9ffdac",
+    "sample_count": 10500,
+    "channel_count": 2963,
+    "sampling_rate_hz": 10.0,
+    "duration_seconds": 1050.0,
+    "channel_rms_statistics": {
+      "mean_rms": 735.0143432617188,
+      "median_rms": 209.5523223876953,
+      "std_rms": 1313.47705078125,
+      "min_rms": 0.0,
+      "max_rms": 12941.9970703125,
+      "inter_channel_cv": 1.7870087336697813
+    },
+    "temporal_stability": {
+      "windows_evaluated": 10,
+      "window_duration_seconds": 105.0,
+      "window_rms_values": [
+        1503.3797607421875,
+        1503.7735595703125,
+        1504.130859375,
+        1504.3966064453125,
+        1504.8558349609375,
+        1505.390380859375,
+        1505.818603515625,
+        1506.267822265625,
+        1506.557861328125,
+        1506.896240234375
+      ],
+      "temporal_stability_cv": 0.0007721418372281263
+    },
+    "distribution_metrics": {
+      "sample_kurtosis": 13.220333099365234,
+      "sample_skewness": -0.11205487698316574
+    },
+    "status": "EXECUTED"
+  }
+}

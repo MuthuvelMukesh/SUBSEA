@@ -1,0 +1,923 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "CONTROLLED SIMULATION",
+  "threat_model": "Vessel-side AIS trajectory and transponder manipulation",
+  "scientific_statement": "Within the implemented vessel-side attack model and tested severity range, no adversarial trial collapsed to T0.",
+  "attacks_evaluated": [
+    "ais_spoofing",
+    "transponder_suppression",
+    "timestamp_manipulation",
+    "spatial_manipulation",
+    "combined_evasion"
+  ],
+  "severities": [
+    0.0,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.0
+  ],
+  "results": [
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 1.0,
+      "t0_count": 0,
+      "t1_count": 0,
+      "t2_count": 100,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.8509288015000145,
+      "mean_fusion_score": 0.8321021068887788,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 100,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T2": 100
+      }
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.2,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.4,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.6,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 0.8,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "ais_spoofing",
+      "severity": 1.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "transponder_suppression",
+      "severity": 0.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 1.0,
+      "t0_count": 0,
+      "t1_count": 0,
+      "t2_count": 100,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.8509288015000145,
+      "mean_fusion_score": 0.8321021068887788,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 100,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T2": 100
+      }
+    },
+    {
+      "attack": "transponder_suppression",
+      "severity": 0.2,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.48325317547305474,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.0,
+      "mean_fusion_score": 0.7756220230551288,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "transponder_suppression",
+      "severity": 0.4,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.48325317547305474,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.0,
+      "mean_fusion_score": 0.7756220230551288,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "transponder_suppression",
+      "severity": 0.6,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.48325317547305474,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.0,
+      "mean_fusion_score": 0.7756220230551288,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "transponder_suppression",
+      "severity": 0.8,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.48325317547305474,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.0,
+      "mean_fusion_score": 0.7756220230551288,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "transponder_suppression",
+      "severity": 1.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.48325317547305474,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.0,
+      "mean_fusion_score": 0.7756220230551288,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "timestamp_manipulation",
+      "severity": 0.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 1.0,
+      "t0_count": 0,
+      "t1_count": 0,
+      "t2_count": 100,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.8509288015000145,
+      "mean_fusion_score": 0.8321021068887788,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 100,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T2": 100
+      }
+    },
+    {
+      "attack": "timestamp_manipulation",
+      "severity": 0.2,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 1.0,
+      "t0_count": 0,
+      "t1_count": 0,
+      "t2_count": 100,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.1788543084313846,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.7175954681666806,
+      "mean_fusion_score": 0.7321021068888038,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 100,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T2": 100
+      }
+    },
+    {
+      "attack": "timestamp_manipulation",
+      "severity": 0.4,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.21218764176471797,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.5842621348333471,
+      "mean_fusion_score": 0.6321021068888287,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "timestamp_manipulation",
+      "severity": 0.6,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.22885430843138455,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.5175954681666807,
+      "mean_fusion_score": 0.5821021068888411,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "timestamp_manipulation",
+      "severity": 0.8,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.22885430843138455,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.5175954681666807,
+      "mean_fusion_score": 0.5821021068888411,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "timestamp_manipulation",
+      "severity": 1.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.22885430843138455,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.5175954681666807,
+      "mean_fusion_score": 0.5821021068888411,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "spatial_manipulation",
+      "severity": 0.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 1.0,
+      "t0_count": 0,
+      "t1_count": 0,
+      "t2_count": 100,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.8509288015000145,
+      "mean_fusion_score": 0.8321021068887788,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 100,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T2": 100
+      }
+    },
+    {
+      "attack": "spatial_manipulation",
+      "severity": 0.2,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.2149719127636023,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.57312505083781,
+      "mean_fusion_score": 0.6237492938921776,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "spatial_manipulation",
+      "severity": 0.4,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "spatial_manipulation",
+      "severity": 0.6,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "spatial_manipulation",
+      "severity": 0.8,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "spatial_manipulation",
+      "severity": 1.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27491984213972154,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.3333333333333334,
+      "mean_fusion_score": 0.44390550576386517,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "combined_evasion",
+      "severity": 0.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 1.0,
+      "t0_count": 0,
+      "t1_count": 0,
+      "t2_count": 100,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.8509288015000145,
+      "mean_fusion_score": 0.8321021068887788,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 100,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T2": 100
+      }
+    },
+    {
+      "attack": "combined_evasion",
+      "severity": 0.2,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.21067741789729727,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.5903030303030303,
+      "mean_fusion_score": 0.6366327784910898,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "combined_evasion",
+      "severity": 0.4,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.27006219874953613,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.35276390689407483,
+      "mean_fusion_score": 0.4584784359344175,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "combined_evasion",
+      "severity": 0.6,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.3245370961491401,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.13486431729565898,
+      "mean_fusion_score": 0.2950537437356466,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "combined_evasion",
+      "severity": 0.8,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.35174869984297985,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.026017902520299573,
+      "mean_fusion_score": 0.21341893265414746,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    },
+    {
+      "attack": "combined_evasion",
+      "severity": 1.0,
+      "trials": 100,
+      "AER": 0.0,
+      "TX_rate": 0.0,
+      "escalated_T2_T3_rate": 0.0,
+      "t0_count": 0,
+      "t1_count": 100,
+      "t2_count": 0,
+      "t3_count": 0,
+      "tx_count": 0,
+      "mean_uncertainty": 0.3582531754730547,
+      "mean_physical_confidence": 0.7756220230559044,
+      "mean_association_confidence": 0.0,
+      "mean_fusion_score": 0.19390550576392765,
+      "original_decision_distribution": {
+        "T2": 100
+      },
+      "attacked_decision_distribution": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "decisions": {
+        "T1": 100
+      }
+    }
+  ]
+}

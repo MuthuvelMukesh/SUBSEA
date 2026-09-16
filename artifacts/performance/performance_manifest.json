@@ -1,0 +1,51 @@
+{
+  "status": "EXECUTED",
+  "iterations": 1000,
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 4, GenuineIntel",
+    "python": "3.13.9"
+  },
+  "performance_metrics": {
+    "DAS Spectral Processing": {
+      "mean_ms": 0.9184670000040569,
+      "median_ms": 0.5669500001204142,
+      "std_ms": 1.1026459215707343,
+      "p95_ms": 2.60744000024715,
+      "max_ms": 12.455099999897357,
+      "throughput_hz": 1088.7707451607766
+    },
+    "Spatio-Temporal Association": {
+      "mean_ms": 0.031168800000159536,
+      "median_ms": 0.02029999996011611,
+      "std_ms": 0.09789744830779078,
+      "p95_ms": 0.05110000074637355,
+      "max_ms": 2.146799999536597,
+      "throughput_hz": 32083.365416534532
+    },
+    "Multimodal Evidence Fusion": {
+      "mean_ms": 0.18944829998599744,
+      "median_ms": 0.10750000001280569,
+      "std_ms": 0.382298630136754,
+      "p95_ms": 0.3981849994033834,
+      "max_ms": 5.787900000541413,
+      "throughput_hz": 5278.484948526391
+    },
+    "Decision State Machine": {
+      "mean_ms": 0.008987000011074997,
+      "median_ms": 0.004599999556376133,
+      "std_ms": 0.08142294205773944,
+      "p95_ms": 0.010405000057289721,
+      "max_ms": 2.563900000495778,
+      "throughput_hz": 111271.83696090628
+    },
+    "End-to-End Pipeline": {
+      "mean_ms": 8.28864299999259,
+      "median_ms": 6.2295500001710025,
+      "std_ms": 5.7140035298626595,
+      "p95_ms": 19.52582500043718,
+      "max_ms": 63.43680000009044,
+      "throughput_hz": 120.64701061451122
+    }
+  }
+}

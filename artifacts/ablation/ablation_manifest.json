@@ -1,0 +1,106 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "CONTROLLED SIMULATION",
+  "ablation_results": {
+    "A: physical_only": {
+      "method_key": "physical_only",
+      "accuracy": 0.3181818181818182,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 1.0,
+      "tx_rate": 0.0
+    },
+    "B: physical + spatial": {
+      "method_key": "physical_plus_spatial",
+      "accuracy": 0.5,
+      "precision": 1.0,
+      "recall": 0.26666666666666666,
+      "f1": 0.4210526315789474,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.7333333333333333,
+      "tx_rate": 0.13636363636363635
+    },
+    "C: physical + temporal": {
+      "method_key": "physical_plus_temporal",
+      "accuracy": 0.5909090909090909,
+      "precision": 1.0,
+      "recall": 0.4,
+      "f1": 0.5714285714285715,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.6,
+      "tx_rate": 0.13636363636363635
+    },
+    "D: physical + behaviour": {
+      "method_key": "physical_plus_behaviour",
+      "accuracy": 0.5,
+      "precision": 1.0,
+      "recall": 0.26666666666666666,
+      "f1": 0.4210526315789474,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.7333333333333333,
+      "tx_rate": 0.13636363636363635
+    },
+    "E: physical + spatial + temporal": {
+      "method_key": "physical_spatial_temporal",
+      "accuracy": 0.4090909090909091,
+      "precision": 1.0,
+      "recall": 0.13333333333333333,
+      "f1": 0.23529411764705882,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.8666666666666667,
+      "tx_rate": 0.13636363636363635
+    },
+    "F: full fusion w/o uncertainty": {
+      "method_key": "without_uncertainty",
+      "accuracy": 0.4090909090909091,
+      "precision": 1.0,
+      "recall": 0.13333333333333333,
+      "f1": 0.23529411764705882,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.8666666666666667,
+      "tx_rate": 0.13636363636363635
+    },
+    "G: full fusion w/o health": {
+      "method_key": "without_health",
+      "accuracy": 0.45454545454545453,
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.33333333333333337,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.8,
+      "tx_rate": 0.0
+    },
+    "H: full fusion w/o counter-evidence": {
+      "method_key": "without_counter_evidence",
+      "accuracy": 0.4090909090909091,
+      "precision": 1.0,
+      "recall": 0.13333333333333333,
+      "f1": 0.23529411764705882,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.8666666666666667,
+      "tx_rate": 0.13636363636363635
+    },
+    "I: full fusion w/o spatial-temporal": {
+      "method_key": "without_spatial_temporal_association",
+      "accuracy": 0.5,
+      "precision": 1.0,
+      "recall": 0.26666666666666666,
+      "f1": 0.4210526315789474,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.7333333333333333,
+      "tx_rate": 0.13636363636363635
+    },
+    "J: full proposed framework": {
+      "method_key": "proposed",
+      "accuracy": 0.4090909090909091,
+      "precision": 1.0,
+      "recall": 0.13333333333333333,
+      "f1": 0.23529411764705882,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.8666666666666667,
+      "tx_rate": 0.13636363636363635
+    }
+  }
+}

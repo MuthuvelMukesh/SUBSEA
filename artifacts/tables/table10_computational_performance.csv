@@ -1,0 +1,6 @@
+Processing_Stage,Mean_ms,Median_ms,P95_ms,Max_ms,Throughput_Hz
+DAS Spectral Processing,0.918,0.567,2.607,12.455,1088.8
+Spatio-Temporal Association,0.031,0.020,0.051,2.147,32083.4
+Multimodal Evidence Fusion,0.189,0.108,0.398,5.788,5278.5
+Decision State Machine,0.009,0.005,0.010,2.564,111271.8
+End-to-End Pipeline,8.289,6.230,19.526,63.437,120.6

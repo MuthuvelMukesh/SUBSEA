@@ -1,0 +1,54 @@
+{
+  "status": "EXECUTED",
+  "configuration": {
+    "dataset": "Marlinks Offshore Wind Farm DAS Demo",
+    "base_channel": 1440,
+    "interaction_radius_m": 500.0
+  },
+  "results": {
+    "dataset_name": "Marlinks Offshore Wind Farm DAS Demo",
+    "file_path": "data\\marlinks_demo\\reduced_dataset_sensor_range_1440_1690.h5",
+    "sha256": "46f5d28383427d4c9d404f22117cd92377a5919de85cbea0dcfc8b9b3a7aff44",
+    "sample_count": 60,
+    "channel_count": 250,
+    "frequency_bins": 100,
+    "time_start": "2023-06-16 15:55:08+00:00",
+    "time_end": "2023-06-16 16:04:58+00:00",
+    "ship_info": {
+      "type": "Container Ship",
+      "length_m": 304.0,
+      "beam_m": 40.0
+    },
+    "cpa_metrics": {
+      "true_cpa_index": 26,
+      "true_cpa_timestamp": "2023-06-16 15:59:28+00:00",
+      "true_cpa_distance_m": 26.22214083336023,
+      "peak_energy_index": 24,
+      "peak_energy_timestamp": "2023-06-16 15:59:08+00:00",
+      "distance_at_peak_energy_m": 165.5716448084759,
+      "cpa_time_offset_seconds": 20.0
+    },
+    "correlation_metrics": {
+      "pearson_r_energy_vs_inverse_dist": 0.3629496295121067,
+      "pearson_p_energy_vs_inverse_dist": 0.004369943574196365,
+      "spearman_rho_energy_vs_inverse_dist": 0.9482078355098639,
+      "spearman_p_energy_vs_inverse_dist": 1.424698698294216e-30,
+      "pearson_r_energy_vs_negative_dist": 0.41212870512765504,
+      "spearman_rho_energy_vs_negative_dist": 0.9482078355098639,
+      "pearson_r_energy_vs_1d_cp": 0.6075260880846306
+    },
+    "spatial_localization": {
+      "peak_sensor_channel": 1449,
+      "peak_channel_index": 9,
+      "spatial_gini_coefficient": 0.8739086398068507,
+      "peak_to_average_ratio": 18.17357306255523
+    },
+    "monotonicity": {
+      "approach_distance_spearman": -0.9999999999999999,
+      "approach_energy_spearman": 0.9877899877899877,
+      "departure_distance_spearman": 1.0,
+      "departure_energy_spearman": -0.9657754010695186
+    },
+    "status": "EXECUTED"
+  }
+}

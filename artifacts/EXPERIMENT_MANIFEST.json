@@ -1,0 +1,98 @@
+{
+  "title": "An Uncertainty-Aware Multimodal Evidence Fusion Framework for Vessel-Associated Subsea Cable Disturbance Assessment under Adversarial Uncertainty",
+  "phase": "PHASE 3: FULL EXPERIMENTAL VALIDATION",
+  "execution_timestamp": "2026-09-16T04:32:04.737956+00:00",
+  "git_commit": "d2a06db",
+  "software_version": "0.1.0",
+  "python_version": "3.13.9",
+  "hardware_environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 4, GenuineIntel",
+    "machine": "AMD64"
+  },
+  "provenance_boundary": {
+    "real_datasets": {
+      "Marlinks": {
+        "path": "data/marlinks_demo/reduced_dataset_sensor_range_1440_1690.h5",
+        "sha256": "46f5d28383427d4c9d404f22117cd92377a5919de85cbea0dcfc8b9b3a7aff44",
+        "status": "REAL DATA (EXECUTED)",
+        "validation_scope": "Continuous physical proximity correlation (rho=0.9482), CPA temporal alignment, spatial Gini concentration",
+        "manifest_path": "artifacts/real_data_evaluation/marlinks_manifest.json"
+      },
+      "EMSO_Ionian": {
+        "path": "data/emso_ionian/decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
+        "sha256": "8af2afac41b9ff9acee4e9f02ff782508398537a5643a331dd47f19e5f9ffdac",
+        "status": "REAL DATA (EXECUTED)",
+        "validation_scope": "Independent unperturbed seafloor baseline, temporal stability (CV=0.0008), channel variability",
+        "manifest_path": "artifacts/real_data_evaluation/emso_manifest.json"
+      }
+    },
+    "controlled_simulation": {
+      "scenarios": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16",
+        "S17",
+        "S18",
+        "S19",
+        "S20",
+        "S21",
+        "S22"
+      ],
+      "trials_per_scenario": 100,
+      "master_seed": 42,
+      "total_trials": 2200,
+      "validation_scope": "Causal threat assessment, competing hypotheses H1-H4, T0-T3/TX decisions, sensor faults, adversarial AIS evasion"
+    }
+  },
+  "artifact_manifests": {
+    "scenario_matrix": "artifacts/simulation/scenario_matrix.json",
+    "monte_carlo": "artifacts/monte_carlo/monte_carlo_manifest.json",
+    "baselines": "artifacts/baselines/baselines_manifest.json",
+    "ablation": "artifacts/ablation/ablation_manifest.json",
+    "sensor_failure": "artifacts/simulation/sensor_failure_manifest.json",
+    "competing_hypotheses": "artifacts/simulation/competing_hypotheses_manifest.json",
+    "adversarial": "artifacts/adversarial/adversarial_manifest.json",
+    "threshold_calibration": "artifacts/simulation/threshold_calibration_manifest.json",
+    "performance": "artifacts/performance/performance_manifest.json"
+  },
+  "publication_tables": [
+    "tables\\table10_computational_performance.csv",
+    "tables\\table1_real_dataset_characteristics.csv",
+    "tables\\table2_marlinks_validation.csv",
+    "tables\\table3_emso_baseline.csv",
+    "tables\\table4_controlled_scenarios.csv",
+    "tables\\table5_baseline_comparison.csv",
+    "tables\\table6_ablation_study.csv",
+    "tables\\table7_sensor_failure.csv",
+    "tables\\table8_adversarial_robustness.csv",
+    "tables\\table9_competing_hypotheses.csv"
+  ],
+  "publication_figures": [
+    "figures\\fig01_marlinks_energy_vs_distance.png",
+    "figures\\fig02_marlinks_spatial_cpa.png",
+    "figures\\fig03_marlinks_temporal_response.png",
+    "figures\\fig04_emso_temporal_stability.png",
+    "figures\\fig05_scenario_confusion_matrix.png",
+    "figures\\fig06_baseline_comparison.png",
+    "figures\\fig07_ablation_performance.png",
+    "figures\\fig08_uncertainty_vs_evidence.png",
+    "figures\\fig09_adversarial_robustness_aer.png",
+    "figures\\fig10_sensor_failure_degradation.png",
+    "figures\\fig11_decision_distribution.png",
+    "figures\\fig12_latency_distribution.png"
+  ]
+}

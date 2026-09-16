@@ -1,0 +1,3 @@
+Dataset,Modality,Format,Channels,Duration,Ground_Truth,Status
+Marlinks DAS Demo,Distributed Acoustic Sensing (DAS),HDF5,250,590 s,Continuous Proximity y (m),REAL DATA (EXECUTED)
+EMSO Ionian Seafloor,Distributed Acoustic Sensing (DAS),NumPy (.npy),"2,963","1,050 s",Unperturbed Seafloor Baseline,REAL DATA (EXECUTED)

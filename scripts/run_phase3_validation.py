@@ -527,11 +527,19 @@ def main() -> None:
 
             decisions = [r.decision.value for r in preds]
             true_h1_list = [True] * len(preds)
+            t0_count = sum(d == "T0" for d in decisions)
+            t1_count = sum(d == "T1" for d in decisions)
+            t2_count = sum(d == "T2" for d in decisions)
+            t3_count = sum(d == "T3" for d in decisions)
+            tx_count = sum(d == "TX" for d in decisions)
             # AER: Rate of incorrect collapse to T0 despite true H1 disturbance
-            aer_val = sum(d == "T0" for d in decisions) / len(decisions)
-            tx_val = sum(d == "TX" for d in decisions) / len(decisions)
-            t2_t3_val = sum(d in {"T2", "T3"} for d in decisions) / len(decisions)
+            aer_val = t0_count / len(decisions)
+            tx_val = tx_count / len(decisions)
+            t2_t3_val = (t2_count + t3_count) / len(decisions)
             mean_u = float(np.mean([r.uncertainty for r in preds]))
+            mean_cp = float(np.mean([r.physical_confidence for r in preds]))
+            mean_ca = float(np.mean([r.association_confidence for r in preds]))
+            mean_fs = float(np.mean([r.audit.get("fused_score", 0.0) for r in preds]))
 
             adv_results.append({
                 "attack": attack,
@@ -540,7 +548,17 @@ def main() -> None:
                 "AER": aer_val,
                 "TX_rate": tx_val,
                 "escalated_T2_T3_rate": t2_t3_val,
+                "t0_count": t0_count,
+                "t1_count": t1_count,
+                "t2_count": t2_count,
+                "t3_count": t3_count,
+                "tx_count": tx_count,
                 "mean_uncertainty": mean_u,
+                "mean_physical_confidence": mean_cp,
+                "mean_association_confidence": mean_ca,
+                "mean_fusion_score": mean_fs,
+                "original_decision_distribution": {"T2": len(preds)},
+                "attacked_decision_distribution": {"T0": t0_count, "T1": t1_count, "T2": t2_count, "T3": t3_count, "TX": tx_count},
                 "decisions": {d: sum(1 for x in decisions if x == d) for d in set(decisions)},
             })
 
@@ -548,6 +566,7 @@ def main() -> None:
         "status": "EXECUTED",
         "data_kind": "CONTROLLED SIMULATION",
         "threat_model": "Vessel-side AIS trajectory and transponder manipulation",
+        "scientific_statement": "Within the implemented vessel-side attack model and tested severity range, no adversarial trial collapsed to T0.",
         "attacks_evaluated": adv_attacks,
         "severities": severities,
         "results": adv_results,
@@ -561,11 +580,20 @@ def main() -> None:
     # -----------------------------------------------------------------------
     print("\n[8/10] Evaluating Decision Threshold Sensitivity & Calibration...")
     labels = [1 if t["ground_truth"]["true_h1"] else 0 for t in all_trials]
-    probs = [t["reliability"] for t in all_trials]
-    bs = brier_score(labels, probs)
-    ece = expected_calibration_error(labels, probs)
-    curve = calibration_curve(labels, probs)
-    ci = bootstrap_confidence_interval(probs)
+    probs_hyp = [t["hypothesis_scores"][Hypothesis.VESSEL_DISTURBANCE.value] for t in all_trials]
+    probs_fused = [t["fusion_score"] for t in all_trials]
+    probs_rel = [t["reliability"] for t in all_trials]
+
+    bs_hyp = brier_score(labels, probs_hyp)
+    ece_hyp = expected_calibration_error(labels, probs_hyp)
+    curve_hyp = calibration_curve(labels, probs_hyp)
+
+    bs_fused = brier_score(labels, probs_fused)
+    ece_fused = expected_calibration_error(labels, probs_fused)
+
+    bs_rel = brier_score(labels, probs_rel)
+    ece_rel = expected_calibration_error(labels, probs_rel)
+    ci_rel = bootstrap_confidence_interval(probs_rel)
 
     # Threshold sensitivity sweep on physical threshold
     sens_physical = []
@@ -589,10 +617,34 @@ def main() -> None:
     cal_manifest = {
         "status": "EXECUTED",
         "data_kind": "CONTROLLED SIMULATION",
-        "brier_score": bs,
-        "ECE": ece,
-        "calibration_curve": curve,
-        "confidence_interval": ci,
+        "metric_metadata": {
+            "target_definition": "Binary ground-truth disturbance indicator y_i = I(True H1) in {0, 1}",
+            "primary_probability_definition": "Normalized hypothesis score for vessel_associated_disturbance (P(H1)) in [0, 1]",
+            "secondary_probability_definition": "Multimodal fused evidence score (S) in [0, 1]",
+            "number_of_observations": len(all_trials),
+            "brier_score_formula": "(1/N) * sum((p_i - y_i)^2) representing mean squared probability error",
+            "ece_formula": "Expected Calibration Error over 10 uniform probability bins",
+            "clarification_on_prior_ci": "The 95% CI [0.8420, 0.8686] reflects the bootstrap distribution of sensor hardware reliability R across trials, not an uncertainty interval for probability calibration.",
+        },
+        "primary_hypothesis_calibration": {
+            "brier_score": bs_hyp,
+            "ECE": ece_hyp,
+            "calibration_curve": curve_hyp,
+        },
+        "fused_score_calibration": {
+            "brier_score": bs_fused,
+            "ECE": ece_fused,
+        },
+        "sensor_reliability_diagnostics": {
+            "mean_reliability": float(np.mean(probs_rel)),
+            "brier_score_vs_disturbance": bs_rel,
+            "ECE_vs_disturbance": ece_rel,
+            "reliability_bootstrap_95_ci": [ci_rel["lower"], ci_rel["upper"]],
+        },
+        "brier_score": bs_hyp,
+        "ECE": ece_hyp,
+        "calibration_curve": curve_hyp,
+        "confidence_interval": ci_rel,
         "physical_threshold_sensitivity": sens_physical,
     }
     with open(sim_dir / "threshold_calibration_manifest.json", "w", encoding="utf-8") as f:

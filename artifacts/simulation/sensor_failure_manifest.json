@@ -1,0 +1,134 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "CONTROLLED SIMULATION",
+  "conditions": [
+    {
+      "condition": "Normal Sensor Baseline",
+      "scenario_id": "S04",
+      "trials": 100,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_reliability": 1.0,
+      "tx_rate": 0.0,
+      "decisions": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 100,
+        "T3": 0,
+        "TX": 0
+      },
+      "correctness": 1.0
+    },
+    {
+      "condition": "Single Sensor Intermittent Packet Loss (25%)",
+      "scenario_id": "S10",
+      "trials": 100,
+      "mean_uncertainty": 0.530016959860448,
+      "mean_reliability": 0.5718479919437874,
+      "tx_rate": 0.0,
+      "decisions": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "correctness": 1.0
+    },
+    {
+      "condition": "Multiple Sensor Packet Loss (50%)",
+      "scenario_id": "S15",
+      "trials": 100,
+      "mean_uncertainty": 0.24297267196406158,
+      "mean_reliability": 0.2502883911134687,
+      "tx_rate": 1.0,
+      "decisions": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 0,
+        "T3": 0,
+        "TX": 100
+      },
+      "correctness": 0.0
+    },
+    {
+      "condition": "Sensor Drift & Calibration Offset",
+      "scenario_id": "S15",
+      "trials": 100,
+      "mean_uncertainty": 0.24297267196406158,
+      "mean_reliability": 0.2502883911134687,
+      "tx_rate": 1.0,
+      "decisions": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 0,
+        "T3": 0,
+        "TX": 100
+      },
+      "correctness": 0.0
+    },
+    {
+      "condition": "Communication Backhaul Failure",
+      "scenario_id": "S08",
+      "trials": 100,
+      "mean_uncertainty": 0.3955209750980346,
+      "mean_reliability": 2.4999999999993744e-13,
+      "tx_rate": 1.0,
+      "decisions": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 0,
+        "T3": 0,
+        "TX": 100
+      },
+      "correctness": 0.0
+    },
+    {
+      "condition": "Complete Sensor Hardware Failure",
+      "scenario_id": "S07",
+      "trials": 100,
+      "mean_uncertainty": 0.3955209750980346,
+      "mean_reliability": 2.4999999999993744e-13,
+      "tx_rate": 1.0,
+      "decisions": {
+        "T0": 0,
+        "T1": 0,
+        "T2": 0,
+        "T3": 0,
+        "TX": 100
+      },
+      "correctness": 0.0
+    },
+    {
+      "condition": "Missing Vessel AIS Corroboration",
+      "scenario_id": "S16",
+      "trials": 100,
+      "mean_uncertainty": 0.48325317547305474,
+      "mean_reliability": 1.0,
+      "tx_rate": 0.0,
+      "decisions": {
+        "T0": 0,
+        "T1": 100,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "correctness": 0.0
+    },
+    {
+      "condition": "Spatial-Temporal Conflicting Evidence",
+      "scenario_id": "S13",
+      "trials": 100,
+      "mean_uncertainty": 0.14552097509805131,
+      "mean_reliability": 1.0,
+      "tx_rate": 0.0,
+      "decisions": {
+        "T0": 100,
+        "T1": 0,
+        "T2": 0,
+        "T3": 0,
+        "TX": 0
+      },
+      "correctness": 0.0
+    }
+  ]
+}

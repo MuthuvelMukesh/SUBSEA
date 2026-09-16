@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\caption{System Degradation and Fail-Closed Behavior under Sensor Failures}
+\begin{tabular}{lrrrrr}
+\toprule
+Condition & Scenario & Mean\_Uncertainty & Mean\_Reliability & TX\_Rate & Accuracy \\
+\midrule
+Normal Sensor Baseline & S04 & 0.1455 & 1.0000 & 0.0000 & 1.0000 \\
+Single Sensor Intermittent Packet Loss (25\%) & S10 & 0.5300 & 0.5718 & 0.0000 & 1.0000 \\
+Multiple Sensor Packet Loss (50\%) & S15 & 0.2430 & 0.2503 & 1.0000 & 0.0000 \\
+Sensor Drift \& Calibration Offset & S15 & 0.2430 & 0.2503 & 1.0000 & 0.0000 \\
+Communication Backhaul Failure & S08 & 0.3955 & 0.0000 & 1.0000 & 0.0000 \\
+Complete Sensor Hardware Failure & S07 & 0.3955 & 0.0000 & 1.0000 & 0.0000 \\
+Missing Vessel AIS Corroboration & S16 & 0.4833 & 1.0000 & 0.0000 & 0.0000 \\
+Spatial-Temporal Conflicting Evidence & S13 & 0.1455 & 1.0000 & 0.0000 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\end{table}

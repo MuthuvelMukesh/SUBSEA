@@ -1,0 +1,185 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "CONTROLLED SIMULATION",
+  "methods": [
+    "physical_only",
+    "association_only",
+    "behaviour_only",
+    "weighted",
+    "proposed"
+  ],
+  "metrics": {
+    "physical_only": {
+      "accuracy": 0.3181818181818182,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 1.0,
+      "tx_rate": 0.0,
+      "total_evaluations": 2200
+    },
+    "association_only": {
+      "accuracy": 0.3181818181818182,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 1.0,
+      "tx_rate": 0.13636363636363635,
+      "total_evaluations": 2200
+    },
+    "behaviour_only": {
+      "accuracy": 0.3181818181818182,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 1.0,
+      "tx_rate": 0.13636363636363635,
+      "total_evaluations": 2200
+    },
+    "weighted": {
+      "accuracy": 0.45454545454545453,
+      "precision": 1.0,
+      "recall": 0.2,
+      "f1": 0.33333333333333337,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.8,
+      "tx_rate": 0.0,
+      "total_evaluations": 2200
+    },
+    "proposed": {
+      "accuracy": 0.4090909090909091,
+      "precision": 1.0,
+      "recall": 0.13333333333333333,
+      "f1": 0.23529411764705882,
+      "false_alarm_rate": 0.0,
+      "miss_rate": 0.8666666666666667,
+      "tx_rate": 0.13636363636363635,
+      "total_evaluations": 2200
+    }
+  },
+  "statistical_tests_vs_proposed": {
+    "physical_only": {
+      "paired_bootstrap": {
+        "status": "EXECUTED",
+        "statistic": "mean",
+        "observed_difference": 0.09090909090909094,
+        "ci_lower": 0.07907954545454546,
+        "ci_upper": 0.10318181818181818,
+        "p_value": 0.0,
+        "resamples": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "permutation_test": {
+        "status": "EXECUTED",
+        "observed_difference": 0.09090909090909094,
+        "p_value": 0.0,
+        "permutations": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "cohens_d": 0.31615588790111987,
+      "mcnemar": {
+        "status": "EXECUTED",
+        "b01": 0,
+        "b10": 200,
+        "chi2": 198.005,
+        "p_value": 0.0,
+        "n": 2200
+      }
+    },
+    "association_only": {
+      "paired_bootstrap": {
+        "status": "EXECUTED",
+        "statistic": "mean",
+        "observed_difference": 0.09090909090909094,
+        "ci_lower": 0.07907954545454546,
+        "ci_upper": 0.10318181818181818,
+        "p_value": 0.0,
+        "resamples": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "permutation_test": {
+        "status": "EXECUTED",
+        "observed_difference": 0.09090909090909094,
+        "p_value": 0.0,
+        "permutations": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "cohens_d": 0.31615588790111987,
+      "mcnemar": {
+        "status": "EXECUTED",
+        "b01": 0,
+        "b10": 200,
+        "chi2": 198.005,
+        "p_value": 0.0,
+        "n": 2200
+      }
+    },
+    "behaviour_only": {
+      "paired_bootstrap": {
+        "status": "EXECUTED",
+        "statistic": "mean",
+        "observed_difference": 0.09090909090909094,
+        "ci_lower": 0.07907954545454546,
+        "ci_upper": 0.10318181818181818,
+        "p_value": 0.0,
+        "resamples": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "permutation_test": {
+        "status": "EXECUTED",
+        "observed_difference": 0.09090909090909094,
+        "p_value": 0.0,
+        "permutations": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "cohens_d": 0.31615588790111987,
+      "mcnemar": {
+        "status": "EXECUTED",
+        "b01": 0,
+        "b10": 200,
+        "chi2": 198.005,
+        "p_value": 0.0,
+        "n": 2200
+      }
+    },
+    "weighted": {
+      "paired_bootstrap": {
+        "status": "EXECUTED",
+        "statistic": "mean",
+        "observed_difference": -0.045454545454545414,
+        "ci_lower": -0.05409090909090909,
+        "ci_upper": -0.03681818181818182,
+        "p_value": 0.0,
+        "resamples": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "permutation_test": {
+        "status": "EXECUTED",
+        "observed_difference": -0.045454545454545414,
+        "p_value": 0.0029,
+        "permutations": 10000,
+        "seed": 42,
+        "n": 2200
+      },
+      "cohens_d": -0.21816828962386486,
+      "mcnemar": {
+        "status": "EXECUTED",
+        "b01": 100,
+        "b10": 0,
+        "chi2": 98.01,
+        "p_value": 0.0,
+        "n": 2200
+      }
+    }
+  }
+}

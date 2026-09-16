@@ -1,0 +1,216 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "CONTROLLED SIMULATION",
+  "metric_metadata": {
+    "target_definition": "Binary ground-truth disturbance indicator y_i = I(True H1) in {0, 1}",
+    "primary_probability_definition": "Normalized hypothesis score for vessel_associated_disturbance (P(H1)) in [0, 1]",
+    "secondary_probability_definition": "Multimodal fused evidence score (S) in [0, 1]",
+    "number_of_observations": 2200,
+    "brier_score_formula": "(1/N) * sum((p_i - y_i)^2) representing mean squared probability error",
+    "ece_formula": "Expected Calibration Error over 10 uniform probability bins",
+    "clarification_on_prior_ci": "The 95% CI [0.8420, 0.8686] reflects the bootstrap distribution of sensor hardware reliability R across trials, not an uncertainty interval for probability calibration."
+  },
+  "primary_hypothesis_calibration": {
+    "brier_score": 0.2559753381566564,
+    "ECE": 0.258242595139329,
+    "calibration_curve": [
+      {
+        "lower": 0.0,
+        "upper": 0.1,
+        "count": 550,
+        "mean_confidence": 0.006265609948298042,
+        "empirical_rate": 0.36363636363636365
+      },
+      {
+        "lower": 0.1,
+        "upper": 0.2,
+        "count": 88,
+        "mean_confidence": 0.1592783402336937,
+        "empirical_rate": 0.4431818181818182
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.30000000000000004,
+        "count": 62,
+        "mean_confidence": 0.2323179238926967,
+        "empirical_rate": 0.9838709677419355
+      },
+      {
+        "lower": 0.30000000000000004,
+        "upper": 0.4,
+        "count": 0,
+        "mean_confidence": 0.0,
+        "empirical_rate": 0.0
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.5,
+        "count": 0,
+        "mean_confidence": 0.0,
+        "empirical_rate": 0.0
+      },
+      {
+        "lower": 0.5,
+        "upper": 0.6000000000000001,
+        "count": 0,
+        "mean_confidence": 0.0,
+        "empirical_rate": 0.0
+      },
+      {
+        "lower": 0.6000000000000001,
+        "upper": 0.7000000000000001,
+        "count": 0,
+        "mean_confidence": 0.0,
+        "empirical_rate": 0.0
+      },
+      {
+        "lower": 0.7000000000000001,
+        "upper": 0.8,
+        "count": 0,
+        "mean_confidence": 0.0,
+        "empirical_rate": 0.0
+      },
+      {
+        "lower": 0.8,
+        "upper": 0.9,
+        "count": 0,
+        "mean_confidence": 0.0,
+        "empirical_rate": 0.0
+      },
+      {
+        "lower": 0.9,
+        "upper": 1.0,
+        "count": 1500,
+        "mean_confidence": 1.0,
+        "empirical_rate": 0.8
+      }
+    ]
+  },
+  "fused_score_calibration": {
+    "brier_score": 0.31756878399216154,
+    "ECE": 0.35355365662514593
+  },
+  "sensor_reliability_diagnostics": {
+    "mean_reliability": 0.8555516537753525,
+    "brier_score_vs_disturbance": 0.40418786401782714,
+    "ECE_vs_disturbance": 0.4237072545831736,
+    "reliability_bootstrap_95_ci": [
+      0.8420067939758831,
+      0.8686482556083467
+    ]
+  },
+  "brier_score": 0.2559753381566564,
+  "ECE": 0.258242595139329,
+  "calibration_curve": [
+    {
+      "lower": 0.0,
+      "upper": 0.1,
+      "count": 550,
+      "mean_confidence": 0.006265609948298042,
+      "empirical_rate": 0.36363636363636365
+    },
+    {
+      "lower": 0.1,
+      "upper": 0.2,
+      "count": 88,
+      "mean_confidence": 0.1592783402336937,
+      "empirical_rate": 0.4431818181818182
+    },
+    {
+      "lower": 0.2,
+      "upper": 0.30000000000000004,
+      "count": 62,
+      "mean_confidence": 0.2323179238926967,
+      "empirical_rate": 0.9838709677419355
+    },
+    {
+      "lower": 0.30000000000000004,
+      "upper": 0.4,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.4,
+      "upper": 0.5,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.5,
+      "upper": 0.6000000000000001,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.6000000000000001,
+      "upper": 0.7000000000000001,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.7000000000000001,
+      "upper": 0.8,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.8,
+      "upper": 0.9,
+      "count": 0,
+      "mean_confidence": 0.0,
+      "empirical_rate": 0.0
+    },
+    {
+      "lower": 0.9,
+      "upper": 1.0,
+      "count": 1500,
+      "mean_confidence": 1.0,
+      "empirical_rate": 0.8
+    }
+  ],
+  "confidence_interval": {
+    "status": "EXECUTED",
+    "estimate": 0.8555516537753525,
+    "lower": 0.8420067939758831,
+    "upper": 0.8686482556083467,
+    "observations": 2200,
+    "resamples": 1000,
+    "seed": 42,
+    "reason": null
+  },
+  "physical_threshold_sensitivity": [
+    {
+      "threshold": 0.4,
+      "f1": 0.23529411764705882
+    },
+    {
+      "threshold": 0.45,
+      "f1": 0.23529411764705882
+    },
+    {
+      "threshold": 0.5,
+      "f1": 0.23529411764705882
+    },
+    {
+      "threshold": 0.55,
+      "f1": 0.23529411764705882
+    },
+    {
+      "threshold": 0.6,
+      "f1": 0.23529411764705882
+    },
+    {
+      "threshold": 0.65,
+      "f1": 0.23529411764705882
+    },
+    {
+      "threshold": 0.7,
+      "f1": 0.23529411764705882
+    }
+  ]
+}

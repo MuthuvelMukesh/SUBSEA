@@ -1,0 +1,59 @@
+{
+  "status": "EXECUTED",
+  "data_kind": "CONTROLLED SIMULATION",
+  "confusion_matrix": {
+    "vessel_associated_disturbance": {
+      "vessel_associated_disturbance": 1200,
+      "environmental_disturbance": 0,
+      "non_vessel_mechanical_disturbance": 0,
+      "sensor_system_fault": 100
+    },
+    "environmental_disturbance": {
+      "vessel_associated_disturbance": 0,
+      "environmental_disturbance": 100,
+      "non_vessel_mechanical_disturbance": 0,
+      "sensor_system_fault": 0
+    },
+    "non_vessel_mechanical_disturbance": {
+      "vessel_associated_disturbance": 100,
+      "environmental_disturbance": 0,
+      "non_vessel_mechanical_disturbance": 0,
+      "sensor_system_fault": 0
+    },
+    "sensor_system_fault": {
+      "vessel_associated_disturbance": 0,
+      "environmental_disturbance": 0,
+      "non_vessel_mechanical_disturbance": 0,
+      "sensor_system_fault": 200
+    }
+  },
+  "per_class_metrics": {
+    "vessel_associated_disturbance": {
+      "true_count": 1300,
+      "precision": 0.9230769230769231,
+      "recall": 0.9230769230769231,
+      "f1": 0.9230769230769231
+    },
+    "environmental_disturbance": {
+      "true_count": 100,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "non_vessel_mechanical_disturbance": {
+      "true_count": 100,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "sensor_system_fault": {
+      "true_count": 200,
+      "precision": 0.6666666666666666,
+      "recall": 1.0,
+      "f1": 0.8
+    }
+  },
+  "macro_f1": 0.6807692307692308,
+  "weighted_f1": 0.8588235294117647,
+  "total_evaluated": 1700
+}

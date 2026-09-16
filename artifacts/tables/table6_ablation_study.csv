@@ -1,0 +1,11 @@
+Configuration,Accuracy,Precision,Recall,F1,Delta_F1,False_Alarm,Miss_Rate,TX_Rate
+A: physical_only,0.3182,0.0000,0.0000,0.0000,-0.2353,0.0000,1.0000,0.0000
+B: physical + spatial,0.5000,1.0000,0.2667,0.4211,+0.1858,0.0000,0.7333,0.1364
+C: physical + temporal,0.5909,1.0000,0.4000,0.5714,+0.3361,0.0000,0.6000,0.1364
+D: physical + behaviour,0.5000,1.0000,0.2667,0.4211,+0.1858,0.0000,0.7333,0.1364
+E: physical + spatial + temporal,0.4091,1.0000,0.1333,0.2353,+0.0000,0.0000,0.8667,0.1364
+F: full fusion w/o uncertainty,0.4091,1.0000,0.1333,0.2353,+0.0000,0.0000,0.8667,0.1364
+G: full fusion w/o health,0.4545,1.0000,0.2000,0.3333,+0.0980,0.0000,0.8000,0.0000
+H: full fusion w/o counter-evidence,0.4091,1.0000,0.1333,0.2353,+0.0000,0.0000,0.8667,0.1364
+I: full fusion w/o spatial-temporal,0.5000,1.0000,0.2667,0.4211,+0.1858,0.0000,0.7333,0.1364
+J: full proposed framework,0.4091,1.0000,0.1333,0.2353,+0.0000,0.0000,0.8667,0.1364

@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+\centering
+\caption{Controlled Benchmark Scenario Performance (S01-S22, N=100 trials each)}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Scenario & Description & Trials & Accuracy & Mean\_CP & Mean\_CA & Mean\_Uncertainty & Dominant\_Decision \\
+\midrule
+S01 & normal & 100 & 1.0000 & 0.009 & 0.000 & 0.375 & T0 \\
+S02 & physical disturbance & 100 & 1.0000 & 0.775 & 0.000 & 0.483 & T1 \\
+S03 & vessel only & 100 & 1.0000 & 0.009 & 0.851 & 0.146 & T0 \\
+S04 & vessel plus disturbance & 100 & 1.0000 & 0.775 & 0.851 & 0.146 & T2 \\
+S05 & environmental event & 100 & 1.0000 & 0.100 & 0.000 & 0.483 & T0 \\
+S06 & non-vessel mechanical event & 100 & 1.0000 & 0.244 & 0.000 & 0.375 & T0 \\
+S07 & sensor failure & 100 & 0.0000 & 0.000 & 0.851 & 0.396 & TX \\
+S08 & communication failure & 100 & 0.0000 & 0.000 & 0.851 & 0.396 & TX \\
+S09 & noise stress & 100 & 1.0000 & 0.878 & 0.000 & 0.483 & T1 \\
+S10 & packet loss & 100 & 1.0000 & 0.773 & 0.000 & 0.530 & T1 \\
+S11 & spatial mismatch & 100 & 0.0000 & 0.776 & 0.333 & 0.275 & T1 \\
+S12 & temporal mismatch & 100 & 0.0000 & 0.775 & 0.518 & 0.229 & T1 \\
+S13 & conflicting evidence & 100 & 0.0000 & 0.101 & 0.851 & 0.146 & T0 \\
+S14 & counter evidence & 100 & 0.0000 & 0.776 & 0.333 & 0.275 & T1 \\
+S15 & high uncertainty & 100 & 0.0000 & 0.772 & 0.851 & 0.243 & TX \\
+S16 & absence of corroboration & 100 & 0.0000 & 0.775 & 0.000 & 0.483 & T1 \\
+S17 & AIS spoofing & 100 & 0.0000 & 0.775 & 0.333 & 0.275 & T1 \\
+S18 & transponder suppression & 100 & 0.0000 & 0.776 & 0.000 & 0.483 & T1 \\
+S19 & timestamp manipulation & 100 & 0.0000 & 0.776 & 0.518 & 0.229 & T1 \\
+S20 & spatial manipulation & 100 & 0.0000 & 0.776 & 0.333 & 0.275 & T1 \\
+S21 & combined adversarial evasion & 100 & 0.0000 & 0.775 & 0.000 & 0.358 & T1 \\
+S22 & multiple vessels and disturbances & 100 & 1.0000 & 0.775 & 0.851 & 0.146 & T2 \\
+\bottomrule
+\end{tabular}
+\end{table}

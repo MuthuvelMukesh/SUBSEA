@@ -1,0 +1,9 @@
+Metric,Value,P_Value,Note
+Spearman Rank Correlation (Energy vs 1/y),0.9482,1.42e-30,Statistically significant monotonic proximity response
+Pearson Correlation (Energy vs 1/y),0.3629,4.37e-03,Linear correlation with inverted distance
+True Closest Point of Approach (CPA),26.22 m,N/A,Occurs at step 26 (2023-06-16 15:59:28+00:00)
+Peak Acoustic Energy Timestamp,2023-06-16 15:59:08+00:00,N/A,Temporal lead offset: 20.0 s
+Spatial Gini Coefficient at CPA,0.8739,N/A,High spatial energy concentration under transit
+Peak-to-Average Ratio (PAR) at CPA,18.17,N/A,Peak channel 1449 vs baseline
+Approach Monotonicity,0.9878,N/A,Monotonic energy growth during approach
+Departure Monotonicity,-0.9658,N/A,Monotonic energy decay during departure

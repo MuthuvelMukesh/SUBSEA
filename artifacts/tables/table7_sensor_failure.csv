@@ -1,0 +1,9 @@
+Condition,Scenario,Mean_Uncertainty,Mean_Reliability,TX_Rate,Accuracy
+Normal Sensor Baseline,S04,0.1455,1.0000,0.0000,1.0000
+Single Sensor Intermittent Packet Loss (25%),S10,0.5300,0.5718,0.0000,1.0000
+Multiple Sensor Packet Loss (50%),S15,0.2430,0.2503,1.0000,0.0000
+Sensor Drift & Calibration Offset,S15,0.2430,0.2503,1.0000,0.0000
+Communication Backhaul Failure,S08,0.3955,0.0000,1.0000,0.0000
+Complete Sensor Hardware Failure,S07,0.3955,0.0000,1.0000,0.0000
+Missing Vessel AIS Corroboration,S16,0.4833,1.0000,0.0000,0.0000
+Spatial-Temporal Conflicting Evidence,S13,0.1455,1.0000,0.0000,0.0000
