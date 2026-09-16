@@ -1,0 +1,93 @@
+{
+  "provenance_records": [
+    {
+      "dataset_name": "Marlinks Offshore Wind Farm DAS Demo (Reduced Range)",
+      "source": "Marlinks BV (Offshore Wind Submarine Export Cable Monitoring Demo)",
+      "doi_or_url": "https://github.com/marlinks / Zenodo open data repository",
+      "filename": "reduced_dataset_sensor_range_1440_1690.h5",
+      "relative_path": "data/marlinks_demo/reduced_dataset_sensor_range_1440_1690.h5",
+      "file_size_bytes": 11425906,
+      "sha256": "46f5d28383427d4c9d404f22117cd92377a5919de85cbea0dcfc8b9b3a7aff44",
+      "dataset_schema": {
+        "/X": {
+          "type": "HDF5 Dataset",
+          "shape": [60, 250, 100],
+          "dtype": "float64",
+          "description": "DAS acoustic/vibrational spectral power features (60 windows x 250 channels [1440-1690] x 100 frequency bins)",
+          "min": 0.0,
+          "max": 3.726739885962445e-08,
+          "nan_count": 0,
+          "inf_count": 0
+        },
+        "/datetimes": {
+          "type": "HDF5 Dataset",
+          "shape": [60],
+          "dtype": "|S26",
+          "description": "UTC ISO 8601 timestamps spaced at 10-second intervals from 2023-06-16 15:55:08+00:00 to 2023-06-16 16:04:58+00:00"
+        },
+        "/ship_info/beam": {
+          "type": "HDF5 Dataset",
+          "shape": [60],
+          "dtype": "float32",
+          "description": "Vessel beam width in meters (constant 40.0 m)",
+          "min": 40.0,
+          "max": 40.0
+        },
+        "/ship_info/length": {
+          "type": "HDF5 Dataset",
+          "shape": [60],
+          "dtype": "float32",
+          "description": "Vessel length overall in meters (constant 304.0 m)",
+          "min": 304.0,
+          "max": 304.0
+        },
+        "/ship_info/type": {
+          "type": "HDF5 Dataset",
+          "shape": [60],
+          "dtype": "|S50",
+          "description": "Vessel category string (constant 'Container Ship')"
+        },
+        "/y": {
+          "type": "HDF5 Dataset",
+          "shape": [60],
+          "dtype": "float64",
+          "description": "Distance from vessel to cable/sensor array in meters",
+          "min": 26.22214083336023,
+          "max": 2785.9104790876195,
+          "nan_count": 0,
+          "inf_count": 0
+        }
+      },
+      "preprocessing_performed": "Band-passed spectral energy binning (100 bins) across channels 1440-1690; temporal aggregation into 10-second sliding windows; distance to target computed in meters.",
+      "experiment_status": "INVENTORY_VERIFIED (Pipeline adapter extension required; partial validation of DAS signal processing & 1D proximity; lacks 2D AIS coordinates, MMSI, SOG/COG, cable polyline, and disturbance labels)"
+    },
+    {
+      "dataset_name": "EMSO Regional Facility Western Ionian Seafloor Observatory DAS",
+      "source": "EMSO ERIC (European Multidisciplinary Seafloor and water-column Observatory) / INGV Catania",
+      "doi_or_url": "https://emso.eu / SEANOE / PANGAEA",
+      "filename": "decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
+      "relative_path": "data/emso_ionian/decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
+      "file_size_bytes": 124446128,
+      "sha256": "8af2afac41b9ff9acee4e9f02ff782508398537a5643a331dd47f19e5f9ffdac",
+      "dataset_schema": {
+        "array": {
+          "type": "NumPy 2D Array (.npy)",
+          "shape": [10500, 2963],
+          "dtype": "float32",
+          "description": "Decimated raw continuous DAS optical strain-rate / phase time series (10500 time samples x 2963 spatial channels)",
+          "sampling_rate_hz": 10.0,
+          "duration_seconds": 1050.0,
+          "channel_count": 2963,
+          "min": -12963.373046875,
+          "max": 10137.328125,
+          "mean": 11.474370956420898,
+          "std": 1505.1029052734375,
+          "nan_count": 0,
+          "inf_count": 0
+        }
+      },
+      "preprocessing_performed": "Optical phase decimation down to 10 Hz sampling rate across 2,963 spatial channels for a 1,050-second continuous recording starting at 2025-06-10T03:05:04.010529 UTC.",
+      "experiment_status": "INVENTORY_VERIFIED (Pipeline adapter extension required for .npy; validates real-world marine DAS signal processing, background noise floor, and optical channel robustness; no AIS, vessel, or event annotations)"
+    }
+  ]
+}

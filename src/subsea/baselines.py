@@ -8,14 +8,21 @@ from .models import DecisionResult, Scenario
 METHODS = frozenset({
     "physical_only",
     "vessel_only",
+    "association_only",
+    "behaviour_only",
     "weighted",
     "proposed",
+    "physical_plus_spatial",
+    "physical_plus_temporal",
+    "physical_plus_behaviour",
+    "physical_spatial_temporal",
     "without_uncertainty",
     "without_health",
     "without_counter_evidence",
     "without_spatial_temporal_association",
     "without_behaviour",
 })
+
 
 
 def _truth(scenario: Scenario) -> dict[str, bool]:
@@ -65,9 +72,27 @@ def evaluate_method(method: str, result: DecisionResult, scenario: Scenario) -> 
     if method == "physical_only":
         effective.update(association_confidence=0.0, reliability=1.0, uncertainty=0.0)
         changed = ("association", "health", "uncertainty")
-    elif method == "vessel_only":
+    elif method in {"vessel_only", "association_only"}:
         effective["physical_confidence"] = 0.0
         changed = ("physical",)
+    elif method == "behaviour_only":
+        effective.update(
+            physical_confidence=0.0,
+            association_confidence=float(result.audit.get("association_components", {}).get("behaviour", 0.0)),
+        )
+        changed = ("physical", "spatial_temporal_association")
+    elif method == "physical_plus_spatial":
+        effective["association_confidence"] = float(result.audit.get("association_components", {}).get("spatial", 0.0))
+        changed = ("temporal", "behaviour")
+    elif method == "physical_plus_temporal":
+        effective["association_confidence"] = float(result.audit.get("association_components", {}).get("temporal", 0.0))
+        changed = ("spatial", "behaviour")
+    elif method == "physical_plus_behaviour":
+        effective["association_confidence"] = float(result.audit.get("association_components", {}).get("behaviour", 0.0))
+        changed = ("spatial", "temporal")
+    elif method == "physical_spatial_temporal":
+        effective["association_confidence"] = _association_without(result, {"behaviour"})
+        changed = ("behaviour",)
     elif method == "weighted":
         pass
     elif method == "without_uncertainty":
@@ -85,6 +110,7 @@ def evaluate_method(method: str, result: DecisionResult, scenario: Scenario) -> 
     elif method == "without_behaviour":
         effective["association_confidence"] = _association_without(result, {"behaviour"})
         changed = ("behaviour",)
+
     if method != "proposed":
         decision = decide(**effective)
     return {

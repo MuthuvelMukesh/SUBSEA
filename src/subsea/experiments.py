@@ -467,12 +467,18 @@ def run_all_scenarios(
 
 ABLATION_VARIANTS = (
     "proposed",
+    "physical_only",
+    "physical_plus_spatial",
+    "physical_plus_temporal",
+    "physical_plus_behaviour",
+    "physical_spatial_temporal",
     "without_uncertainty",
     "without_health",
     "without_counter_evidence",
     "without_spatial_temporal_association",
     "without_behaviour",
 )
+
 
 
 def run_ablation_study(

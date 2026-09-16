@@ -1,7 +1,27 @@
 .venv/
 __pycache__/
+*.py[cod]
+.Python
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 .pytest_cache/
 *.egg-info/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Generated experiment outputs
 results/*
 !results/.gitkeep
+artifacts/*
+!artifacts/.gitkeep
+
+# External research datasets
+data/*
+!data/PROVENANCE.json
+
 .streamlit/

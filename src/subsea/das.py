@@ -55,8 +55,26 @@ def load_das_hdf5(path: str | Path, schema: DasSchema) -> DasDataset:
     with h5py.File(source, "r") as handle:
         if schema.signal_path not in handle:
             raise KeyError(f"DAS signal dataset not found: {schema.signal_path}")
-        samples = _as_rows(handle[schema.signal_path][()], schema.channel_axis)
-        timestamps = tuple(value for value in handle[schema.timestamp_path][()]) if schema.timestamp_path else tuple(float(index) for index in range(len(samples)))
+        raw_signal = handle[schema.signal_path][()]
+        if hasattr(raw_signal, "ndim") and raw_signal.ndim == 3:
+            raw_signal = raw_signal.mean(axis=-1)
+        samples = _as_rows(raw_signal, schema.channel_axis)
+        if schema.timestamp_path:
+            raw_ts = handle[schema.timestamp_path][()]
+            parsed_ts = []
+            for val in raw_ts:
+                if isinstance(val, (bytes, bytearray)):
+                    val = val.decode("utf-8")
+                if isinstance(val, str):
+                    from .real_data import _normalize_timestamp
+                    parsed_ts.append(_normalize_timestamp(val))
+                elif isinstance(val, bool):
+                    raise ValueError("DAS timestamps must be non-boolean numeric")
+                else:
+                    parsed_ts.append(float(val))
+            timestamps = tuple(parsed_ts)
+        else:
+            timestamps = tuple(float(index) for index in range(len(samples)))
         distances = tuple(value for value in handle[schema.distance_path][()]) if schema.distance_path else None
     if any(isinstance(value, bool) for value in timestamps) or distances is not None and any(isinstance(value, bool) for value in distances):
         raise ValueError("DAS timestamps and distances must be numeric")
@@ -71,3 +89,36 @@ def load_das_hdf5(path: str | Path, schema: DasSchema) -> DasDataset:
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     provenance = DataProvenance(str(source), "das_hdf5", digest, len(samples), causal_ground_truth=False)
     return DasDataset(samples, timestamps, distances, len(samples[0]) if samples else 0, provenance)
+
+
+def load_das_numpy(
+    path: str | Path,
+    *,
+    channel_axis: int = 1,
+    sampling_rate_hz: float = 10.0,
+    start_timestamp: float = 0.0,
+) -> DasDataset:
+    source = Path(path)
+    if source.suffix.lower() != ".npy":
+        raise ValueError("NumPy DAS adapter requires a .npy file")
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    if sampling_rate_hz <= 0 or not math.isfinite(sampling_rate_hz):
+        raise ValueError("sampling_rate_hz must be positive and finite")
+    if not math.isfinite(start_timestamp):
+        raise ValueError("start_timestamp must be finite")
+    import numpy as np
+    raw = np.load(source)
+    if raw.ndim != 2:
+        raise ValueError("NumPy DAS array must be 2-dimensional")
+    if channel_axis not in {0, 1}:
+        raise ValueError("channel_axis must be 0 or 1")
+    time_steps = raw.shape[0] if channel_axis == 1 else raw.shape[1]
+    channel_count = raw.shape[1] if channel_axis == 1 else raw.shape[0]
+    dt = 1.0 / sampling_rate_hz
+    timestamps = tuple(float(start_timestamp + i * dt) for i in range(time_steps))
+    samples = _as_rows(raw, channel_axis)
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    provenance = DataProvenance(str(source), "das_numpy", digest, len(samples), causal_ground_truth=False)
+    return DasDataset(samples, timestamps, None, channel_count, provenance)
+

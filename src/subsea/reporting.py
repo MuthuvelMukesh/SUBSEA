@@ -764,18 +764,25 @@ def generate_calibration_table(cal_path: Path, output_dir: Path) -> str:
 
 def generate_real_data_association_table(output_dir: Path, real_manifest_path: Path | None = None) -> str:
     """Table IX: Real-data association results (marked NOT EXECUTED if external data absent)."""
-    if real_manifest_path and real_manifest_path.is_file():
+    if real_manifest_path and Path(real_manifest_path).is_file():
         status = "EXECUTED"
-        reason = "External real data processed"
+        import json
+        manifest = json.loads(Path(real_manifest_path).read_text(encoding="utf-8"))
+        res = manifest.get("results", {})
+        corr = res.get("correlation_metrics", {})
+        rho = corr.get("spearman_rho_energy_vs_inverse_dist")
+        metric_str = f"rho={rho:.3f}" if rho is not None else "N/A"
+        reason = "Genuine real DAS continuous proximity validation executed"
     else:
         status = "NOT EXECUTED"
+        metric_str = "N/A"
         reason = "Real external dataset required (Marlinks / Paphos field acquisition pending)"
     rows = [
         {
             "Dataset": "Marlinks Offshore Wind Farm DAS",
             "Modality": "Distributed Acoustic Sensing (DAS)",
             "Region": "North Sea",
-            "Association_F1": "N/A" if status != "EXECUTED" else "0.82",
+            "Association_F1": metric_str,
             "Status": status,
             "Notes": reason,
         },
@@ -783,11 +790,12 @@ def generate_real_data_association_table(output_dir: Path, real_manifest_path: P
             "Dataset": "Paphos Subsea Optical Cable",
             "Modality": "Subsea Optical Interferometry",
             "Region": "Eastern Mediterranean",
-            "Association_F1": "N/A" if status != "EXECUTED" else "0.78",
-            "Status": status,
-            "Notes": reason,
+            "Association_F1": "N/A",
+            "Status": "NOT EXECUTED",
+            "Notes": "Field acquisition pending",
         },
     ]
+
     path = output_dir / "table_real_data_association.csv"
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))

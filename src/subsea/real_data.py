@@ -94,12 +94,22 @@ def _read_hdf5(path: Path, dataset_name: str | None, timestamp_column: str | Non
     return _normalize_records(records, timestamp_column)
 
 
+def _read_numpy(path: Path, timestamp_column: str | None) -> tuple[dict[str, Any], ...]:
+    import numpy as np
+    values = np.load(path)
+    rows = values.tolist()
+    if not isinstance(rows, list):
+        rows = [rows]
+    records = [{"value": row if isinstance(row, list) else [row]} for row in rows]
+    return _normalize_records(records, timestamp_column)
+
+
 def load_dataset(path: str | Path, *, timestamp_column: str | None = "timestamp", hdf5_dataset: str | None = None) -> LoadedDataset:
     source = Path(path)
     if not source.is_file():
         raise FileNotFoundError(source)
     suffix = source.suffix.lower()
-    formats = {".csv": "csv", ".json": "json", ".h5": "hdf5", ".hdf5": "hdf5"}
+    formats = {".csv": "csv", ".json": "json", ".h5": "hdf5", ".hdf5": "hdf5", ".npy": "numpy"}
     if suffix not in formats:
         raise ValueError(f"unsupported data format: {suffix or 'unknown'}")
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
@@ -108,7 +118,10 @@ def load_dataset(path: str | Path, *, timestamp_column: str | None = "timestamp"
         records = _read_csv(source, timestamp_column)
     elif data_format == "json":
         records = _read_json(source, timestamp_column)
+    elif data_format == "numpy":
+        records = _read_numpy(source, timestamp_column)
     else:
         records = _read_hdf5(source, hdf5_dataset, timestamp_column)
     provenance = DataProvenance(str(source), data_format, digest, len(records))
     return LoadedDataset(records, provenance)
+
