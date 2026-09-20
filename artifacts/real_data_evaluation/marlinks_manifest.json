@@ -7,7 +7,7 @@
   },
   "results": {
     "dataset_name": "Marlinks Offshore Wind Farm DAS Demo",
-    "file_path": "data\\marlinks_demo\\reduced_dataset_sensor_range_1440_1690.h5",
+    "file_path": "data/marlinks_demo/reduced_dataset_sensor_range_1440_1690.h5",
     "sha256": "46f5d28383427d4c9d404f22117cd92377a5919de85cbea0dcfc8b9b3a7aff44",
     "sample_count": 60,
     "channel_count": 250,

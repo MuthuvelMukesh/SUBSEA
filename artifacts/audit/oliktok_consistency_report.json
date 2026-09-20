@@ -1,0 +1,192 @@
+{
+  "status": "EXECUTED",
+  "dataset": "Dryad Oliktok Submarine DAS",
+  "total_checks": 23,
+  "inconsistent_count": 0,
+  "checks": [
+    {
+      "name": "file size",
+      "source_value": 22701136,
+      "artifact_value": 22701136,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "SHA-256",
+      "source_value": "5fa69e4cf90a8bcfab0b4bd0aa0d6374aec88baf70ab7e46d158885ef674a91c",
+      "artifact_value": "5fa69e4cf90a8bcfab0b4bd0aa0d6374aec88baf70ab7e46d158885ef674a91c",
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "dimensions",
+      "source_value": "215x183x32",
+      "artifact_value": "215x183x32",
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "channel count",
+      "source_value": 183,
+      "artifact_value": 183,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "window count",
+      "source_value": 215,
+      "artifact_value": 215,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "duration",
+      "source_value": 2386800.0,
+      "artifact_value": 2386800.0,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "frequency range",
+      "source_value": "[0.0078, 0.4941]",
+      "artifact_value": "[0.0078, 0.4941]",
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "NaN count",
+      "source_value": 0,
+      "artifact_value": 0,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "Inf count",
+      "source_value": 0,
+      "artifact_value": 0,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "RMS",
+      "source_value": 550.8507,
+      "artifact_value": 550.8507,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "spatial CV",
+      "source_value": 0.2349,
+      "artifact_value": 0.2349,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "temporal CV",
+      "source_value": 0.1239,
+      "artifact_value": 0.1239,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "skewness",
+      "source_value": 0.1547,
+      "artifact_value": 0.1547,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "kurtosis",
+      "source_value": -1.1625,
+      "artifact_value": -1.1625,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "wave correlation",
+      "source_value": 0.3141,
+      "artifact_value": 0.3141,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "wave p-value",
+      "source_value": "2.63e-06",
+      "artifact_value": "2.63e-06",
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "pressure correlation",
+      "source_value": 0.4951,
+      "artifact_value": 0.4951,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "pressure p-value",
+      "source_value": "1.07e-14",
+      "artifact_value": "1.07e-14",
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "T0",
+      "source_value": 93,
+      "artifact_value": 93,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "T1",
+      "source_value": 122,
+      "artifact_value": 122,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "T2",
+      "source_value": 0,
+      "artifact_value": 0,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "T3",
+      "source_value": 0,
+      "artifact_value": 0,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    },
+    {
+      "name": "TX",
+      "source_value": 0,
+      "artifact_value": 0,
+      "absolute_difference": 0.0,
+      "relative_difference": 0.0,
+      "status": "PASS"
+    }
+  ]
+}

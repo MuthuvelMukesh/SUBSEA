@@ -7,7 +7,7 @@
   },
   "results": {
     "dataset_name": "EMSO Western Ionian Seafloor Observatory DAS",
-    "file_path": "data\\emso_ionian\\decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
+    "file_path": "data/emso_ionian/decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
     "sha256": "8af2afac41b9ff9acee4e9f02ff782508398537a5643a331dd47f19e5f9ffdac",
     "sample_count": 10500,
     "channel_count": 2963,

@@ -1,0 +1,210 @@
+{
+  "status": "PASS",
+  "total_comparisons": 22,
+  "identical_count": 22,
+  "discrepancy_count": 0,
+  "tolerance": 1e-09,
+  "deterministic_fields": [
+    "sample_count",
+    "channel_count",
+    "frequency_bins",
+    "duration_seconds",
+    "sha256",
+    "signal_statistics.mean_rms",
+    "signal_statistics.std_rms",
+    "signal_statistics.median_rms",
+    "signal_statistics.skewness",
+    "signal_statistics.kurtosis",
+    "spatial_variability.spatial_gini_coefficient",
+    "spatial_variability.inter_channel_cv",
+    "temporal_stability.temporal_stability_cv",
+    "oceanographic_wave_reference.spearman_rho_energy_vs_wave_height",
+    "oceanographic_wave_reference.spearman_rho_energy_vs_pressure_var",
+    "physical_detector_evaluation.decision_distribution.T0",
+    "physical_detector_evaluation.decision_distribution.T1",
+    "physical_detector_evaluation.decision_distribution.T2",
+    "physical_detector_evaluation.decision_distribution.T3",
+    "physical_detector_evaluation.decision_distribution.TX",
+    "physical_detector_evaluation.environmental_escalation_count",
+    "table_oliktok_validation.csv"
+  ],
+  "non_deterministic_fields": [],
+  "comparisons": [
+    {
+      "field": "sample_count",
+      "run1_value": 215,
+      "run2_value": 215,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "channel_count",
+      "run1_value": 183,
+      "run2_value": 183,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "frequency_bins",
+      "run1_value": 32,
+      "run2_value": 32,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "duration_seconds",
+      "run1_value": 2386800.0,
+      "run2_value": 2386800.0,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "sha256",
+      "run1_value": "5fa69e4cf90a8bcfab0b4bd0aa0d6374aec88baf70ab7e46d158885ef674a91c",
+      "run2_value": "5fa69e4cf90a8bcfab0b4bd0aa0d6374aec88baf70ab7e46d158885ef674a91c",
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "signal_statistics.mean_rms",
+      "run1_value": 550.8506939358433,
+      "run2_value": 550.8506939358433,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "signal_statistics.std_rms",
+      "run1_value": 159.2488144548955,
+      "run2_value": 159.2488144548955,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "signal_statistics.median_rms",
+      "run1_value": 553.5942248026647,
+      "run2_value": 553.5942248026647,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "signal_statistics.skewness",
+      "run1_value": 0.15474792489358988,
+      "run2_value": 0.15474792489358988,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "signal_statistics.kurtosis",
+      "run1_value": -1.1625433146604058,
+      "run2_value": -1.1625433146604058,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "spatial_variability.spatial_gini_coefficient",
+      "run1_value": 0.12653801262066838,
+      "run2_value": 0.12653801262066838,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "spatial_variability.inter_channel_cv",
+      "run1_value": 0.2349242157324458,
+      "run2_value": 0.2349242157324458,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "temporal_stability.temporal_stability_cv",
+      "run1_value": 0.12390618125532367,
+      "run2_value": 0.12390618125532367,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "oceanographic_wave_reference.spearman_rho_energy_vs_wave_height",
+      "run1_value": 0.31408993214035597,
+      "run2_value": 0.31408993214035597,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "oceanographic_wave_reference.spearman_rho_energy_vs_pressure_var",
+      "run1_value": 0.49509526914438884,
+      "run2_value": 0.49509526914438884,
+      "match": true,
+      "difference": 0.0,
+      "deterministic": true
+    },
+    {
+      "field": "physical_detector_evaluation.decision_distribution.T0",
+      "run1_value": 93,
+      "run2_value": 93,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "physical_detector_evaluation.decision_distribution.T1",
+      "run1_value": 122,
+      "run2_value": 122,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "physical_detector_evaluation.decision_distribution.T2",
+      "run1_value": 0,
+      "run2_value": 0,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "physical_detector_evaluation.decision_distribution.T3",
+      "run1_value": 0,
+      "run2_value": 0,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "physical_detector_evaluation.decision_distribution.TX",
+      "run1_value": 0,
+      "run2_value": 0,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "physical_detector_evaluation.environmental_escalation_count",
+      "run1_value": 0,
+      "run2_value": 0,
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    },
+    {
+      "field": "table_oliktok_validation.csv",
+      "run1_value": "hash:-4410758350352450885",
+      "run2_value": "hash:-4410758350352450885",
+      "match": true,
+      "difference": 0,
+      "deterministic": true
+    }
+  ]
+}

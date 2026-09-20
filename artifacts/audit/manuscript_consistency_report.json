@@ -1,0 +1,505 @@
+{
+  "status": "PASS",
+  "total_checks": 62,
+  "passed": 62,
+  "failed": 0,
+  "unverified": 0,
+  "checks": [
+    {
+      "claim": "Oliktok Windows Count",
+      "manuscript_value": 215,
+      "artifact_value": 215,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Channel Count",
+      "manuscript_value": 183,
+      "artifact_value": 183,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Frequency Bins",
+      "manuscript_value": 32,
+      "artifact_value": 32,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Duration Days",
+      "manuscript_value": 27.625,
+      "artifact_value": 27.625,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Mean Strain RMS",
+      "manuscript_value": 550.85,
+      "artifact_value": 550.85,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Median Strain RMS",
+      "manuscript_value": 553.59,
+      "artifact_value": 553.59,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Spatial CV",
+      "manuscript_value": 0.2349,
+      "artifact_value": 0.2349,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Spatial Gini",
+      "manuscript_value": 0.1265,
+      "artifact_value": 0.1265,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Temporal CV",
+      "manuscript_value": 0.1239,
+      "artifact_value": 0.1239,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Drift Slope / hr",
+      "manuscript_value": 0.0188,
+      "artifact_value": 0.0188,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Drift p-value",
+      "manuscript_value": 0.8037,
+      "artifact_value": 0.8037,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Skewness",
+      "manuscript_value": 0.1547,
+      "artifact_value": 0.1547,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Kurtosis",
+      "manuscript_value": -1.1625,
+      "artifact_value": -1.1625,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Spearman Rho vs Wave Height",
+      "manuscript_value": 0.3141,
+      "artifact_value": 0.3141,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Pearson r vs Wave Height",
+      "manuscript_value": 0.337,
+      "artifact_value": 0.337,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Spearman Rho vs Pressure Var",
+      "manuscript_value": 0.4951,
+      "artifact_value": 0.4951,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Pearson r vs Pressure Var",
+      "manuscript_value": 0.4903,
+      "artifact_value": 0.4903,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Decision T0 Count",
+      "manuscript_value": 93,
+      "artifact_value": 93,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Decision T0 Rate",
+      "manuscript_value": 43.26,
+      "artifact_value": 43.26,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Decision T1 Count",
+      "manuscript_value": 122,
+      "artifact_value": 122,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Decision T1 Rate",
+      "manuscript_value": 56.74,
+      "artifact_value": 56.74,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Decision T2 Count",
+      "manuscript_value": 0,
+      "artifact_value": 0,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Decision T3 Count",
+      "manuscript_value": 0,
+      "artifact_value": 0,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Decision TX Count",
+      "manuscript_value": 0,
+      "artifact_value": 0,
+      "difference": 0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Oliktok Environmental Escalation Rate",
+      "manuscript_value": 0.0,
+      "artifact_value": 0.0,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "oliktok_manifest.json"
+    },
+    {
+      "claim": "Marlinks Windows Count",
+      "manuscript_value": 60,
+      "artifact_value": 60,
+      "difference": 0,
+      "status": "PASS",
+      "source": "marlinks_manifest.json"
+    },
+    {
+      "claim": "Marlinks Channels Count",
+      "manuscript_value": 250,
+      "artifact_value": 250,
+      "difference": 0,
+      "status": "PASS",
+      "source": "marlinks_manifest.json"
+    },
+    {
+      "claim": "Marlinks CPA Distance (m)",
+      "manuscript_value": 26.22,
+      "artifact_value": 26.22,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "marlinks_manifest.json"
+    },
+    {
+      "claim": "Marlinks Spearman Rho vs Inverse Dist",
+      "manuscript_value": 0.9482,
+      "artifact_value": 0.9482,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "marlinks_manifest.json"
+    },
+    {
+      "claim": "Marlinks Pearson r vs Inverse Dist",
+      "manuscript_value": 0.3629,
+      "artifact_value": 0.3629,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "marlinks_manifest.json"
+    },
+    {
+      "claim": "Marlinks Spatial Gini at CPA",
+      "manuscript_value": 0.8739,
+      "artifact_value": 0.8739,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "marlinks_manifest.json"
+    },
+    {
+      "claim": "EMSO Windows Count",
+      "manuscript_value": 105,
+      "artifact_value": 105.0,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "emso_manifest.json"
+    },
+    {
+      "claim": "EMSO Channels Count",
+      "manuscript_value": 2963,
+      "artifact_value": 2963,
+      "difference": 0,
+      "status": "PASS",
+      "source": "emso_manifest.json"
+    },
+    {
+      "claim": "EMSO Duration (s)",
+      "manuscript_value": 1050.0,
+      "artifact_value": 1050.0,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "emso_manifest.json"
+    },
+    {
+      "claim": "EMSO Sampling Rate (Hz)",
+      "manuscript_value": 10.0,
+      "artifact_value": 10.0,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "emso_manifest.json"
+    },
+    {
+      "claim": "EMSO Temporal CV",
+      "manuscript_value": 0.0008,
+      "artifact_value": 0.0008,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "emso_manifest.json"
+    },
+    {
+      "claim": "Decision Regression Total Scenarios",
+      "manuscript_value": 22,
+      "artifact_value": 22,
+      "difference": 0,
+      "status": "PASS",
+      "source": "decision_regression_report.json"
+    },
+    {
+      "claim": "Decision Regression Identical Count",
+      "manuscript_value": 22,
+      "artifact_value": 22,
+      "difference": 0,
+      "status": "PASS",
+      "source": "decision_regression_report.json"
+    },
+    {
+      "claim": "Decision Regression Changed Decisions",
+      "manuscript_value": 0,
+      "artifact_value": 0,
+      "difference": 0,
+      "status": "PASS",
+      "source": "decision_regression_report.json"
+    },
+    {
+      "claim": "Perf End-to-End Mean (ms)",
+      "manuscript_value": 8.289,
+      "artifact_value": 8.289,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf End-to-End Median (ms)",
+      "manuscript_value": 6.23,
+      "artifact_value": 6.23,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf End-to-End P95 (ms)",
+      "manuscript_value": 19.526,
+      "artifact_value": 19.526,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf End-to-End Max (ms)",
+      "manuscript_value": 63.437,
+      "artifact_value": 63.437,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf End-to-End Throughput (Hz)",
+      "manuscript_value": 120.6,
+      "artifact_value": 120.6,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf Decision State Machine Mean (ms)",
+      "manuscript_value": 0.009,
+      "artifact_value": 0.009,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf Decision State Machine Median (ms)",
+      "manuscript_value": 0.005,
+      "artifact_value": 0.005,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf Decision State Machine Throughput (Hz)",
+      "manuscript_value": 111271.8,
+      "artifact_value": 111271.8,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf DAS Spectral Processing Mean (ms)",
+      "manuscript_value": 0.918,
+      "artifact_value": 0.918,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf Spatio-Temporal Association Mean (ms)",
+      "manuscript_value": 0.031,
+      "artifact_value": 0.031,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Perf Multimodal Evidence Fusion Mean (ms)",
+      "manuscript_value": 0.189,
+      "artifact_value": 0.189,
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "performance_manifest.json"
+    },
+    {
+      "claim": "Absence of outdated value 1.4398e-04 (Outdated Oliktok mean strain RMS scale)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of outdated value 0.9168 (Outdated Oliktok spatial CV scale)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of outdated value 0.4578 (Outdated Oliktok temporal CV scale)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of outdated value 4.8252 (Outdated Oliktok kurtosis scale)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of outdated value 1.0345 (Outdated Oliktok skewness scale)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of unsupported phrase 'attack-proof' (Unwarranted cyber security claim)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of unsupported phrase 'guaranteed detection' (Unwarranted deterministic detection claim)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of unsupported phrase 'zero false vessel alarms' (Unwarranted vessel claim without vessel ground truth)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of unsupported phrase 'zero false positives' (Unwarranted claim without negative ground truth)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of unsupported phrase 'false-positive rate = 0' (Unwarranted claim without negative ground truth)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of unsupported phrase 'proves that storms caused' (Unwarranted causal assertion)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    },
+    {
+      "claim": "Absence of unsupported phrase 'universal vessel attribution' (Unwarranted universality claim)",
+      "manuscript_value": "ABSENT",
+      "artifact_value": "ABSENT",
+      "difference": 0.0,
+      "status": "PASS",
+      "source": "scientific_audit"
+    }
+  ]
+}

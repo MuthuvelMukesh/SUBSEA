@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+\centering
+\caption{Dryad Oliktok Real Submarine DAS Validation & Physical Detector Robustness}
+\begin{tabular}{lrrr}
+\toprule
+Category & Metric & Value & Scientific\_Interpretation \\
+\midrule
+Temporal Scope & Recording Duration & 27.6 days (215 hours) & Continuous multi-week deployment (Aug 24 - Sep 20, 2023) \\
+Spatial Scope & Spatial Channel Array & 183 channels & 183 physical DAS channels along cable (8.8 to 30.0 km) \\
+Signal Noise Floor & Mean Integrated Strain RMS & 550.85 (nm/m/s) & Baseline seafloor acoustic noise floor across 32 frequency bins \\
+Signal Noise Floor & Median Integrated Strain RMS & 553.59 (nm/m/s) & Robust central tendency unaffected by transient wave peaks \\
+Signal Distribution & Sample Skewness & +0.1547 & Slight positive skewness in seafloor strain energy distribution \\
+Signal Distribution & Sample Kurtosis & -1.1625 & Platykurtic / sub-Gaussian baseline energy distribution \\
+Temporal Stability & Temporal Stability (CV) & 0.1239 & Long-term environmental acoustic stability over 27.6 days \\
+Temporal Stability & Baseline Drift Slope & +0.0188 / hr & Negligible systematic sensor drift across multi-week window \\
+Spatial Distribution & Spatial Gini Coefficient & 0.1265 & Uniform seafloor coupling (no anomalous acoustic localization) \\
+Spatial Distribution & Inter-Channel Spatial CV & 0.2349 & Low spatial variability across fiber optic channels \\
+Environmental Corroboration & Spearman Rho vs Mooring Wave Height & +0.3141 & Statistically significant wave pressure tracking (p=2.63e-06) \\
+Environmental Corroboration & Spearman Rho vs Seafloor Pressure Var & +0.4951 & Direct seafloor pressure variance tracking (p=1.07e-14) \\
+Detector Robustness & Mean Physical Confidence (Cp) & 0.5533 & Natural wave variation produces moderate physical excitation \\
+Detector Robustness & Quiet Background Rate (T0) & 43.3\% & Classified as nominal quiet background during calm sea states \\
+Detector Robustness & Uncorrelated Disturbance Rate (T1) & 56.7\% & Escalated to uncorroborated wave excitation without false vessel attribution \\
+Detector Robustness & Environmental Escalation Rate (T2/T3) & 0.0\% & No T2/T3 vessel-escalation decisions occurred in the evaluated Oliktok environmental recording \\
+Detector Robustness & Fail-Closed Rate (TX) & 0.0\% & Zero unforced fail-closed errors on healthy sensor stream \\
+\bottomrule
+\end{tabular}
+\end{table}

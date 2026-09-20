@@ -109,7 +109,7 @@ def load_dataset(path: str | Path, *, timestamp_column: str | None = "timestamp"
     if not source.is_file():
         raise FileNotFoundError(source)
     suffix = source.suffix.lower()
-    formats = {".csv": "csv", ".json": "json", ".h5": "hdf5", ".hdf5": "hdf5", ".npy": "numpy"}
+    formats = {".csv": "csv", ".json": "json", ".h5": "hdf5", ".hdf5": "hdf5", ".npy": "numpy", ".nc": "netcdf"}
     if suffix not in formats:
         raise ValueError(f"unsupported data format: {suffix or 'unknown'}")
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
@@ -120,8 +120,18 @@ def load_dataset(path: str | Path, *, timestamp_column: str | None = "timestamp"
         records = _read_json(source, timestamp_column)
     elif data_format == "numpy":
         records = _read_numpy(source, timestamp_column)
+    elif data_format == "netcdf":
+        records = _read_hdf5(source, hdf5_dataset or "strain_spectral_density", timestamp_column)
     else:
         records = _read_hdf5(source, hdf5_dataset, timestamp_column)
     provenance = DataProvenance(str(source), data_format, digest, len(records))
     return LoadedDataset(records, provenance)
+
+
+def __getattr__(name: str) -> Any:
+    if name in {"OliktokAdapter", "OliktokDataset", "load_oliktok_dataset"}:
+        from . import oliktok
+        return getattr(oliktok, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 

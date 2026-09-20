@@ -1,0 +1,12 @@
+Property,Dataset_A_Marlinks,Dataset_B_EMSO,Dataset_C_Oliktok
+Dataset Name,Marlinks Offshore Wind Farm DAS,EMSO Western Ionian Observatory DAS,Dryad Oliktok Submarine DAS
+Geographic Location,Belgian North Sea (Offshore Export Cable),"Western Ionian Sea (Deep Seafloor, 2,100 m)","Beaufort Sea, Arctic Ocean (Oliktok Point)"
+Scientific Role,AIS-Corroborated Vessel Proximity & CPA,Independent Seafloor Acoustic Baseline,Independent real-DAS environmental robustness & false-escalation validation
+Recording Duration,590 s (10 min sequence),"1,050 s (17.5 min recording)","2,386,800 s (27.6 days continuous)"
+Spatial Channel Count,250 channels (channels 1440-1690),"2,963 channels along seafloor cable",183 channels (indices 1088-3672)
+Data Format,HDF5 (.h5),NumPy (.npy),NetCDF-4 / HDF5 (.nc)
+Vessel / AIS Ground Truth,Continuous 1D vessel distance y (26 m - 2.8 km),unavailable,unavailable
+Independent Reference,Ship dimensions (304 m container ship),INGV Catania deep-sea observatory,Seafloor oceanographic wave moorings
+Temporal Stability (CV),"N/A (active transit, non-stationary)",0.0008,0.1239
+Spatial Variability (CV),Gini = 0.8739 (strong spatial peak at CPA),CV = 1.7870,CV = 0.2349 (Gini = 0.1265)
+Primary Empirical Finding,Spearman rho = 0.9482 (p < 1e-30) vs 1/y,Extremely quiet acoustic baseline (kurtosis 13.2),No T2/T3 vessel-escalation decisions across 27.6 days

@@ -1,0 +1,249 @@
+{
+  "total_scenarios": 22,
+  "identical_decisions": 22,
+  "changed_decisions": 0,
+  "scenarios": [
+    {
+      "scenario_id": "S01",
+      "old_decision": "T0",
+      "new_decision": "T0",
+      "match": true,
+      "physical_confidence": 0.0069,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.375,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S02",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.4833,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S03",
+      "old_decision": "T0",
+      "new_decision": "T0",
+      "match": true,
+      "physical_confidence": 0.0069,
+      "association_confidence": 0.8509,
+      "reliability": 1.0,
+      "uncertainty": 0.1455,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S04",
+      "old_decision": "T2",
+      "new_decision": "T2",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.8509,
+      "reliability": 1.0,
+      "uncertainty": 0.1455,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S05",
+      "old_decision": "T0",
+      "new_decision": "T0",
+      "match": true,
+      "physical_confidence": 0.098,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.4833,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S06",
+      "old_decision": "T0",
+      "new_decision": "T0",
+      "match": true,
+      "physical_confidence": 0.244,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.375,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S07",
+      "old_decision": "TX",
+      "new_decision": "TX",
+      "match": true,
+      "physical_confidence": 0.0,
+      "association_confidence": 0.8509,
+      "reliability": 0.0,
+      "uncertainty": 0.3955,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S08",
+      "old_decision": "TX",
+      "new_decision": "TX",
+      "match": true,
+      "physical_confidence": 0.0,
+      "association_confidence": 0.8509,
+      "reliability": 0.0,
+      "uncertainty": 0.3955,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S09",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.8587,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.4833,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S10",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7795,
+      "association_confidence": 0.0,
+      "reliability": 0.511,
+      "uncertainty": 0.5466,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S11",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.3333,
+      "reliability": 1.0,
+      "uncertainty": 0.2749,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S12",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.5176,
+      "reliability": 1.0,
+      "uncertainty": 0.2289,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S13",
+      "old_decision": "T0",
+      "new_decision": "T0",
+      "match": true,
+      "physical_confidence": 0.098,
+      "association_confidence": 0.8509,
+      "reliability": 1.0,
+      "uncertainty": 0.1455,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S14",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.3333,
+      "reliability": 1.0,
+      "uncertainty": 0.2749,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S15",
+      "old_decision": "TX",
+      "new_decision": "TX",
+      "match": true,
+      "physical_confidence": 0.8019,
+      "association_confidence": 0.8509,
+      "reliability": 0.2346,
+      "uncertainty": 0.2478,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S16",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.4833,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S17",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.3333,
+      "reliability": 1.0,
+      "uncertainty": 0.2749,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S18",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.4833,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S19",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.5176,
+      "reliability": 1.0,
+      "uncertainty": 0.2289,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S20",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.3333,
+      "reliability": 1.0,
+      "uncertainty": 0.2749,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S21",
+      "old_decision": "T1",
+      "new_decision": "T1",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.0,
+      "reliability": 1.0,
+      "uncertainty": 0.3583,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    },
+    {
+      "scenario_id": "S22",
+      "old_decision": "T2",
+      "new_decision": "T2",
+      "match": true,
+      "physical_confidence": 0.7739,
+      "association_confidence": 0.8509,
+      "reliability": 1.0,
+      "uncertainty": 0.1455,
+      "previous_decision_source": "git_history_diff:src/subsea/decision.py:HEAD~1"
+    }
+  ]
+}

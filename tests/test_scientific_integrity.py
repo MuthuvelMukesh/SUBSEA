@@ -44,14 +44,24 @@ def test_real_dataset_sha256_matches_provenance():
     assert prov_p.is_file(), "PROVENANCE.json must exist"
 
     prov = json.loads(prov_p.read_text(encoding="utf-8"))["provenance_records"]
-    assert len(prov) == 2
+    assert len(prov) == 3
 
     import hashlib
     for rec in prov:
-        fpath = root / rec["relative_path"]
-        assert fpath.is_file(), f"File {fpath} must exist"
-        computed_hash = hashlib.sha256(fpath.read_bytes()).hexdigest()
-        assert computed_hash == rec["sha256"], f"SHA256 mismatch for {fpath}"
+        if "relative_path" in rec and "sha256" in rec:
+            fpath = root / rec["relative_path"]
+            assert fpath.is_file(), f"File {fpath} must exist"
+            computed_hash = hashlib.sha256(fpath.read_bytes()).hexdigest()
+            assert computed_hash == rec["sha256"], f"SHA256 mismatch for {fpath}"
+        elif "local_files" in rec and "files_metadata" in rec:
+            for rel_path in rec["local_files"]:
+                fpath = root / rel_path
+                assert fpath.is_file(), f"File {fpath} must exist"
+                fname = fpath.name
+                meta = rec["files_metadata"].get(fname)
+                assert meta is not None, f"Metadata missing for {fname}"
+                computed_hash = hashlib.sha256(fpath.read_bytes()).hexdigest()
+                assert computed_hash == meta["sha256"], f"SHA256 mismatch for {fpath}"
 
 
 def test_real_and_synthetic_results_are_strictly_separated():
@@ -276,4 +286,53 @@ def test_no_unsupported_telemetry_budget_claim():
                 text = f.read_text(encoding="utf-8", errors="ignore")
                 assert "40x" not in text, f"Found unsupported 40x claim in {f}"
                 assert "40X" not in text, f"Found unsupported 40X claim in {f}"
+
+
+def test_decision_ordering_quiet_healthy_is_t0():
+    """Verify that a healthy sensor with low physical confidence evaluates to T0 (not TX)."""
+    from subsea.decision import decide
+    from subsea.models import DecisionState
+
+    dec = decide(physical_confidence=0.10, association_confidence=0.0, reliability=1.0, uncertainty=0.70)
+    assert dec == DecisionState.T0, "Healthy quiet background must be T0, not TX"
+
+
+def test_decision_ordering_missing_evidence_disturbance_is_tx():
+    """Verify that a disturbance with conflicting/missing evidence escalates to TX."""
+    from subsea.decision import decide
+    from subsea.models import DecisionState
+
+    dec = decide(physical_confidence=0.80, association_confidence=0.20, reliability=1.0, uncertainty=0.75)
+    assert dec == DecisionState.TX, "Disturbance with conflicting evidence must escalate to TX"
+
+
+def test_decision_ordering_degraded_sensor_is_tx():
+    """Verify that a degraded sensor hardware/packet failure fails closed to TX."""
+    from subsea.decision import decide
+    from subsea.models import DecisionState
+
+    dec = decide(physical_confidence=0.10, association_confidence=0.0, reliability=0.20, uncertainty=0.20)
+    assert dec == DecisionState.TX, "Degraded sensor must fail closed to TX"
+
+
+def test_decision_ordering_uncorroborated_disturbance_is_t1():
+    """Verify that high physical disturbance with weak association evaluates to T1."""
+    from subsea.decision import decide
+    from subsea.models import DecisionState
+
+    dec = decide(physical_confidence=0.80, association_confidence=0.20, reliability=1.0, uncertainty=0.25)
+    assert dec == DecisionState.T1, "High physical disturbance without vessel corroboration must be T1"
+
+
+def test_decision_ordering_corroborated_disturbance_is_t2_or_t3():
+    """Verify that strong physical and association evidence evaluates to T2 or T3."""
+    from subsea.decision import decide
+    from subsea.models import DecisionState
+
+    dec_t2 = decide(physical_confidence=0.80, association_confidence=0.80, reliability=1.0, uncertainty=0.20)
+    assert dec_t2 == DecisionState.T2
+
+    dec_t3 = decide(physical_confidence=0.90, association_confidence=0.90, reliability=1.0, uncertainty=0.10)
+    assert dec_t3 == DecisionState.T3
+
 

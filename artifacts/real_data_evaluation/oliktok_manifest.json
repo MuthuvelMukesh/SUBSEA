@@ -1,0 +1,170 @@
+{
+  "status": "EXECUTED",
+  "dataset_name": "Dryad Oliktok Submarine DAS (Beaufort Sea, Arctic Ocean)",
+  "scientific_role": "Independent real-DAS environmental robustness and false-escalation validation",
+  "evaluation_category": "Unlabelled real DAS robustness evaluation",
+  "file_path": "data/Dryad_Oliktok/oliktok_das_mooring_hourly_dataset.nc",
+  "filename": "oliktok_das_mooring_hourly_dataset.nc",
+  "file_size_bytes": 22701136,
+  "sha256": "5fa69e4cf90a8bcfab0b4bd0aa0d6374aec88baf70ab7e46d158885ef674a91c",
+  "sample_count": 215,
+  "channel_count": 183,
+  "frequency_bins": 32,
+  "frequency_range_hz": [
+    0.0078125,
+    0.494140625
+  ],
+  "duration_seconds": 2386800.0,
+  "duration_days": 27.625,
+  "time_start": "2023-08-24T04:00:00+00:00",
+  "time_end": "2023-09-20T19:00:00+00:00",
+  "spatial_extent": {
+    "cable_route": "Oliktok Point offshore telecommunications cable, Beaufort Sea, Alaska",
+    "distance_along_cable_km": [
+      8.790539741516113,
+      29.96778678894043
+    ],
+    "water_depth_range_m": [
+      -18.183212280273438,
+      -5.273872375488281
+    ],
+    "burial_depth_range_m": [
+      2.0,
+      4.0
+    ],
+    "channels_evaluated": [
+      1088,
+      3672
+    ]
+  },
+  "signal_statistics": {
+    "mean_rms": 550.8506939358433,
+    "std_rms": 159.2488144548955,
+    "median_rms": 553.5942248026647,
+    "min_rms": 249.1453619414841,
+    "max_rms": 1000.7413740104133,
+    "skewness": 0.15474792489358988,
+    "kurtosis": -1.1625433146604058,
+    "percentiles": {
+      "p25": 402.5777601183336,
+      "p50": 553.5942248026647,
+      "p75": 684.3554739830082,
+      "p95": 805.9211193713529,
+      "p99": 864.9274194820753
+    },
+    "nan_count": 0,
+    "inf_count": 0
+  },
+  "spatial_variability": {
+    "spatial_gini_coefficient": 0.12653801262066838,
+    "inter_channel_cv": 0.2349242157324458,
+    "peak_to_average_ratio": 1.3456857885937534,
+    "mean_channel_rms": 550.8506939358433,
+    "std_channel_rms": 129.40816725855152
+  },
+  "temporal_stability": {
+    "temporal_stability_cv": 0.12390618125532367,
+    "baseline_drift_slope_per_hour": 0.018753725441781298,
+    "baseline_drift_p_value": 0.8036638520674725,
+    "weekly_mean_rms": [
+      533.4358077339808,
+      593.6158132754948,
+      508.86135010042847,
+      570.3332965394077
+    ]
+  },
+  "oceanographic_wave_reference": {
+    "alignment_method": "Synchronous hourly timestamp index alignment (215 windows)",
+    "sample_count": 215,
+    "mean_significant_wave_height_m": 0.9194159884444338,
+    "median_significant_wave_height_m": 0.8988194424223532,
+    "min_significant_wave_height_m": 0.34754139181604615,
+    "max_significant_wave_height_m": 1.4626998729758076,
+    "std_significant_wave_height_m": 0.30857654654693556,
+    "mean_energy_period_s": 6.9133345642884985,
+    "median_energy_period_s": 6.939672562807202,
+    "wave_height_correlation": {
+      "variable_names": [
+        "das_mean_integrated_strain_rms",
+        "target_significant_wave_height"
+      ],
+      "sample_count": 215,
+      "spearman_rho": 0.31408993214035597,
+      "spearman_p_value": 2.626542529266166e-06,
+      "pearson_r": 0.3369858321531706,
+      "pearson_p_value": 4.166389126250063e-07,
+      "scientific_interpretation": "Empirical environmental correlation; does NOT constitute causal evidence"
+    },
+    "seafloor_pressure_correlation": {
+      "variable_names": [
+        "das_mean_integrated_strain_rms",
+        "target_seafloor_pressure_variance"
+      ],
+      "sample_count": 215,
+      "spearman_rho": 0.49509526914438884,
+      "spearman_p_value": 1.0729440213156035e-14,
+      "pearson_r": 0.49028445854137004,
+      "pearson_p_value": 2.1096561300327422e-14,
+      "scientific_interpretation": "Empirical environmental correlation; does NOT constitute causal evidence"
+    },
+    "spearman_rho_energy_vs_wave_height": 0.31408993214035597,
+    "spearman_p_energy_vs_wave_height": 2.626542529266166e-06,
+    "pearson_r_energy_vs_wave_height": 0.3369858321531706,
+    "spearman_rho_energy_vs_pressure_var": 0.49509526914438884,
+    "spearman_p_energy_vs_pressure_var": 1.0729440213156035e-14
+  },
+  "physical_detector_evaluation": {
+    "baseline_energy_threshold": 435.1416094139074,
+    "disturbance_energy_threshold": 645.1089736910575,
+    "physical_confidence_distribution": {
+      "mean": 0.5533312762314766,
+      "std": 0.32079870807711086,
+      "min": 0.0,
+      "max": 1.0,
+      "median": 0.6016651053364813,
+      "p25": 0.29791453673609913,
+      "p75": 0.8242853862712982
+    },
+    "uncertainty_distribution": {
+      "mean": 0.35,
+      "std": 0.0,
+      "min": 0.35,
+      "max": 0.35
+    },
+    "reliability_distribution": {
+      "mean": 1.0,
+      "std": 0.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "mean_physical_confidence": 0.5533312762314766,
+    "std_physical_confidence": 0.32079870807711086,
+    "min_physical_confidence": 0.0,
+    "max_physical_confidence": 1.0,
+    "decision_distribution": {
+      "T1": 122,
+      "T0": 93,
+      "T2": 0,
+      "T3": 0,
+      "TX": 0
+    },
+    "t0_count": 93,
+    "t1_count": 122,
+    "t2_count": 0,
+    "t3_count": 0,
+    "tx_count": 0,
+    "quiet_background_rate_t0": 0.4325581395348837,
+    "uncorrelated_disturbance_rate_t1": 0.5674418604651162,
+    "environmental_escalation_count": 0,
+    "environmental_escalation_rate": 0.0,
+    "false_critical_escalation_rate_t2_t3": 0.0,
+    "fail_closed_tx_rate": 0.0,
+    "escalation_finding": "No T2/T3 vessel-escalation decisions occurred in the evaluated Oliktok environmental recording."
+  },
+  "assumptions_and_limitations": {
+    "vessel_ground_truth": false,
+    "ais_available": false,
+    "causal_damage_ground_truth": false,
+    "classification_disclaimer": "No categorical vessel ground-truth or AIS trajectory labels are present in this dataset. The dataset validates physical detector robustness, ambient noise stability, and avoidance of false critical vessel alarms (T2/T3) under continuous natural ocean wave variations across 27.6 days."
+  }
+}
