@@ -56,7 +56,7 @@ frequency bins over 27.625 days) providing long-duration environmental
 robustness and escalation-avoidance evaluation against co-located oceanographic
 moorings. On Marlinks, the DAS physical channel separates 1~km corridor
 incursions at AUC $=0.959$ (95\% CI $[0.887, 1.000]$), with DAS power tracking
-AIS range at Spearman $\rho = -0.914$ ($p = 2.1\times10^{-24}$) and range
+AIS range at Spearman $\rho = -0.948$ ($p = 1.4\times10^{-30}$) and range
 regression generalising at $R^2_{\log} = 0.849$. On EMSO, the framework
 yielded zero false escalations across 85/85 background windows. On Oliktok, the
 detector exhibited stable acoustic noise floors (mean integrated strain RMS
@@ -65,13 +65,16 @@ statistically significant empirical associations with independent significant
 wave height ($\rho = +0.3141$, $p = 2.63\times10^{-6}$) and seafloor pressure
 variance ($\rho = +0.4951$, $p = 1.07\times10^{-14}$), while yielding 93
 \dstate{T0} (43.26\%), 122 \dstate{T1} (56.74\%), and zero \dstate{T2}/\dstate{T3}
-escalations (0.0\% environmental escalation rate). Adversarial evasion rate is
+escalations (0.0\% environmental escalation rate). Adversarial evasion rate
+(AER, defined as the fraction of genuine-incursion trials collapsing to
+\dstate{T0} under adversarial perturbation) is
 0.0 across four attack families and five severities applied to the vessel-side
 AIS channel. We also report our negative ablation result: at reference
 thresholds the full framework achieves F1 $=0.462$ on the held-out transit and
-F1 $=0.235$ in 2,200 controlled simulation trials, below simple weighted fusion
-(F1 $=0.824$ and $0.333$), reflecting an intentional architectural trade-off
-prioritizing fail-closed safety over unconstrained escalation recall.
+F1 $=0.235$ in 2,200 controlled simulation trials (evaluated separately;
+these scores are not pooled), below simple weighted fusion
+(F1 $=0.824$ real, $0.333$ simulation), reflecting an intentional architectural
+trade-off prioritizing fail-closed safety over unconstrained escalation recall.
 Verified end-to-end processing latency averages 8.289~ms (decision engine
 0.009~ms). Physical ESP32--MPU6050 hardware validation was not executed and is
 scoped as future work.
@@ -183,8 +186,9 @@ spatial decay, deep-sea stationarity, and oceanographic wave coupling.
 identical decisions) under the updated reliability-first decision hierarchy,
 resolving quiet-baseline misclassifications.
 \item A transparent accounting of negative and bounded findings: at reference
-thresholds, the full framework is outperformed on pooled F1 by simple weighted
-fusion on both simulated and real data, reflecting deliberate conservatism.
+thresholds, the full framework is outperformed on escalation F1 by simple
+weighted fusion on both simulated and real data (evaluated independently),
+reflecting deliberate fail-closed conservatism.
 \end{enumerate}
 
 \section{Related Work}
@@ -439,6 +443,9 @@ Dataset A captures an active commercial vessel transit across a submarine power
 export cable in the Belgian North Sea \cite{b12}. The recording comprises 60
 consecutive 10-second windows across 250 spatial channels with synchronous 1D
 distance ground truth $y(t) \in [26.22, 2785.91]$~m for a 304~m container ship.
+The observed minimum distance 26.22~m denotes the closest recorded 1D ground-truth
+point; the kinematic CPA fit (Section~\ref{sec:kinematics}) yields a distinct
+fitted parameter $d_{\mathrm{cpa}} = 125.1$~m.
 It serves strictly as a 1D vessel proximity validation dataset, not a full 2D
 trajectory tracking set.
 
@@ -505,8 +512,10 @@ inversion. Bottom: Graded decisions across the transit.}
 
 \subsection{Physical Detection on Real DAS}
 \label{sec:detection-results}
-Acoustic strain power tracks inverse vessel distance at Spearman $\rho = -0.914$
-($p = 2.1\times10^{-24}$, $n=60$). Evaluated against corridor boundaries on the
+Acoustic strain power exhibits a strong negative monotonic association with
+vessel distance at Spearman $\rho = -0.948$ ($p = 1.4\times10^{-30}$,
+$n=60$); equivalently, energy correlates at $\rho = +0.948$ with inverse
+distance $1/d$. Evaluated against corridor boundaries on the
 held-out leg, the coherent statistic achieves the detection AUCs in
 Table~\ref{tab:auc}, reaching AUC $= 0.959$ (95\% CI $[0.887, 1.000]$) at 1~km.
 
@@ -543,20 +552,25 @@ protection corridor.}
 
 \subsection{Background Baseline and Threshold Calibration}
 \label{sec:background}
-On Dataset B, a static baseline drifts over 17 minutes, producing a 97.7\% false
-alarm rate. A rolling 200-second baseline stabilizes the statistic at mean 4.15
-(p95 6.01, max 6.99). Sweeping $\tau_P$ identifies $\tau_P = 7$ as the minimal
-integer yielding zero background false alarms (Fig.~\ref{fig:far}). Operating
-the full decision engine over Dataset B produced \dstate{TX} in 85/85 windows
-and \textbf{zero} false escalations to \dstate{T2}/\dstate{T3}, verifying
-fail-closed behavior when vessel corroboration is absent.
+On Dataset B, a static baseline drifts over 17 minutes, producing a 97.7\%
+background detection exceedance rate. A rolling 200-second baseline stabilizes
+the statistic at mean 4.15 (p95 6.01, max 6.99). Sweeping $\tau_P$ identifies
+$\tau_P = 7$ as the minimal integer yielding zero background detection
+exceedances (Fig.~\ref{fig:far}). Operating the full decision engine over
+Dataset B (85 evaluated windows after 20-window rolling-baseline initialization)
+produced \dstate{TX} in 85/85 windows and \textbf{zero} false escalations to
+\dstate{T2}/\dstate{T3}, verifying fail-closed behavior when vessel
+corroboration is absent. We term these \emph{background false alarms} (physical
+detector exceedances on quiescent seafloor), distinct from \emph{environmental
+escalations} (T2/T3 decisions during natural hydrodynamic forcing) and
+\emph{vessel attribution errors} (incorrect vessel assignment).
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.42\textwidth]{figs/fig_far.png}
-\caption{Background false-alarm rate versus threshold on Dataset B (85 windows,
-rolling baseline). The reference threshold $\tau_P=3$ produces 100\% false
-alarms, whereas $\tau_P=7$ achieves zero false alarms.}
+\caption{Background detection exceedance rate versus threshold on Dataset B
+(85 evaluated windows, rolling baseline). The reference threshold $\tau_P=3$
+produces 100\% exceedances; $\tau_P=7$ achieves zero.}
 \label{fig:far}
 \end{figure}
 
@@ -613,11 +627,11 @@ The integrated strain exhibited statistically significant empirical associations
 with independent oceanographic measurements: Spearman $\rho = +0.3141$
 ($p = 2.63\times10^{-6}$, Pearson $r = +0.3370, p = 4.31\times10^{-7}$) against
 significant wave height $H_s$, and Spearman $\rho = +0.4951$
-($p = 1.07\times10^{-14}$, Pearson $r = +0.4682, p = 7.74\times10^{-13}$) against
+($p = 1.07\times10^{-14}$, Pearson $r = +0.4903, p = 2.11\times10^{-14}$) against
 dynamic seafloor pressure variance. These correlations demonstrate empirical
-coupling with surface hydrodynamics. They do not demonstrate causal cable
-damage, as environmental records cannot establish causal physical damage
-without annotated structural incident ground truth.
+monotonic association with surface hydrodynamics. They do not demonstrate
+causal cable damage, as environmental records cannot establish causal physical
+damage without annotated structural incident ground truth.
 
 Processing Dataset C through the frozen decision pipeline produced 93
 \dstate{T0} states (43.26\%) during calm periods, 122 \dstate{T1} states
@@ -689,9 +703,13 @@ marginal incursions.
 \subsection{Ablation on Real Data}
 Ablating individual components (Table~\ref{tab:ablation}) shows that removing
 health weighting, uncertainty modeling, or adversarial checking changes no
-decisions on the clean transit leg. Removing behavioral scoring increases F1
-from 0.462 to 0.571, whereas removing spatio-temporal association collapses F1
-to 0.000, confirming that association gating is the primary load-bearing module.
+decisions on the clean transit leg. This is expected: the health, uncertainty,
+and adversarial modules are designed to activate under degraded or adversarial
+conditions absent from this clean single-vessel transit; their contribution is
+visible in the adversarial evaluation (Section~\ref{sec:adv-results}).
+Removing behavioral scoring increases F1 from 0.462 to 0.571, whereas removing
+spatio-temporal association collapses F1 to 0.000, confirming that association
+gating is the primary load-bearing module.
 
 \begin{table}[!t]
 \caption{Ablation Analysis on Held-Out Transit Leg ($n=33$)}
@@ -714,11 +732,11 @@ Spatio-temporal association & 0.697 & 0.000 & 0.000 \\
 
 \subsection{Adversarial Robustness and Evasion Rate}
 \label{sec:adv-results}
-The adversarial evaluation perturbed the real AIS channel across 10 genuine
-incursion windows while leaving the real fiber recording untouched. Four attack
-families were evaluated at five severities: AIS range inflation, transponder
-suppression, timestamp offset, and combined multi-vector evasion
-(Table~\ref{tab:adv}).
+The adversarial evaluation perturbed the vessel-side AIS channel across 10
+genuine incursion windows while leaving the real fiber recording untouched.
+Four attack families were evaluated at five severity levels (0.00, 0.25, 0.50,
+0.75, 1.00): AIS range inflation, transponder suppression, timestamp offset,
+and combined multi-vector evasion (Table~\ref{tab:adv}).
 
 \begin{table}[!t]
 \caption{Adversarial Evaluation on Real DAS (10 Incursion Windows)}
@@ -741,10 +759,13 @@ AER (all families) & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
 \end{tabular}
 \end{table}
 
-The adversarial evasion rate (AER) was 0.0 across all 20 cells: within the
-implemented vessel-side attack model, no trial collapsed to \dstate{T0}.
-Mean uncertainty rose from 0.225 to 0.436 under full attack, and the consistency
-check fired monotonically with severity for range manipulation
+The adversarial evasion rate (AER), defined as the fraction of genuine-incursion
+trials that collapse to \dstate{T0} under adversarial perturbation, was 0/200
+(0.0) across all 20 attack cells ($4\ \text{families} \times
+5\ \text{severities}$, 10 incursion windows each): within the implemented
+vessel-side attack model, no trial collapsed to \dstate{T0}. Mean uncertainty
+rose from 0.225 to 0.436 under full attack, and the consistency check fired
+monotonically with severity for range manipulation
 (Fig.~\ref{fig:adversarial}). Crucially, the threat model covers vessel-side
 telemetry manipulation only; this does not constitute complete cyber-physical
 security against cable tampering or optical interrogator compromise.
@@ -871,9 +892,10 @@ vessels excite fiber channels out to 1.5~km. Physical-only monitoring triggers
 continuous false alarms during normal transit. Robust protection requires
 spatio-temporal association and independent range verification.
 
-Third, the lower pooled F1 score (0.462 real, 0.235 simulation) reflects an
-explicit engineering choice: prioritizing uncertainty awareness, health
-gating, and fail-closed security over optimistic classification.
+Third, the lower escalation F1 scores (0.462 on real data, 0.235 on simulation,
+evaluated independently) reflect an explicit engineering choice: prioritizing
+uncertainty awareness, health gating, and fail-closed security over optimistic
+classification.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -948,8 +970,9 @@ days of Arctic environmental DAS data and 1,050~s of deep-sea baseline data,
 the system achieved zero false escalations to \dstate{T2}/\dstate{T3}, while
 maintaining an adversarial evasion rate of 0.0 against vessel-side AIS
 manipulation. By formally bounding the scope of adversarial security,
-acknowledging lower pooled F1 relative to unconstrained fusion, and verifying
-all claims against executable artifacts, this work establishes a rigorous,
+acknowledging lower escalation F1 relative to unconstrained fusion (evaluated
+independently on real and simulated data), and verifying all claims against
+executable artifacts, this work establishes a rigorous,
 reproducible foundation for subsea cable surveillance.
 
 \begin{thebibliography}{00}
