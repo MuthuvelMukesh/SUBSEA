@@ -9,7 +9,7 @@
 | **Phase 2** | Site Shell & Components | `web/index.html`, `style.css`, Plotly vendored, `app.js`, `router.js`, `theme.js`, `banner.js`, `charts.js`, `components.js` | 266 | VERIFIED UNCHANGED | `feat(web): phase 2 site shell, styling, plotly vendoring, and router` | COMPLETED |
 | **Phase 3** | Pages 1–5 | Overview, Scenarios, Signals, Geometry, Evidence Timeline | 266 | VERIFIED UNCHANGED | `feat(web): phase 3 pages 1-5 overview scenarios signals geometry timeline` | COMPLETED |
 | **Phase 4** | Pages 6–10 | Decision Path, Hypotheses, Adversarial, Baselines, Robustness | 266 | VERIFIED UNCHANGED | `feat(web): phase 4 pages 6-10 decision_path hypotheses adversarial baselines robustness` | COMPLETED |
-| **Phase 5** | Pages 11, 13, 14 | Real DAS, Provenance, Publications | Pending | Pending | - | PENDING |
+| **Phase 5** | Pages 11, 13, 14 | Real DAS, Provenance, Publications | 266 | VERIFIED UNCHANGED | `feat(web): phase 5 pages 11 13 14 real_das provenance publications` | COMPLETED |
 | **Phase 6** | Page 12 (Live HIL) | Live HIL dashboard with polling, drag-and-drop, and disclaimer | Pending | Pending | - | PENDING |
 | **Phase 7** | Documentation | `docs/WEB.md`, `README.md` update | Pending | Pending | - | PENDING |
 | **Phase 8** | Smoke & Tamper Tests | E2E browser smoke tests & provenance tamper verification | Pending | Pending | - | PENDING |
@@ -57,4 +57,13 @@
   - `web/js/pages/adversarial.js` (Page 8: 6-level severity sweeps, AER & FHER curves, stacked decision distributions, scientific statement display)
   - `web/js/pages/baselines.js` (Page 9: Proposed vs single-modality baselines, paired bootstrap 95% CIs, McNemar tests, multi-modal ablation hierarchy)
   - `web/js/pages/robustness.js` (Page 10: Sensor degradation/fault stress matrix, probability calibration curves, Brier score, ECE, reliability diagnostics)
+- **Status**: COMPLETED.
+
+### Phase 5: Pages 11, 13, 14
+- **Test Suite**: 266 passed, 0 failures in 37.41s.
+- **AbyssLink Hashes**: 5/5 verified unchanged.
+- **Files Created**:
+  - `web/js/pages/real_das.js` (Page 11: Real DAS deployments for Marlinks, EMSO, Oliktok; exact wording of zero T2/T3 false escalation finding; autocorrelation caveats)
+  - `web/js/pages/provenance.js` (Page 13: Live Web Crypto API SHA-256 auditing of shipped assets; match/mismatch indicators; PROVENANCE.json records)
+  - `web/js/pages/publications.js` (Page 14: Publication figures browser with PNG downloads and tables browser with CSV downloads; cohort filters)
 - **Status**: COMPLETED.
