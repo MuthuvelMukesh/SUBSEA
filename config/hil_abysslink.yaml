@@ -1,0 +1,28 @@
+distance:
+  scale_factor: 0.1        # 80 cm -> 8 m
+  smoothing_window: 5       # packets for speed estimation
+  min_valid_cm: 2.0         # below this -> unavailable
+signal:
+  ldr_debounce_packets: 2
+  vibration_debounce_packets: 2
+  grace_period_s: 0.5       # ignore LDR after START_TRANSMISSION
+  packet_timeout_s: 1.0
+pipeline:
+  sampling_rate: 50.0
+  window_size: 256
+  baseline_rms: 1.0
+  disturbance_rms: 1.8
+  interaction_radius: 10.0
+  temporal_tolerance: 5.0
+  expected_interval: 0.02
+accel:
+  baseline_amplitude: 0.15
+  disturbance_amplitude: 1.8
+  frequency_hz: 8.0
+  noise_std: 0.03
+mock:
+  approach_start_cm: 120.0
+  approach_end_cm: 20.0
+  retreat_end_cm: 150.0
+  link_break_duration_s: 3.0
+  no_echo_duration_s: 2.0

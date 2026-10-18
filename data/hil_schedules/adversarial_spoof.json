@@ -1,0 +1,11 @@
+{
+  "description": "Adversarial AIS spatial spoofing injection during vessel approach",
+  "injections": [
+    {
+      "timestamp_s": 1006.0,
+      "duration_s": 10.0,
+      "type": "ais_spoof",
+      "offset_m": 85.0
+    }
+  ]
+}

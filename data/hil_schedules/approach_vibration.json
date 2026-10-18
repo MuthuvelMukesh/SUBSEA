@@ -1,0 +1,11 @@
+{
+  "description": "Approaching vessel with concurrent physical vibration event",
+  "injections": [
+    {
+      "timestamp_s": 1006.0,
+      "duration_s": 12.0,
+      "type": "vibration",
+      "value": 1
+    }
+  ]
+}

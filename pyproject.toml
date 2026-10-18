@@ -21,6 +21,7 @@ ui = ["streamlit>=1.30", "plotly>=5.18"]
 test = ["pytest>=8.0"]
 ml = ["scikit-learn>=1.4", "xgboost>=2.0"]
 realdata = ["h5py>=3.10"]
+hil = ["pyserial>=3.5"]
 
 [project.scripts]
 subsea-simulate = "subsea.cli:main"

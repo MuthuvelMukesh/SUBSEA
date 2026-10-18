@@ -1,0 +1,10 @@
+{
+  "description": "Environmental low-frequency disturbance injection (0.55g at 2.0 Hz)",
+  "injections": [
+    {
+      "timestamp_s": 1004.0,
+      "duration_s": 15.0,
+      "type": "environmental"
+    }
+  ]
+}

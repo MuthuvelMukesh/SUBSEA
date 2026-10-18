@@ -1,0 +1,10 @@
+{
+  "description": "Optical link interruption during active telemetry transmission (LDR=1 fault)",
+  "injections": [
+    {
+      "timestamp_s": 1005.0,
+      "duration_s": 8.0,
+      "type": "link_fault"
+    }
+  ]
+}

@@ -19,5 +19,6 @@ htmlcov/
 # External research datasets
 data/*
 !data/PROVENANCE.json
+!data/hil_schedules/
 
 .streamlit/
