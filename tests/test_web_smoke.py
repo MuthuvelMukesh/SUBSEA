@@ -45,17 +45,29 @@ class QuietHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, format, *args):
         pass  # Suppress normal HTTP access logs
 
+    def copyfile(self, source, outputfile):
+        try:
+            super().copyfile(source, outputfile)
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
+
+class QuietServer(http.server.ThreadingHTTPServer):
+    def handle_error(self, request, client_address):
+        pass  # Suppress harmless connection abort logs during fast client teardown
+
 
 @pytest.fixture(scope="session")
 def web_server():
     """Starts a local HTTP server serving web/ in a daemon thread."""
     handler = functools.partial(QuietHandler, directory=str(WEB_DIR))
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), handler)
+    server = QuietServer(("127.0.0.1", PORT), handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     time.sleep(0.5)
     yield BASE_URL
     server.shutdown()
+
 
 
 @pytest.fixture(scope="session")
@@ -129,17 +141,17 @@ def test_provenance_tamper_detection(web_server, browser_instance):
 
     page.route("**/data/overview.json*", handle_tamper)
 
-    page.goto(f"{BASE_URL}/index.html#/provenance", wait_until="networkidle")
-    page.wait_for_timeout(1200)
+    page.goto(f"{BASE_URL}/index.html#/provenance", wait_until="domcontentloaded")
 
-    # Assert tamper detection alert is triggered
+    # Assert tamper detection alert is rendered
     tamper_status = page.locator("#tamper-status-title")
-    assert tamper_status.is_visible()
+    tamper_status.wait_for(state="visible", timeout=12000)
     title_text = tamper_status.inner_text()
     assert "TAMPER" in title_text or "MISMATCH" in title_text or "CLEAN" in title_text
 
-    # Check that mismatch count indicator reflects at least 1 mismatch or badge reflects status
+    # Check that mismatch indicator badge is rendered
     mismatch_badge = page.locator("#tamper-badge-container")
+    mismatch_badge.wait_for(state="visible", timeout=12000)
     assert mismatch_badge.is_visible()
 
     page.close()
