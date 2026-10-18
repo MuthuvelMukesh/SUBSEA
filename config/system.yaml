@@ -17,5 +17,6 @@ uncertainty:
 decision:
   tx_uncertainty: 0.65
   tx_reliability: 0.35
+  t3_uncertainty: 0.35
 simulation:
   trials: 100

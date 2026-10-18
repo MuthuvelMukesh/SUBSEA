@@ -16,6 +16,7 @@ def decide(
         "association": 0.60,
         "t2": 0.65,
         "t3": 0.85,
+        "t3_uncertainty": 0.35,
         "tx_uncertainty": 0.65,
         "tx_reliability": 0.35,
         **(thresholds or {}),
@@ -34,4 +35,4 @@ def decide(
         return DecisionState.T1
     # 5. Strong physical and vessel corroboration -> T2 or T3
     score = 0.5 * physical_confidence + 0.5 * association_confidence
-    return DecisionState.T3 if score >= limits["t3"] and uncertainty < 0.35 else DecisionState.T2
+    return DecisionState.T3 if score >= limits["t3"] and uncertainty < limits["t3_uncertainty"] else DecisionState.T2
