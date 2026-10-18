@@ -14,6 +14,8 @@
 | **Phase 7** | Documentation | `docs/WEB.md`, `README.md` update | 266 | VERIFIED UNCHANGED | `docs(web): phase 7 documentation and readme updates` | COMPLETED |
 | **Phase 8** | Smoke & Tamper Tests | `tests/test_web_smoke.py`, Playwright automated browser tests across all 14 pages & tamper detection | 283 | VERIFIED UNCHANGED | `feat(web): phase 8 automated smoke and tamper tests` | COMPLETED |
 | **Phase 9** | Pyodide Feasibility | In-browser Python assessment (Skipped per offline vendoring constraint) | 283 | VERIFIED UNCHANGED | `docs(web): phase 9 pyodide offline feasibility assessment` | COMPLETED |
+| **Phase 10** | Direct ESP32 Web Serial | Direct USB serial link (`hardware_serial.js`, `hardware_adapter.js`, `serve_web.py`, real-time pipeline inference bridge, tests) | 292 | VERIFIED UNCHANGED | `feat(hil): direct esp32 hardware usb serial connectivity` | COMPLETED |
+
 
 ---
 
@@ -110,4 +112,20 @@
   - The 14 static pages already provide precomputed, deterministic pipeline runs for all 22 scenarios across 6 attack vectors and 5 severity levels, fully satisfying interactive exploration requirements without incurring heavy in-browser runtime penalties.
 - **AbyssLink Hashes**: 5/5 verified unchanged against baseline.
 - **Status**: COMPLETED (Formally evaluated and skipped per offline constraint).
+
+### Phase 10: Direct ESP32 Web Serial Hardware Integration
+- **Deliverables**:
+  - `web/js/hardware_serial.js`: Web Serial API controller supporting 115200 baud streaming, line buffering, TextDecoder/TextEncoder streams, command transmission (`START_TRANSMISSION\n`, `STOP_TRANSMISSION\n`), ACK handling, USB physical disconnect listener, and duplicate connection guards.
+  - `web/js/hardware_adapter.js`: Telemetry parser, packet validator, bounded raw packet buffer, raw JSONL export, transition logger, and Python pipeline bridge client.
+  - `scripts/serve_web.py`: Unified server serving static files from `web/` plus HTTP endpoints:
+    - `GET /api/status` & `GET /api/status.json` (pipeline status indicator)
+    - `POST /api/hil/process_packet` (routes live Web Serial packets directly into `HILBridge.process_packet()`, runs real `run_pipeline()` and `decide()`, and returns real `DecisionResult`)
+    - `POST /api/hil/reset` (resets HIL run session)
+  - `web/js/pages/hil.js`: Integrated direct USB serial connectivity, 4 live hardware cards (LDR, vibration, ultrasonic distance, actuators), Start/Stop transmission controls, raw JSONL telemetry export, bounded event audit log (50 events), and real pipeline inference display.
+  - `web/api/status.json`: Static fallback status file ensuring zero 404 console errors on pure static hosts.
+  - `tests/test_hardware_serial.py`: 9 comprehensive automated tests for packet validation, missing fields, buffer stream splitting, malformed recovery, adapter mapping, and real pipeline execution.
+- **Test Suite**: 292 passed (258 baseline + 8 web export + 17 Playwright browser smoke + 9 hardware serial), 0 failures in 44.66s.
+- **AbyssLink Hashes**: 5/5 verified unchanged against baseline.
+- **Status**: COMPLETED.
+
 

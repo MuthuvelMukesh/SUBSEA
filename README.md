@@ -2,10 +2,10 @@
 
 > **An Uncertainty-Aware Multimodal Evidence Fusion Framework for Vessel-Associated Subsea Cable Disturbance Assessment under Adversarial Uncertainty**
 
-[![Tests](https://img.shields.io/badge/tests-266%20passed-brightgreen)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-292%20passed-brightgreen)](#test-suite)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://python.org)
 [![Data Kind](https://img.shields.io/badge/data%20kind-SIMULATION%20%2B%20REAL%20DATA-brightgreen)](#scientific-integrity--provenance)
-[![Web Front End](https://img.shields.io/badge/web%20front%20end-14%20pages%20%7C%20static-blue)](web/index.html)
+[![Web Front End](https://img.shields.io/badge/web%20front%20end-14%20pages%20%7C%20Web%20Serial%20HIL-blue)](web/index.html)
 
 A reproducible research platform for uncertainty-aware multimodal evidence fusion under adversarial uncertainty. The framework integrates subsea vibration sensing (accelerometer/DAS acoustic), AIS vessel tracking kinematics, sensor health diagnostics, epistemic uncertainty quantification, and multi-hypothesis assessment to reliably distinguish vessel-caused cable disturbances (anchor dragging, bottom-trawling) from benign transit, sensor malfunctions, environmental confounding, and adversarial evasion (AIS spoofing, timestamp manipulation).
 
@@ -212,9 +212,12 @@ python scripts/export_web_data.py
 ```
 
 #### B. Serve Locally
-Launch any static HTTP server:
+Launch the unified server with live Python research pipeline bridge (recommended for ESP32 hardware):
 ```bash
-# Recommended:
+# Unified server (Static web frontend + Real-Time Subsea Pipeline API Bridge):
+python scripts/serve_web.py --port 8000
+
+# Or standard static server:
 python -m http.server 8000 --directory web
 
 # Open in browser: http://localhost:8000/
@@ -232,7 +235,7 @@ python -m http.server 8000 --directory web
 9. **Baselines & Ablations** (`#/baselines`): Proposed vs single-modality baselines, paired bootstrap 95% CIs, McNemar tests, ablation hierarchy.
 10. **Robustness & Calibration** (`#/robustness`): Sensor degradation/fault stress matrix, probability calibration curves, Brier score, ECE.
 11. **Real DAS Deployments** (`#/real-das`): Marlinks North Sea ($1/\text{dist}$ correlation), EMSO deep-sea noise floor, Oliktok 27.6-day Arctic recording.
-12. **Live Hardware-in-the-Loop** (`#/hil`): 2-second polling live stream, drag-and-drop JSONL loader, simulated accelerometer disclaimer.
+12. **Live Hardware-in-the-Loop** (`#/hil`): Direct Web Serial ESP32 connection (115200 baud), live sensor cards (LDR, vibration, distance, laser, buzzer, alert), Start/Stop laser transmission controls, raw JSONL export, Python pipeline bridge, 2s polling stream, Drag-and-drop loader.
 13. **Provenance Verification** (`#/provenance`): In-browser Web Crypto API SHA-256 live audit against PROVENANCE.json records.
 14. **Publication Artifacts** (`#/publications`): Publication figure gallery with PNG downloads and tables list with CSV downloads.
 

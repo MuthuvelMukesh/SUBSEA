@@ -97,7 +97,7 @@ The precomputed JSON files in `web/data/` (~1.5 MB total) are **committed to ver
 | 9 | Baselines & Ablations | `#/baselines` | `data/baselines.json`, `data/ablation.json` | Proposed vs baselines bar chart with paired bootstrap 95% CIs, McNemar tests, Ablation hierarchy |
 | 10 | Robustness & Calibration | `#/robustness` | `data/robustness.json`, `data/calibration.json` | Sensor failure stress matrix, Reliability diagram (ECE, Brier score), Sensitivity curve |
 | 11 | Real DAS Deployments | `#/real-das` | `data/real_das.json` | Marlinks $1/\text{dist}$ correlation, EMSO noise floor, Oliktok 27.6-day recording & wave correlations |
-| 12 | Live Hardware-in-the-Loop | `#/hil` | `web/hil/latest.json`, `web/hil/decisions.jsonl` | 2-second polling live stream, Drag-and-drop JSONL loader, Simulated-accel notice, Recent stream |
+| 12 | Live Hardware-in-the-Loop | `#/hil` | `web/hil/latest.json`, `web/hil/decisions.jsonl` | Direct Web Serial ESP32 connection (115200 baud), live hardware sensor cards, Start/Stop laser transmission controls, raw JSONL export, Python pipeline bridge, 2s polling stream, Drag-and-drop loader |
 | 13 | Provenance Verification | `#/provenance` | `data/provenance.json`, Shipped web assets | In-browser Web Crypto API SHA-256 live verification, Match/Mismatch tamper detection |
 | 14 | Publication Artifacts | `#/publications` | `data/publications.json`, `assets/figures/*.png` | Publication figure gallery with PNG downloads, Publication tables list with CSV downloads |
 
@@ -105,18 +105,22 @@ The precomputed JSON files in `web/data/` (~1.5 MB total) are **committed to ver
 
 ## 6. How to Serve Locally
 
-### Option A: Standard Python Static Server (Recommended)
-From the repository root:
+### Option A: Unified Server with Live Python Pipeline Bridge (Recommended for Hardware)
+Runs both the static frontend and the real-time Python research inference pipeline bridge:
+```powershell
+python scripts/serve_web.py --port 8000
+```
+- Web Application: [http://localhost:8000/](http://localhost:8000/)
+- Live Pipeline Endpoint: `http://localhost:8000/api/hil/process_packet`
+- Enables real-time Subsea pipeline execution for incoming Web Serial ESP32 packets.
+
+### Option B: Standard Python Static Server
 ```powershell
 python -m http.server 8000 --directory web
 ```
-Then navigate to: `http://localhost:8000/`
+Then navigate to: [http://localhost:8000/](http://localhost:8000/)
+In this mode, direct Web Serial connects to the ESP32 in client-only raw mode, and file replay/polling are fully available.
 
-### Option B: From Repository Root
-```powershell
-python -m http.server 8000
-```
-Then navigate to: `http://localhost:8000/web/`
 
 ---
 

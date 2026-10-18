@@ -1,0 +1,8 @@
+{
+  "status": "online",
+  "framework": "SUBSEA",
+  "version": "0.1.0",
+  "mode": "static",
+  "pipeline": "offline_static",
+  "data_kind": "HIL_SIMULATED_ACCEL"
+}
