@@ -55,12 +55,13 @@ A reproducible research platform for uncertainty-aware multimodal evidence fusio
 │   ├── association.py               # Spatial, temporal, and kinematic association
 │   ├── baselines.py                 # Scikit-learn ML baselines (Random Forest, Decision Tree)
 │   ├── behaviour.py                 # Vessel behaviour analysis & spectral feature extraction
-│   ├── calibration.py               # Brier score, Expected Calibration Error (ECE), reliability curves
+│   ├── calibration.py               # Note: calibration functions integrated in metrics.py & experiments.py
 │   ├── cli.py                       # CLI entrypoints
 │   ├── das.py                       # Read-only DAS HDF5 loader with SHA-256 validation
 │   ├── das_ais_association.py       # DAS acoustic event to AIS track association pipeline
 │   ├── decision.py                  # Decision state engine (T0, T1, T2, T3, TX) with reliability-first hierarchy
-│   ├── evaluation.py                # Evaluation harness & confusion matrix metrics
+│   ├── evaluation.py                # Note: evaluation harnesses integrated in experiments.py & *_evaluation.py
+│   ├── hil_abysslink.py             # Hardware-in-the-Loop bridge for AbyssLink ESP32 serial telemetry
 │   ├── experiments.py               # Experiment runners with append-only manifest guarantees
 │   ├── features.py                  # Acceleration magnitude and spectral features
 │   ├── fusion.py                    # Multimodal weighted evidence fusion & competing hypotheses
@@ -92,10 +93,10 @@ python -m venv .venv
 # On Linux/macOS: source .venv/bin/activate
 # On Windows: .venv\Scripts\activate
 
-# Install dependencies
+# Install dependencies (includes test, ui, ml, realdata, and hil extras)
 python -m pip install -r requirements.txt
-# To install optional UI (Streamlit) and ML dependencies:
-python -m pip install -e .[test,ui,ml]
+# Or selectively:
+python -m pip install -e .[test,ui,ml,realdata,hil]
 ```
 
 ---
@@ -204,3 +205,29 @@ streamlit run dashboard/app.py
 ## Hardware Status
 
 Physical hardware experiments with ESP32 microcontrollers and MPU6050 vibration sensors are **`FUTURE WORK`** and are decoupled from the peer-reviewed paper's theoretical validation. All communication interfaces (`Mpu6050Packet`, MQTT receiver, HTTP receiver, Serial receiver, append-only packet logger) are implemented and unit tested.
+
+---
+
+## Hardware-in-the-Loop (HIL) AbyssLink Bridge
+
+The HIL AbyssLink bridge (`src/subsea/hil_abysslink.py`, CLI `scripts/run_abysslink_hil.py`) connects real AbyssLink ESP32 telemetry (115200 baud UART, 300 ms interval) into the Subsea research pipeline:
+- **Telemetry ingestion**: Line-buffered JSON parser supporting sensor telemetry and command acknowledgments.
+- **Signal adaptation**: Optical link tracking with LDR debounce and startup grace period; 50 Hz MPU6050 accelerometer synthesis conditioned on binary vibration; ultrasonic distance to scaled vessel kinematic observation mapping.
+- **Passive by default**: Zero serial transmission unless explicitly passed `--send-commands`.
+- **Scientific integrity**: All outputs isolated under `artifacts/hil/` with `data_kind: "HIL_SIMULATED_ACCEL"`. Validates protocol, streaming adaptation, and decision latency—does not represent subsea acoustic wave propagation physics.
+
+### Quick Start (HIL)
+```bash
+# Run deterministic mock emulator with summary table:
+python scripts/run_abysslink_hil.py --mock --seed 42
+
+# Run with baseline comparison:
+python scripts/run_abysslink_hil.py --mock --replay-baselines
+
+# Live passive serial read from ESP32:
+python scripts/run_abysslink_hil.py --port COM3
+
+# Run unit and integration tests:
+pytest tests/test_hil_abysslink.py -v
+```
+See [`docs/HIL_ABYSSLINK.md`](docs/HIL_ABYSSLINK.md) for full architecture and protocol mapping details.

@@ -30,28 +30,28 @@ This tracker distinguishes implemented software from results that require an exe
 - [x] Comprehensive test coverage (`test_multi_node.py`, `test_multi_vessel.py`).
 
 ## Phase 3 — Complete Benchmark Scenarios (S01–S22)
-- [x] S01: Benign transit at cruising speed.
-- [x] S02: Benign loitering outside cable zone.
-- [x] S03: Normal cable crossing without contact.
-- [x] S04: Anchor dragging (low speed, high vibration, spatial proximity).
-- [x] S05: Bottom-trawling gear interaction.
-- [x] S06: Dropped object / acute impact.
-- [x] S07: Legitimate maintenance vessel operation.
-- [x] S08: Benign transit in shallow water.
-- [x] S09: Heavy vessel displacement wash without physical cable contact.
-- [x] S10: Bad weather and sea-state turbulence.
-- [x] S11: Natural seismic / seismic survey acoustic anomaly.
-- [x] S12: Marine fauna / biological acoustic disturbance.
-- [x] S13: Single sensor intermittent packet loss.
-- [x] S14: Multiple sensor spatial node failure.
-- [x] S15: Sensor drift and calibration offset.
-- [x] S16: Communication backhaul outage.
-- [x] S17: Adversarial AIS transponder intentional shutdown.
-- [x] S18: Adversarial AIS spoofing (ghost trajectory injection).
-- [x] S19: Adversarial AIS timestamp manipulation.
-- [x] S20: Coordinated spatial offset manipulation.
-- [x] S21: Multi-vector combined evasion (spoofing + timestamp desynchronization).
-- [x] S22: Multi-vessel ambiguous association and spatial-temporal conflict.
+- [x] S01: Normal baseline (no vessel, no disturbance).
+- [x] S02: Physical disturbance (no vessel).
+- [x] S03: Vessel only (no disturbance).
+- [x] S04: Vessel plus disturbance.
+- [x] S05: Environmental event.
+- [x] S06: Non-vessel mechanical event.
+- [x] S07: Sensor failure.
+- [x] S08: Communication failure.
+- [x] S09: Noise stress.
+- [x] S10: Packet loss.
+- [x] S11: Spatial mismatch.
+- [x] S12: Temporal mismatch.
+- [x] S13: Conflicting evidence.
+- [x] S14: Counter evidence.
+- [x] S15: High uncertainty.
+- [x] S16: Absence of corroboration.
+- [x] S17: AIS spoofing.
+- [x] S18: Transponder suppression.
+- [x] S19: Timestamp manipulation.
+- [x] S20: Spatial manipulation.
+- [x] S21: Combined adversarial evasion.
+- [x] S22: Multiple vessels and disturbances.
 - [x] Comprehensive test coverage (`test_all_scenarios.py`, `test_scenarios.py`).
 
 ## Phase 4 — Robustness Sweeps
@@ -167,3 +167,22 @@ This tracker distinguishes implemented software from results that require an exe
   - `Mpu6050Packet` validation schema.
   - MQTT, HTTP, and Serial receiver adapters.
   - Append-only raw packet recorder.
+
+## Phase 15 — Hardware-in-the-Loop AbyssLink Bridge
+- [x] Bridge library (`src/subsea/hil_abysslink.py`):
+  - Line-buffered serial protocol parser for AbyssLink newline-delimited JSON.
+  - Link health tracking with optical link debounce and post-startup grace period.
+  - Phase-continuous 50 Hz MPU6050 accelerometer synthesis from binary vibration flag.
+  - Ultrasonic distance to vessel observation kinematics mapping and approach speed estimation.
+  - Lazy `pyserial` import (zero mandatory runtime overhead when hardware is disconnected).
+  - Isolated outputs under `artifacts/hil/` with `data_kind: "HIL_SIMULATED_ACCEL"`.
+- [x] CLI entry point (`scripts/run_abysslink_hil.py`):
+  - `--mock`, `--port`, `--replay`, `--seed`, `--config`, `--schedule`, `--send-commands`, `--replay-baselines`.
+  - Passive-by-default serial contract; commands only transmitted under `--send-commands`.
+  - Comprehensive run summary table with baseline comparative metrics.
+- [x] Configuration & schedules:
+  - Default tunables in `config/hil_abysslink.yaml`.
+  - Injection schedules in `data/hil_schedules/` (`approach_vibration.json`, `link_fault.json`, `adversarial_spoof.json`, `environmental.json`, `quiet_baseline.json`).
+- [x] Deterministic test suite (`tests/test_hil_abysslink.py`): 18 comprehensive unit and integration tests passing.
+- [x] Documentation (`docs/HIL_ABYSSLINK.md`): Mapping specifications, execution guide, and scientific integrity boundary.
+- [x] Web integration: Real-time run pointer at `web/hil/latest.json`.
