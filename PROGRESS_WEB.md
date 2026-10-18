@@ -13,7 +13,7 @@
 | **Phase 6** | Page 12 (Live HIL) | Live HIL dashboard with polling, drag-and-drop, and disclaimer | 266 | VERIFIED UNCHANGED | `feat(web): phase 6 page 12 live hil dashboard` | COMPLETED |
 | **Phase 7** | Documentation | `docs/WEB.md`, `README.md` update | 266 | VERIFIED UNCHANGED | `docs(web): phase 7 documentation and readme updates` | COMPLETED |
 | **Phase 8** | Smoke & Tamper Tests | `tests/test_web_smoke.py`, Playwright automated browser tests across all 14 pages & tamper detection | 283 | VERIFIED UNCHANGED | `feat(web): phase 8 automated smoke and tamper tests` | COMPLETED |
-| **Phase 9** | Pyodide Feasibility | In-browser Python assessment | Pending | Pending | - | PENDING |
+| **Phase 9** | Pyodide Feasibility | In-browser Python assessment (Skipped per offline vendoring constraint) | 283 | VERIFIED UNCHANGED | `docs(web): phase 9 pyodide offline feasibility assessment` | COMPLETED |
 
 ---
 
@@ -100,3 +100,14 @@
   - `web/js/pages/adversarial.js` (fixed template literal syntax)
   - `web/js/pages/timeline.js` (ensured initial banner render)
 - **Status**: COMPLETED.
+
+### Phase 9: Optional Pyodide Phase Assessment
+- **Assessment Finding**: Skipped per explicit prompt specification: *"If Pyodide cannot be vendored offline, skip this phase and report why."*
+- **Technical Justification**:
+  - The core architecture enforces a zero-external-CDN, fully air-gapped offline static site design.
+  - Vendoring Pyodide + Emscripten WASM binary + Python standard library archive (`python_stdlib.zip`) + compiled NumPy wheels requires ~45–60 MB of third-party binary artifacts not pre-bundled in the workspace.
+  - Fetching Pyodide at runtime from CDN (e.g. `cdn.jsdelivr.net`) violates Hard Rule 8 / Frontend Stack rules ("No CDN, no web fonts, no remote images, no analytics").
+  - The 14 static pages already provide precomputed, deterministic pipeline runs for all 22 scenarios across 6 attack vectors and 5 severity levels, fully satisfying interactive exploration requirements without incurring heavy in-browser runtime penalties.
+- **AbyssLink Hashes**: 5/5 verified unchanged against baseline.
+- **Status**: COMPLETED (Formally evaluated and skipped per offline constraint).
+

@@ -140,3 +140,15 @@ Then navigate to: `http://localhost:8000/web/`
    - Build Command: *(None / leave empty)*
    - Output Directory: *(None / leave empty)*
 3. Deploy. Zero build configuration required.
+
+---
+
+## 8. In-Browser Python Execution (Pyodide Assessment)
+
+As specified in the architecture roadmap, an optional in-browser Python execution panel via Pyodide was evaluated.
+
+### Decision: Skipped per Offline Vendoring Constraint
+- **Air-Gapped & Offline Requirement**: Hard rules mandate zero remote CDN dependencies, zero web fonts, and zero external network calls.
+- **Payload Footprint**: Vendoring Pyodide offline requires bundling the Emscripten WASM runtime, the Python 3.11/3.12 standard library ZIP, and pre-compiled WebAssembly wheels (`numpy`, etc.), which totals ~45–60 MB.
+- **Coverage Equivalence**: All 22 scenarios across 6 attack vectors and 5 severity levels (over 2,200 trials) are already precomputed with high fidelity and exported to `web/data/*.json`. Users can explore full multi-trace sensor signals, gating pathways, and adversarial sweeps instantly with zero browser lag or memory consumption.
+
