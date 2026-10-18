@@ -1,0 +1,731 @@
+{
+  "metadata": {
+    "software_version": "0.1.0",
+    "data_kind": "SIMULATION",
+    "source_manifest_path": "src/subsea/geometry.py",
+    "seed": 42,
+    "exported_at": "2026-10-18T06:58:09.514448+00:00"
+  },
+  "geometries": {
+    "S01": {
+      "scenario_id": "S01",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [],
+      "trajectory_timestamps": [],
+      "vessel_current_position": null,
+      "speed": 0.0,
+      "heading": 0.0,
+      "position_uncertainty": 0.0,
+      "reported": false,
+      "closest_point_of_approach_m": null,
+      "closest_point_timestamp": null,
+      "dwell_time_within_10m_s": 0.0,
+      "crossing_detected": false
+    },
+    "S02": {
+      "scenario_id": "S02",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [],
+      "trajectory_timestamps": [],
+      "vessel_current_position": null,
+      "speed": 0.0,
+      "heading": 0.0,
+      "position_uncertainty": 0.0,
+      "reported": false,
+      "closest_point_of_approach_m": null,
+      "closest_point_timestamp": null,
+      "dwell_time_within_10m_s": 0.0,
+      "crossing_detected": false
+    },
+    "S03": {
+      "scenario_id": "S03",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -38.0,
+          1.0
+        ],
+        [
+          -34.0,
+          1.0
+        ],
+        [
+          -30.0,
+          1.0
+        ],
+        [
+          -26.0,
+          1.0
+        ],
+        [
+          -22.0,
+          1.0
+        ],
+        [
+          -18.0,
+          1.0
+        ],
+        [
+          -14.0,
+          1.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -6.0,
+          1.0
+        ],
+        [
+          -2.0,
+          1.0
+        ],
+        [
+          2.0,
+          1.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        2.0,
+        1.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": true,
+      "closest_point_of_approach_m": 1.0,
+      "closest_point_timestamp": 5.1,
+      "dwell_time_within_10m_s": 2.0,
+      "crossing_detected": false
+    },
+    "S04": {
+      "scenario_id": "S04",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -38.0,
+          1.0
+        ],
+        [
+          -34.0,
+          1.0
+        ],
+        [
+          -30.0,
+          1.0
+        ],
+        [
+          -26.0,
+          1.0
+        ],
+        [
+          -22.0,
+          1.0
+        ],
+        [
+          -18.0,
+          1.0
+        ],
+        [
+          -14.0,
+          1.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -6.0,
+          1.0
+        ],
+        [
+          -2.0,
+          1.0
+        ],
+        [
+          2.0,
+          1.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        2.0,
+        1.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": true,
+      "closest_point_of_approach_m": 1.0,
+      "closest_point_timestamp": 5.1,
+      "dwell_time_within_10m_s": 2.0,
+      "crossing_detected": false
+    },
+    "S08": {
+      "scenario_id": "S08",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -38.0,
+          1.0
+        ],
+        [
+          -34.0,
+          1.0
+        ],
+        [
+          -30.0,
+          1.0
+        ],
+        [
+          -26.0,
+          1.0
+        ],
+        [
+          -22.0,
+          1.0
+        ],
+        [
+          -18.0,
+          1.0
+        ],
+        [
+          -14.0,
+          1.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -6.0,
+          1.0
+        ],
+        [
+          -2.0,
+          1.0
+        ],
+        [
+          2.0,
+          1.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        2.0,
+        1.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": true,
+      "closest_point_of_approach_m": 1.0,
+      "closest_point_timestamp": 5.1,
+      "dwell_time_within_10m_s": 2.0,
+      "crossing_detected": false
+    },
+    "S11": {
+      "scenario_id": "S11",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -15.0,
+          25.0
+        ],
+        [
+          -11.0,
+          25.0
+        ],
+        [
+          -7.0,
+          25.0
+        ],
+        [
+          -3.0,
+          25.0
+        ],
+        [
+          1.0,
+          25.0
+        ],
+        [
+          5.0,
+          25.0
+        ],
+        [
+          9.0,
+          25.0
+        ],
+        [
+          13.0,
+          25.0
+        ],
+        [
+          17.0,
+          25.0
+        ],
+        [
+          21.0,
+          25.0
+        ],
+        [
+          25.0,
+          25.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        25.0,
+        25.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": true,
+      "closest_point_of_approach_m": 25.0,
+      "closest_point_timestamp": -0.9,
+      "dwell_time_within_10m_s": 0.0,
+      "crossing_detected": false
+    },
+    "S17": {
+      "scenario_id": "S17",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -15.0,
+          25.0
+        ],
+        [
+          -11.0,
+          25.0
+        ],
+        [
+          -7.0,
+          25.0
+        ],
+        [
+          -3.0,
+          25.0
+        ],
+        [
+          1.0,
+          25.0
+        ],
+        [
+          5.0,
+          25.0
+        ],
+        [
+          9.0,
+          25.0
+        ],
+        [
+          13.0,
+          25.0
+        ],
+        [
+          17.0,
+          25.0
+        ],
+        [
+          21.0,
+          25.0
+        ],
+        [
+          25.0,
+          25.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        25.0,
+        25.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": true,
+      "closest_point_of_approach_m": 25.0,
+      "closest_point_timestamp": -0.9,
+      "dwell_time_within_10m_s": 0.0,
+      "crossing_detected": false
+    },
+    "S18": {
+      "scenario_id": "S18",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -38.0,
+          1.0
+        ],
+        [
+          -34.0,
+          1.0
+        ],
+        [
+          -30.0,
+          1.0
+        ],
+        [
+          -26.0,
+          1.0
+        ],
+        [
+          -22.0,
+          1.0
+        ],
+        [
+          -18.0,
+          1.0
+        ],
+        [
+          -14.0,
+          1.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -6.0,
+          1.0
+        ],
+        [
+          -2.0,
+          1.0
+        ],
+        [
+          2.0,
+          1.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        2.0,
+        1.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": false,
+      "closest_point_of_approach_m": 1.0,
+      "closest_point_timestamp": 5.1,
+      "dwell_time_within_10m_s": 2.0,
+      "crossing_detected": false
+    },
+    "S20": {
+      "scenario_id": "S20",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -20.0,
+          20.0
+        ],
+        [
+          -16.0,
+          20.0
+        ],
+        [
+          -12.0,
+          20.0
+        ],
+        [
+          -8.0,
+          20.0
+        ],
+        [
+          -4.0,
+          20.0
+        ],
+        [
+          0.0,
+          20.0
+        ],
+        [
+          4.0,
+          20.0
+        ],
+        [
+          8.0,
+          20.0
+        ],
+        [
+          12.0,
+          20.0
+        ],
+        [
+          16.0,
+          20.0
+        ],
+        [
+          20.0,
+          20.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        20.0,
+        20.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": true,
+      "closest_point_of_approach_m": 20.0,
+      "closest_point_timestamp": 0.1,
+      "dwell_time_within_10m_s": 0.0,
+      "crossing_detected": false
+    },
+    "S22": {
+      "scenario_id": "S22",
+      "cable_polyline": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          100.0,
+          0.0
+        ]
+      ],
+      "vessel_trajectory": [
+        [
+          -38.0,
+          1.0
+        ],
+        [
+          -34.0,
+          1.0
+        ],
+        [
+          -30.0,
+          1.0
+        ],
+        [
+          -26.0,
+          1.0
+        ],
+        [
+          -22.0,
+          1.0
+        ],
+        [
+          -18.0,
+          1.0
+        ],
+        [
+          -14.0,
+          1.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -6.0,
+          1.0
+        ],
+        [
+          -2.0,
+          1.0
+        ],
+        [
+          2.0,
+          1.0
+        ]
+      ],
+      "trajectory_timestamps": [
+        -4.9,
+        -3.9,
+        -2.9,
+        -1.9,
+        -0.9,
+        0.1,
+        1.1,
+        2.1,
+        3.1,
+        4.1,
+        5.1
+      ],
+      "vessel_current_position": [
+        2.0,
+        1.0
+      ],
+      "speed": 4.0,
+      "heading": 90.0,
+      "position_uncertainty": 0.0,
+      "reported": true,
+      "closest_point_of_approach_m": 1.0,
+      "closest_point_timestamp": 5.1,
+      "dwell_time_within_10m_s": 2.0,
+      "crossing_detected": false
+    }
+  }
+}

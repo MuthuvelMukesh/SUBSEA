@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "software_version": "0.1.0",
+    "data_kind": "SIMULATION",
+    "source_manifest_path": "artifacts/EXPERIMENT_MANIFEST.json",
+    "seed": 42,
+    "exported_at": "2026-10-18T06:58:09.801698+00:00"
+  },
+  "framework_title": "An Uncertainty-Aware Multimodal Evidence Fusion Framework for Subsea Cable Disturbance Assessment",
+  "cohorts": {
+    "controlled_simulation": {
+      "name": "Controlled Simulation Benchmark",
+      "data_kind": "SIMULATION",
+      "scenarios": 22,
+      "trials": 2200,
+      "master_seed": 42,
+      "status": "VALIDATED",
+      "key_finding": "Decoupled physical disturbance detection from vessel attribution with reliable fail-closed TX handling."
+    },
+    "real_das": {
+      "name": "Real Submarine Fiber DAS Deployments",
+      "data_kind": "REAL_DAS",
+      "deployments": [
+        "Marlinks (North Sea)",
+        "EMSO (Mediterranean)",
+        "Dryad Oliktok (Arctic Ocean)"
+      ],
+      "total_duration_evaluated": "27.6 days Arctic + 1,050 s deep-sea + 10 min North Sea wind farm",
+      "status": "EXECUTED",
+      "key_finding": "No T2/T3 vessel-escalation decisions occurred during the evaluated Arctic environmental recording; Spearman rho = 0.9482 proximity correlation on North Sea export cable."
+    },
+    "hardware_in_the_loop": {
+      "name": "AbyssLink Hardware-in-the-Loop Bridge",
+      "data_kind": "HIL_SIMULATED_ACCEL",
+      "hardware": "ESP32 (115200 baud UART, 300ms telemetry) + Optical Link + Ultrasonic",
+      "status": "OPERATIONAL",
+      "key_finding": "Validates real-time protocol decoding, timing, and optical fault detection with synthesized 50 Hz MPU6050 accelerometer."
+    }
+  },
+  "kpis": {
+    "scenarios_count": 22,
+    "real_datasets_count": 3,
+    "total_simulation_trials": 2200,
+    "oliktok_eval_duration_days": 27.6,
+    "adversarial_error_rate_aer": 0.0
+  }
+}

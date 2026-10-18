@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "software_version": "0.1.0",
+    "data_kind": "SIMULATION",
+    "source_manifest_path": "src/subsea/models.py",
+    "seed": 42,
+    "exported_at": "2026-10-18T06:58:09.662539+00:00"
+  },
+  "definitions": {
+    "vessel_associated_disturbance": "Physical disturbance correlated in time and space with an AIS vessel track (anchor drag, trawl contact).",
+    "environmental_disturbance": "Natural ambient or hydrodynamic event (ocean surface waves, seafloor turbulence, seismic tremors).",
+    "non_vessel_mechanical_disturbance": "Mechanical impact or dropped object lacking vessel spatial-temporal corroboration.",
+    "sensor_system_fault": "Sensor hardware malfunction, optical transmission link dropout, or packet degradation."
+  }
+}

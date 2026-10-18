@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "software_version": "0.1.0",
+    "data_kind": "SIMULATION",
+    "source_manifest_path": "artifacts/EXPERIMENT_MANIFEST.json",
+    "seed": 42,
+    "exported_at": "2026-10-18T06:58:09.799363+00:00"
+  },
+  "publication_figures": [
+    {
+      "id": "fig01",
+      "name": "Marlinks Energy vs Distance",
+      "filename": "fig01_marlinks_energy_vs_distance.png",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "fig02",
+      "name": "Marlinks Spatial CPA",
+      "filename": "fig02_marlinks_spatial_cpa.png",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "fig03",
+      "name": "Marlinks Temporal Response",
+      "filename": "fig03_marlinks_temporal_response.png",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "fig04",
+      "name": "EMSO Temporal Stability",
+      "filename": "fig04_emso_temporal_stability.png",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "fig05",
+      "name": "Scenario Confusion Matrix",
+      "filename": "fig05_scenario_confusion_matrix.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig06",
+      "name": "Baseline Method Comparison",
+      "filename": "fig06_baseline_comparison.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig07",
+      "name": "Ablation Study Performance",
+      "filename": "fig07_ablation_performance.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig08",
+      "name": "Uncertainty vs Evidence",
+      "filename": "fig08_uncertainty_vs_evidence.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig09",
+      "name": "Adversarial Robustness AER",
+      "filename": "fig09_adversarial_robustness_aer.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig10",
+      "name": "Sensor Failure Degradation",
+      "filename": "fig10_sensor_failure_degradation.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig11",
+      "name": "Decision State Distribution",
+      "filename": "fig11_decision_distribution.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig12",
+      "name": "Pipeline Latency Distribution",
+      "filename": "fig12_latency_distribution.png",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "fig_oliktok_temp",
+      "name": "Oliktok Temporal Stability (27.6 Days)",
+      "filename": "oliktok_temporal_stability.png",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "fig_oliktok_chan",
+      "name": "Oliktok Channel Statistics",
+      "filename": "oliktok_channel_statistics.png",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "fig_oliktok_phys",
+      "name": "Oliktok Physical Confidence Distribution",
+      "filename": "oliktok_physical_confidence.png",
+      "cohort": "REAL_DAS"
+    }
+  ],
+  "publication_tables": [
+    {
+      "id": "table1",
+      "name": "Table I: Real Dataset Characteristics",
+      "filename": "table1_real_dataset_characteristics.csv",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "table2",
+      "name": "Table II: Marlinks Proximity Validation",
+      "filename": "table2_marlinks_validation.csv",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "table3",
+      "name": "Table III: EMSO Deep-Sea Baseline",
+      "filename": "table3_emso_baseline.csv",
+      "cohort": "REAL_DAS"
+    },
+    {
+      "id": "table4",
+      "name": "Table IV: Controlled Scenarios (S01\u2013S22)",
+      "filename": "table4_controlled_scenarios.csv",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "table5",
+      "name": "Table V: Baseline Method Comparison",
+      "filename": "table5_baseline_comparison.csv",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "table6",
+      "name": "Table VI: Multimodal Evidence Ablation Study",
+      "filename": "table6_ablation_study.csv",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "table7",
+      "name": "Table VII: Sensor Failure & Noise Degradation",
+      "filename": "table7_sensor_failure.csv",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "table8",
+      "name": "Table VIII: Adversarial Robustness & AER",
+      "filename": "table8_adversarial_robustness.csv",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "table9",
+      "name": "Table IX: Competing Hypotheses Formulation",
+      "filename": "table9_competing_hypotheses.csv",
+      "cohort": "SIMULATION"
+    },
+    {
+      "id": "table10",
+      "name": "Table X: Computational Latency & Performance",
+      "filename": "table10_computational_performance.csv",
+      "cohort": "SIMULATION"
+    }
+  ]
+}

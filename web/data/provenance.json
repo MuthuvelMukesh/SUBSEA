@@ -1,0 +1,220 @@
+{
+  "metadata": {
+    "software_version": "0.1.0",
+    "data_kind": "REAL_DAS",
+    "source_manifest_path": "data/PROVENANCE.json",
+    "seed": 42,
+    "exported_at": "2026-10-18T06:58:09.718463+00:00"
+  },
+  "provenance_records": [
+    {
+      "dataset_name": "Marlinks Offshore Wind Farm DAS Demo (Reduced Range)",
+      "source": "Marlinks BV (Offshore Wind Submarine Export Cable Monitoring Demo)",
+      "doi_or_url": "https://github.com/marlinks / Zenodo open data repository",
+      "filename": "reduced_dataset_sensor_range_1440_1690.h5",
+      "relative_path": "data/marlinks_demo/reduced_dataset_sensor_range_1440_1690.h5",
+      "file_size_bytes": 11425906,
+      "sha256": "46f5d28383427d4c9d404f22117cd92377a5919de85cbea0dcfc8b9b3a7aff44",
+      "dataset_schema": {
+        "/X": {
+          "type": "HDF5 Dataset",
+          "shape": [
+            60,
+            250,
+            100
+          ],
+          "dtype": "float64",
+          "description": "DAS acoustic/vibrational spectral power features (60 windows x 250 channels [1440-1690] x 100 frequency bins)",
+          "min": 0.0,
+          "max": 3.726739885962445e-08,
+          "nan_count": 0,
+          "inf_count": 0
+        },
+        "/datetimes": {
+          "type": "HDF5 Dataset",
+          "shape": [
+            60
+          ],
+          "dtype": "|S26",
+          "description": "UTC ISO 8601 timestamps spaced at 10-second intervals from 2023-06-16 15:55:08+00:00 to 2023-06-16 16:04:58+00:00"
+        },
+        "/ship_info/beam": {
+          "type": "HDF5 Dataset",
+          "shape": [
+            60
+          ],
+          "dtype": "float32",
+          "description": "Vessel beam width in meters (constant 40.0 m)",
+          "min": 40.0,
+          "max": 40.0
+        },
+        "/ship_info/length": {
+          "type": "HDF5 Dataset",
+          "shape": [
+            60
+          ],
+          "dtype": "float32",
+          "description": "Vessel length overall in meters (constant 304.0 m)",
+          "min": 304.0,
+          "max": 304.0
+        },
+        "/ship_info/type": {
+          "type": "HDF5 Dataset",
+          "shape": [
+            60
+          ],
+          "dtype": "|S50",
+          "description": "Vessel category string (constant 'Container Ship')"
+        },
+        "/y": {
+          "type": "HDF5 Dataset",
+          "shape": [
+            60
+          ],
+          "dtype": "float64",
+          "description": "Distance from vessel to cable/sensor array in meters",
+          "min": 26.22214083336023,
+          "max": 2785.9104790876195,
+          "nan_count": 0,
+          "inf_count": 0
+        }
+      },
+      "preprocessing_performed": "Band-passed spectral energy binning (100 bins) across channels 1440-1690; temporal aggregation into 10-second sliding windows; distance to target computed in meters.",
+      "experiment_status": "INVENTORY_VERIFIED (Pipeline adapter extension required; partial validation of DAS signal processing & 1D proximity; lacks 2D AIS coordinates, MMSI, SOG/COG, cable polyline, and disturbance labels)"
+    },
+    {
+      "dataset_name": "EMSO Regional Facility Western Ionian Seafloor Observatory DAS",
+      "source": "EMSO ERIC (European Multidisciplinary Seafloor and water-column Observatory) / INGV Catania",
+      "doi_or_url": "https://emso.eu / SEANOE / PANGAEA",
+      "filename": "decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
+      "relative_path": "data/emso_ionian/decimated_20250610T030504.010529_1050_seconds_10_Hz.npy",
+      "file_size_bytes": 124446128,
+      "sha256": "8af2afac41b9ff9acee4e9f02ff782508398537a5643a331dd47f19e5f9ffdac",
+      "dataset_schema": {
+        "array": {
+          "type": "NumPy 2D Array (.npy)",
+          "shape": [
+            10500,
+            2963
+          ],
+          "dtype": "float32",
+          "description": "Decimated raw continuous DAS optical strain-rate / phase time series (10500 time samples x 2963 spatial channels)",
+          "sampling_rate_hz": 10.0,
+          "duration_seconds": 1050.0,
+          "channel_count": 2963,
+          "min": -12963.373046875,
+          "max": 10137.328125,
+          "mean": 11.474370956420898,
+          "std": 1505.1029052734375,
+          "nan_count": 0,
+          "inf_count": 0
+        }
+      },
+      "preprocessing_performed": "Optical phase decimation down to 10 Hz sampling rate across 2,963 spatial channels for a 1,050-second continuous recording starting at 2025-06-10T03:05:04.010529 UTC.",
+      "experiment_status": "INVENTORY_VERIFIED (Pipeline adapter extension required for .npy; validates real-world marine DAS signal processing, background noise floor, and optical channel robustness; no AIS, vessel, or event annotations)"
+    },
+    {
+      "dataset_name": "Dryad Oliktok submarine DAS",
+      "source": "Dryad Digital Repository / University of Washington Applied Physics Laboratory (UW-APL) / Woods Hole Oceanographic Institution (WHOI)",
+      "doi_or_url": "https://doi.org/10.5061/dryad.brv15dvnz",
+      "local_files": [
+        "data/Dryad_Oliktok/oliktok_das_mooring_hourly_dataset.nc",
+        "data/Dryad_Oliktok/oliktok_das_hourly_along_cable_dataset.nc",
+        "data/Dryad_Oliktok/oliktok_das_half-hourly_along_cable_dataset.nc",
+        "data/Dryad_Oliktok/oliktok_das_mooring_half-hourly_dataset.nc",
+        "data/Dryad_Oliktok/README(1).md"
+      ],
+      "files_metadata": {
+        "oliktok_das_mooring_hourly_dataset.nc": {
+          "file_size_bytes": 22701136,
+          "sha256": "5fa69e4cf90a8bcfab0b4bd0aa0d6374aec88baf70ab7e46d158885ef674a91c",
+          "format": "NetCDF-4 / HDF5",
+          "dimensions": {
+            "time": 215,
+            "ch": 183,
+            "frequency": 32
+          },
+          "sampling_interval": "1 hour (663 hours total span)",
+          "spatial_extent": "183 channels (indices 1088-3672) within 1 km of 3 mooring sites along cable (8.79 km to 29.97 km along cable)",
+          "frequency_band_hz": [
+            0.0078125,
+            0.494140625
+          ]
+        },
+        "oliktok_das_hourly_along_cable_dataset.nc": {
+          "file_size_bytes": 45775886,
+          "sha256": "6f9927adbfea6425f47598d1ec8211295b83b2f0806c1babf78411b0a03c5e60",
+          "format": "NetCDF-4 / HDF5",
+          "dimensions": {
+            "time": 215,
+            "site": 25,
+            "frequency": 32,
+            "wavenumber": 32
+          },
+          "sampling_interval": "1 hour (663 hours total span)",
+          "spatial_extent": "25 along-cable 2-km segments (6.94 km to 31.13 km along cable, 70.54\u00b0N-70.75\u00b0N, 150.02\u00b0W-150.00\u00b0W)",
+          "frequency_band_hz": [
+            0.005,
+            0.495833
+          ]
+        },
+        "oliktok_das_half-hourly_along_cable_dataset.nc": {
+          "file_size_bytes": 90853256,
+          "sha256": "ac7e09d41bed76bcb40f89c09a9546c1f6bf0537c188db582b4d1938552f0bc7",
+          "format": "NetCDF-4 / HDF5",
+          "dimensions": {
+            "time": 428,
+            "site": 25,
+            "frequency": 32,
+            "wavenumber": 32
+          },
+          "sampling_interval": "30 minutes (39,780 minutes total span)",
+          "spatial_extent": "25 along-cable 2-km segments",
+          "frequency_band_hz": [
+            0.01,
+            0.498333
+          ]
+        },
+        "oliktok_das_mooring_half-hourly_dataset.nc": {
+          "file_size_bytes": 10912950,
+          "sha256": "317ae192d40e57afcf06a0ae24449c9d8dbf5ac194e28739e65fe0efa6d2a01f",
+          "format": "NetCDF-4 / HDF5",
+          "dimensions": {
+            "time": 428,
+            "site": 3,
+            "frequency": 32,
+            "wavenumber": 32
+          },
+          "sampling_interval": "30 minutes (39,780 minutes total span)",
+          "spatial_extent": "3 mooring sites along cable",
+          "frequency_band_hz": [
+            0.01,
+            0.498333
+          ]
+        },
+        "README(1).md": {
+          "file_size_bytes": 6744,
+          "sha256": "ff0127dbb15588b311ce06f1c6ba75bb856e0116d687922dcbd2e51b3bf6db19"
+        }
+      },
+      "format": "NetCDF-4 / HDF5",
+      "duration_seconds": 2386800.0,
+      "time_start": "2023-08-24T04:00:00+00:00",
+      "time_end": "2023-09-20T19:00:00+00:00",
+      "channel_count": 183,
+      "spatial_extent": "Seafloor telecommunications cable extending 31.1 km offshore from Oliktok Point into the Beaufort Sea, Arctic Ocean",
+      "labels_available": false,
+      "ais_available": false,
+      "vessel_ground_truth": false,
+      "causal_damage_ground_truth": false,
+      "scientific_role": "environmental / real DAS robustness validation",
+      "experiment_status": "INVENTORY_VERIFIED (Real Arctic subsea cable DAS strain-rate spectra & oceanographic mooring wave reference; validates physical detector stability, false-escalation avoidance, and noise floor across 27.6 days; no vessel or AIS annotations)"
+    }
+  ],
+  "manifest_hashes": {
+    "EXPERIMENT_MANIFEST.json": "cccabd549ff7ea280efc517f7d5d2e0ba513a3731eb829730c724aa10b294b54",
+    "marlinks_manifest.json": "670d9164f3a80750683763f3fba4156cafac3b6c52665adca058459d631d37b5",
+    "emso_manifest.json": "1230ada88d3958c149815a0efc3d5a15f16c7261e710bd6ea45f1ddd150092a2",
+    "oliktok_manifest.json": "2cfecb4859140873cd7bef0a06a21c3e5b7cad96836a3bb2a21621d0f6166c46"
+  }
+}

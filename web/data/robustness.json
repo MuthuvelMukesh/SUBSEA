@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "software_version": "0.1.0",
+    "data_kind": "SIMULATION",
+    "source_manifest_path": "artifacts/tables/table7_sensor_failure.csv",
+    "seed": 42,
+    "exported_at": "2026-10-18T06:58:09.710104+00:00"
+  },
+  "table": [
+    {
+      "Condition": "Normal Sensor Baseline",
+      "Scenario": "S04",
+      "Mean_Uncertainty": "0.1455",
+      "Mean_Reliability": "1.0000",
+      "TX_Rate": "0.0000",
+      "Accuracy": "1.0000"
+    },
+    {
+      "Condition": "Single Sensor Intermittent Packet Loss (25%)",
+      "Scenario": "S10",
+      "Mean_Uncertainty": "0.5300",
+      "Mean_Reliability": "0.5718",
+      "TX_Rate": "0.0000",
+      "Accuracy": "1.0000"
+    },
+    {
+      "Condition": "Multiple Sensor Packet Loss (50%)",
+      "Scenario": "S15",
+      "Mean_Uncertainty": "0.2430",
+      "Mean_Reliability": "0.2503",
+      "TX_Rate": "1.0000",
+      "Accuracy": "0.0000"
+    },
+    {
+      "Condition": "Sensor Drift & Calibration Offset",
+      "Scenario": "S15",
+      "Mean_Uncertainty": "0.2430",
+      "Mean_Reliability": "0.2503",
+      "TX_Rate": "1.0000",
+      "Accuracy": "0.0000"
+    },
+    {
+      "Condition": "Communication Backhaul Failure",
+      "Scenario": "S08",
+      "Mean_Uncertainty": "0.3955",
+      "Mean_Reliability": "0.0000",
+      "TX_Rate": "1.0000",
+      "Accuracy": "0.0000"
+    },
+    {
+      "Condition": "Complete Sensor Hardware Failure",
+      "Scenario": "S07",
+      "Mean_Uncertainty": "0.3955",
+      "Mean_Reliability": "0.0000",
+      "TX_Rate": "1.0000",
+      "Accuracy": "0.0000"
+    },
+    {
+      "Condition": "Missing Vessel AIS Corroboration",
+      "Scenario": "S16",
+      "Mean_Uncertainty": "0.4833",
+      "Mean_Reliability": "1.0000",
+      "TX_Rate": "0.0000",
+      "Accuracy": "0.0000"
+    },
+    {
+      "Condition": "Spatial-Temporal Conflicting Evidence",
+      "Scenario": "S13",
+      "Mean_Uncertainty": "0.1455",
+      "Mean_Reliability": "1.0000",
+      "TX_Rate": "0.0000",
+      "Accuracy": "0.0000"
+    }
+  ]
+}

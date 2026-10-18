@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "software_version": "0.1.0",
+    "data_kind": "SIMULATION",
+    "source_manifest_path": "src/subsea/decision.py",
+    "seed": 42,
+    "exported_at": "2026-10-18T06:58:09.650227+00:00"
+  },
+  "gates": [
+    {
+      "gate": 1,
+      "name": "Reliability Fail-Closed Gating",
+      "condition": "reliability <= tx_reliability (0.35)",
+      "target_decision": "TX",
+      "explanation": "Genuinely degraded sensor hardware / communication failure triggers immediate fail-closed alert."
+    },
+    {
+      "gate": 2,
+      "name": "Physical Quiet Background Check",
+      "condition": "physical_confidence < physical (0.55)",
+      "target_decision": "T0",
+      "explanation": "Quiet healthy window with no physical disturbance detected on healthy sensor."
+    },
+    {
+      "gate": 3,
+      "name": "Conflicting Evidence / High Uncertainty Gating",
+      "condition": "uncertainty >= tx_uncertainty (0.65)",
+      "target_decision": "TX",
+      "explanation": "Physical disturbance is present, but evidence is conflicting, degraded, or uncertain."
+    },
+    {
+      "gate": 4,
+      "name": "Vessel Association Corroboration Check",
+      "condition": "association_confidence < association (0.60)",
+      "target_decision": "T1",
+      "explanation": "Physical disturbance is present, but uncorroborated by vessel association."
+    },
+    {
+      "gate": 5,
+      "name": "High-Confidence Escalation Gate",
+      "condition": "score >= t3 (0.85) AND uncertainty < t3_uncertainty (0.35)",
+      "target_decision": "T3 (if met) / T2 (otherwise)",
+      "explanation": "Strong physical and vessel corroboration with low uncertainty escalates to T3; else T2."
+    }
+  ]
+}
