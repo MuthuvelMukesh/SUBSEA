@@ -11,7 +11,7 @@
 | **Phase 4** | Pages 6–10 | Decision Path, Hypotheses, Adversarial, Baselines, Robustness | 266 | VERIFIED UNCHANGED | `feat(web): phase 4 pages 6-10 decision_path hypotheses adversarial baselines robustness` | COMPLETED |
 | **Phase 5** | Pages 11, 13, 14 | Real DAS, Provenance, Publications | 266 | VERIFIED UNCHANGED | `feat(web): phase 5 pages 11 13 14 real_das provenance publications` | COMPLETED |
 | **Phase 6** | Page 12 (Live HIL) | Live HIL dashboard with polling, drag-and-drop, and disclaimer | 266 | VERIFIED UNCHANGED | `feat(web): phase 6 page 12 live hil dashboard` | COMPLETED |
-| **Phase 7** | Documentation | `docs/WEB.md`, `README.md` update | Pending | Pending | - | PENDING |
+| **Phase 7** | Documentation | `docs/WEB.md`, `README.md` update | 266 | VERIFIED UNCHANGED | `docs(web): phase 7 documentation and readme updates` | COMPLETED |
 | **Phase 8** | Smoke & Tamper Tests | E2E browser smoke tests & provenance tamper verification | Pending | Pending | - | PENDING |
 | **Phase 9** | Pyodide Feasibility | In-browser Python assessment | Pending | Pending | - | PENDING |
 
@@ -75,4 +75,12 @@
   - `web/js/pages/hil.js` (Page 12: Live HIL streaming dashboard with 2s polling of `latest.json`, drag-and-drop JSONL loader, simulated accelerometer disclaimer, real schema from actual HIL run)
   - `scripts/export_web_data.py` (Synced latest HIL decisions to `web/hil/decisions.jsonl`)
   - Tested against real mock run log: `python scripts/run_abysslink_hil.py --mock --seed 42` (100 packets, 55 T0, 2 T1, 43 T2, 0 T3, 0 TX)
+- **Status**: COMPLETED.
+
+### Phase 7: Documentation
+- **Test Suite**: 266 passed, 0 failures in 52.20s.
+- **AbyssLink Hashes**: 5/5 verified unchanged.
+- **Files Created/Modified**:
+  - `docs/WEB.md` (Architecture, data flow, cohort isolation rules, justification for committing `web/data/*.json`, page-to-data mapping, local serving and Vercel/GitHub Pages deployment instructions)
+  - `README.md` (Updated test badge to 266, updated tree structure, replaced Streamlit instructions with 14-page static web frontend guide)
 - **Status**: COMPLETED.

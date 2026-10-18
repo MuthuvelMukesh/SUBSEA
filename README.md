@@ -2,10 +2,10 @@
 
 > **An Uncertainty-Aware Multimodal Evidence Fusion Framework for Vessel-Associated Subsea Cable Disturbance Assessment under Adversarial Uncertainty**
 
-[![Tests](https://img.shields.io/badge/tests-240%20passed-brightgreen)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-266%20passed-brightgreen)](#test-suite)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://python.org)
 [![Data Kind](https://img.shields.io/badge/data%20kind-SIMULATION%20%2B%20REAL%20DATA-brightgreen)](#scientific-integrity--provenance)
-[![Hardware](https://img.shields.io/badge/hardware-FUTURE%20WORK-lightgrey)](#hardware-status)
+[![Web Front End](https://img.shields.io/badge/web%20front%20end-14%20pages%20%7C%20static-blue)](web/index.html)
 
 A reproducible research platform for uncertainty-aware multimodal evidence fusion under adversarial uncertainty. The framework integrates subsea vibration sensing (accelerometer/DAS acoustic), AIS vessel tracking kinematics, sensor health diagnostics, epistemic uncertainty quantification, and multi-hypothesis assessment to reliably distinguish vessel-caused cable disturbances (anchor dragging, bottom-trawling) from benign transit, sensor malfunctions, environmental confounding, and adversarial evasion (AIS spoofing, timestamp manipulation).
 
@@ -29,7 +29,13 @@ A reproducible research platform for uncertainty-aware multimodal evidence fusio
 ├── config/
 │   └── system.yaml                  # System configuration (weights, thresholds, uncertainty lambdas)
 ├── dashboard/
-│   └── app.py                       # 21-panel interactive Streamlit research dashboard
+│   └── app.py                       # (Deprecated) Streamlit research dashboard prototype
+├── web/                             # Standalone static web front end (14 interactive pages)
+│   ├── index.html                   # Shell & hash-based routing entrypoint
+│   ├── assets/                      # CSS styling and static publication figures
+│   ├── vendor/                      # Offline vendored Plotly.js (v6.4.0)
+│   ├── data/                        # Exported precomputed research manifests & runs
+│   └── js/                          # ES modules for 14 pages and components
 ├── data/
 │   ├── PROVENANCE.json              # SHA-256 provenance records for real external datasets
 │   ├── marlinks_demo/               # Reduced Marlinks North Sea DAS demo (channels 1440-1690)
@@ -194,11 +200,43 @@ Evaluate 27.6 days of continuous Arctic seafloor DAS strain spectra, oceanograph
 python scripts/run_oliktok_evaluation.py
 ```
 
-### 10. Interactive Research Dashboard
-Launch the 21-panel Streamlit dashboard:
+### 10. Standalone Web Front End (14 Interactive Pages)
+The research dashboard has been transitioned to a complete, standalone, static web application in `web/` featuring 14 dedicated interactive pages powered by vendored Plotly.js and Web Crypto API. No backend, node runtime, or build step required.
+
+#### A. Export Web Data
+Export precomputed pipeline runs, scenarios, real DAS campaigns, and manifests:
 ```bash
-streamlit run dashboard/app.py
+# Windows PowerShell:
+$env:PYTHONPATH='src'
+python scripts/export_web_data.py
 ```
+
+#### B. Serve Locally
+Launch any static HTTP server:
+```bash
+# Recommended:
+python -m http.server 8000 --directory web
+
+# Open in browser: http://localhost:8000/
+```
+
+#### C. The 14 Pages
+1. **Overview & Architecture** (`#/overview`): System KPIs, Decision State definitions ($T0-T3, TX$), Cohort isolation breakdown.
+2. **Scenario Explorer** (`#/scenarios`): Scenarios S01–S22 across 6 attack types and 5 severities.
+3. **Signals & Spectrum** (`#/signals`): 3-axis acceleration waveforms, FFT spectrum, packet-loss gaps, spectral CSV export.
+4. **Geometry & Kinematics** (`#/geometry`): 2D metric map, 10m corridor, vessel trajectory, distance vs time, CPA, dwell time, crossing detection.
+5. **Evidence Timeline** (`#/timeline`): Sliding-window multi-trace chart ($C_P, C_A, R, U$), decision sequence, window table & CSV export.
+6. **Decision Path Explainer** (`#/decision-path`): 5-stage sequential decision gating engine, deciding gate highlighting, exploratory what-if sandbox.
+7. **Hypotheses & Audit** (`#/hypotheses`): Real Hypothesis enum names, candidate evidence scoring, positive/counter evidence audit trail.
+8. **Adversarial Lab** (`#/adversarial`): Severity sweeps [0.0, 1.0], AER & FHER curves, stacked decision distributions, AER=0.0 finding.
+9. **Baselines & Ablations** (`#/baselines`): Proposed vs single-modality baselines, paired bootstrap 95% CIs, McNemar tests, ablation hierarchy.
+10. **Robustness & Calibration** (`#/robustness`): Sensor degradation/fault stress matrix, probability calibration curves, Brier score, ECE.
+11. **Real DAS Deployments** (`#/real-das`): Marlinks North Sea ($1/\text{dist}$ correlation), EMSO deep-sea noise floor, Oliktok 27.6-day Arctic recording.
+12. **Live Hardware-in-the-Loop** (`#/hil`): 2-second polling live stream, drag-and-drop JSONL loader, simulated accelerometer disclaimer.
+13. **Provenance Verification** (`#/provenance`): In-browser Web Crypto API SHA-256 live audit against PROVENANCE.json records.
+14. **Publication Artifacts** (`#/publications`): Publication figure gallery with PNG downloads and tables list with CSV downloads.
+
+*(Note: The legacy Streamlit prototype in `dashboard/app.py` is deprecated. See [`docs/WEB.md`](docs/WEB.md) for full architecture and deployment documentation).*
 
 ---
 
