@@ -1,3 +1,9 @@
+"""DEPRECATION NOTICE:
+This Streamlit dashboard is deprecated and maintained for historical reference only.
+It has been replaced by the standalone static web front end located in `web/` (web/index.html).
+See `docs/WEB.md` for serving and deployment instructions.
+"""
+
 from __future__ import annotations
 
 import json
