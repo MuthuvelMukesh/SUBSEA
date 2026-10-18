@@ -71,5 +71,25 @@
 
   <!-- Main ES Module Application -->
   <script type="module" src="js/app.js"></script>
+
+  <!-- Fallback guidance if opened directly via file:/// instead of an HTTP server -->
+  <script>
+    if (window.location.protocol === "file:") {
+      window.addEventListener("DOMContentLoaded", function () {
+        var content = document.getElementById("main-content");
+        if (content) {
+          content.innerHTML =
+            '<div class="card" style="border-left: 4px solid var(--state-t2); margin-top: 1rem; padding: 1.5rem;">' +
+            '<h2 style="color: var(--state-t2); margin-top: 0; font-size: 1.25rem;">⚡ Local HTTP Server Required</h2>' +
+            '<p style="color: var(--text-color); line-height: 1.6;">Modern browsers block JavaScript ES Modules (<code>import</code>/<code>export</code>) when opened via the <code>file:///</code> protocol due to CORS security policies.</p>' +
+            '<p style="color: var(--text-color); font-weight: 600;">The local server has been started for you! Click below to open:</p>' +
+            '<p><a href="http://localhost:8000/" target="_blank" style="display: inline-block; background: var(--brand-blue); color: #fff; padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 600;">👉 Open http://localhost:8000/</a></p>' +
+            '<hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">' +
+            '<p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">To start manually from terminal: <code>python -m http.server 8000 --directory web</code></p>' +
+            '</div>';
+        }
+      });
+    }
+  </script>
 </body>
 </html>
