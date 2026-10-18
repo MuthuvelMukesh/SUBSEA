@@ -12,13 +12,13 @@ const BANNERS = {
   },
   REAL_DAS: {
     className: "real-das",
-    badge: "REAL DAS",
+    badge: "REAL_DAS",
     title: "Real Submarine Fiber DAS Deployments",
     description: "Evaluates empirical datasets (Marlinks, EMSO Western Ionian, Dryad Oliktok). Decoupled from vessel ground truth where unlabelled.",
   },
   HIL_SIMULATED_ACCEL: {
     className: "hil",
-    badge: "HIL (SIMULATED ACCEL)",
+    badge: "HIL_SIMULATED_ACCEL",
     title: "Hardware-in-the-Loop AbyssLink Bridge",
     description: "Live ESP32 serial telemetry. Accelerometer data is synthesized from binary vibration flags and does not represent subsea acoustic physics.",
   },

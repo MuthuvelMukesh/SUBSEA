@@ -152,7 +152,7 @@ export async function render(container) {
                 <tr>
                   <td><strong>${s.severity.toFixed(2)}</strong></td>
                   <td>${s.trials}</td>
-                  <td><span style="color: ${s.AER === 0 ? "var(--state-t0)" : "var(--state-t3)}; font-weight: 700;">${(s.AER * 100).toFixed(1)}%</span></td>
+                  <td><span style="color: ${s.AER === 0 ? "var(--state-t0)" : "var(--state-t3)"}; font-weight: 700;">${(s.AER * 100).toFixed(1)}%</span></td>
                   <td>${(s.TX_rate * 100).toFixed(1)}%</td>
                   <td>${(s.escalated_T2_T3_rate * 100).toFixed(1)}%</td>
                   <td>${s.mean_uncertainty ? s.mean_uncertainty.toFixed(3) : "N/A"}</td>

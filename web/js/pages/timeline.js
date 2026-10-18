@@ -19,12 +19,16 @@ const STATE_COLORS = {
 };
 
 export async function render(container) {
+  renderBanner("SIMULATION");
+
   try {
     const res = await fetch("data/timelines.json");
     const json = await res.json();
     metadata = json.metadata || {};
     timelinesData = json.timelines || {};
-    renderBanner(metadata.data_kind || "SIMULATION");
+    if (metadata.data_kind) {
+      renderBanner(metadata.data_kind);
+    }
   } catch (err) {
     console.error("Failed to load timelines.json", err);
     renderBanner("SIMULATION");

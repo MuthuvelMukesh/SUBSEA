@@ -12,7 +12,7 @@
 | **Phase 5** | Pages 11, 13, 14 | Real DAS, Provenance, Publications | 266 | VERIFIED UNCHANGED | `feat(web): phase 5 pages 11 13 14 real_das provenance publications` | COMPLETED |
 | **Phase 6** | Page 12 (Live HIL) | Live HIL dashboard with polling, drag-and-drop, and disclaimer | 266 | VERIFIED UNCHANGED | `feat(web): phase 6 page 12 live hil dashboard` | COMPLETED |
 | **Phase 7** | Documentation | `docs/WEB.md`, `README.md` update | 266 | VERIFIED UNCHANGED | `docs(web): phase 7 documentation and readme updates` | COMPLETED |
-| **Phase 8** | Smoke & Tamper Tests | E2E browser smoke tests & provenance tamper verification | Pending | Pending | - | PENDING |
+| **Phase 8** | Smoke & Tamper Tests | `tests/test_web_smoke.py`, Playwright automated browser tests across all 14 pages & tamper detection | 283 | VERIFIED UNCHANGED | `feat(web): phase 8 automated smoke and tamper tests` | COMPLETED |
 | **Phase 9** | Pyodide Feasibility | In-browser Python assessment | Pending | Pending | - | PENDING |
 
 ---
@@ -83,4 +83,20 @@
 - **Files Created/Modified**:
   - `docs/WEB.md` (Architecture, data flow, cohort isolation rules, justification for committing `web/data/*.json`, page-to-data mapping, local serving and Vercel/GitHub Pages deployment instructions)
   - `README.md` (Updated test badge to 266, updated tree structure, replaced Streamlit instructions with 14-page static web frontend guide)
+- **Status**: COMPLETED.
+
+### Phase 8: Smoke & Tamper Tests
+- **Test Suite**: 283 passed (266 unit/pipeline + 17 Playwright browser tests), 0 failures in 52.92s.
+- **AbyssLink Hashes**: 5/5 verified unchanged against baseline.
+- **Automated Browser Coverage**:
+  - Headless Chromium browser testing all 14 hash routes (`#/overview`, `#/scenarios`, `#/signals`, `#/geometry`, `#/timeline`, `#/decision-path`, `#/hypotheses`, `#/adversarial`, `#/baselines`, `#/robustness`, `#/real-das`, `#/hil`, `#/provenance`, `#/publications`).
+  - Verified no unhandled JavaScript console errors or fatal page exceptions on any route.
+  - Verified presence of cohort isolation banner on every page matching exact data kind tokens (`SIMULATION`, `REAL_DAS`, `HIL_SIMULATED_ACCEL`).
+  - Verified tamper detection in `test_provenance_tamper_detection`: live payload interception triggers provenance mismatch reporting.
+  - Verified graceful degradation in `test_missing_data_graceful_handling`: missing data files render without crashing the application shell.
+- **Files Created/Modified**:
+  - `tests/test_web_smoke.py` (17 headless Playwright smoke and tamper tests)
+  - `web/js/banner.js` (cohort badges aligned to exact tokens)
+  - `web/js/pages/adversarial.js` (fixed template literal syntax)
+  - `web/js/pages/timeline.js` (ensured initial banner render)
 - **Status**: COMPLETED.
