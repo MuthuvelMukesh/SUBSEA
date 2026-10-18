@@ -10,7 +10,7 @@
 | **Phase 3** | Pages 1–5 | Overview, Scenarios, Signals, Geometry, Evidence Timeline | 266 | VERIFIED UNCHANGED | `feat(web): phase 3 pages 1-5 overview scenarios signals geometry timeline` | COMPLETED |
 | **Phase 4** | Pages 6–10 | Decision Path, Hypotheses, Adversarial, Baselines, Robustness | 266 | VERIFIED UNCHANGED | `feat(web): phase 4 pages 6-10 decision_path hypotheses adversarial baselines robustness` | COMPLETED |
 | **Phase 5** | Pages 11, 13, 14 | Real DAS, Provenance, Publications | 266 | VERIFIED UNCHANGED | `feat(web): phase 5 pages 11 13 14 real_das provenance publications` | COMPLETED |
-| **Phase 6** | Page 12 (Live HIL) | Live HIL dashboard with polling, drag-and-drop, and disclaimer | Pending | Pending | - | PENDING |
+| **Phase 6** | Page 12 (Live HIL) | Live HIL dashboard with polling, drag-and-drop, and disclaimer | 266 | VERIFIED UNCHANGED | `feat(web): phase 6 page 12 live hil dashboard` | COMPLETED |
 | **Phase 7** | Documentation | `docs/WEB.md`, `README.md` update | Pending | Pending | - | PENDING |
 | **Phase 8** | Smoke & Tamper Tests | E2E browser smoke tests & provenance tamper verification | Pending | Pending | - | PENDING |
 | **Phase 9** | Pyodide Feasibility | In-browser Python assessment | Pending | Pending | - | PENDING |
@@ -66,4 +66,13 @@
   - `web/js/pages/real_das.js` (Page 11: Real DAS deployments for Marlinks, EMSO, Oliktok; exact wording of zero T2/T3 false escalation finding; autocorrelation caveats)
   - `web/js/pages/provenance.js` (Page 13: Live Web Crypto API SHA-256 auditing of shipped assets; match/mismatch indicators; PROVENANCE.json records)
   - `web/js/pages/publications.js` (Page 14: Publication figures browser with PNG downloads and tables browser with CSV downloads; cohort filters)
+- **Status**: COMPLETED.
+
+### Phase 6: Page 12 (Live HIL)
+- **Test Suite**: 266 passed, 0 failures in 68.17s.
+- **AbyssLink Hashes**: 5/5 verified unchanged.
+- **Files Created/Modified**:
+  - `web/js/pages/hil.js` (Page 12: Live HIL streaming dashboard with 2s polling of `latest.json`, drag-and-drop JSONL loader, simulated accelerometer disclaimer, real schema from actual HIL run)
+  - `scripts/export_web_data.py` (Synced latest HIL decisions to `web/hil/decisions.jsonl`)
+  - Tested against real mock run log: `python scripts/run_abysslink_hil.py --mock --seed 42` (100 packets, 55 T0, 2 T1, 43 T2, 0 T3, 0 TX)
 - **Status**: COMPLETED.

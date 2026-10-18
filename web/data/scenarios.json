@@ -4,7 +4,7 @@
     "data_kind": "SIMULATION",
     "source_manifest_path": "src/subsea/simulation.py",
     "seed": 42,
-    "exported_at": "2026-10-18T06:58:07.755648+00:00"
+    "exported_at": "2026-10-18T07:22:18.278182+00:00"
   },
   "scenarios": [
     {

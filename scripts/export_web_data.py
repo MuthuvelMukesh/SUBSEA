@@ -398,6 +398,18 @@ def main() -> None:
     }
     (data_dir / "overview.json").write_text(json.dumps(overview_data, indent=2), encoding="utf-8")
 
+    # 15. Sync latest HIL run decisions if available
+    hil_ptr = web_dir / "hil" / "latest.json"
+    if hil_ptr.is_file():
+        try:
+            ptr_data = json.loads(hil_ptr.read_text(encoding="utf-8"))
+            dec_src = Path(ptr_data.get("decisions_path", ""))
+            if dec_src.is_file():
+                shutil.copy2(dec_src, web_dir / "hil" / "decisions.jsonl")
+                print(f"  -> Synced latest HIL decisions to {web_dir / 'hil' / 'decisions.jsonl'}")
+        except Exception as e:
+            print(f"  -> Note: could not sync HIL decisions ({e})")
+
     print(f"[Web Exporter] Successfully exported all web data files to {data_dir}!")
 
 
