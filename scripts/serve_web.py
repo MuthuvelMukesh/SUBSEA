@@ -17,6 +17,10 @@ from pathlib import Path
 import shutil
 import sys
 
+# Ensure safe console printing on Windows
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 # Ensure Subsea src is on Python search path
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR / "src"))
@@ -337,7 +341,7 @@ def main() -> None:
     server = http.server.ThreadingHTTPServer((args.host, args.port), handler)
 
     print(f"===========================================================")
-    print(f"🌊 SUBSEA Standalone Web & Real-Time Pipeline Bridge Server")
+    print(f">>> SUBSEA Standalone Web & Real-Time Pipeline Bridge Server <<<")
     print(f"===========================================================")
     print(f"  Local Web App URL:      http://{args.host}:{args.port}/")
     print(f"  Live Pipeline Endpoint: http://{args.host}:{args.port}/api/hil/process_packet")
