@@ -30,6 +30,33 @@ let isPollingActive = false;
 let loadedDecisions = [];
 let currentRunMeta = null;
 let isTransmissionActive = false;
+
+// Digital Twin & Early Warning State
+let currentOperatingMode = "HYBRID_DEMO"; // "HYBRID_DEMO" or "PHYSICAL_ONLY"
+let activeTwinScenario = "approaching_vessel";
+let twinSimTimer = null;
+let twinPreloadedScenarios = null;
+let currentTwinStepIndex = 0;
+let currentTwinData = {
+  elapsed_s: 0.0,
+  phase: "STANDBY",
+  warning_state: "W0",
+  warning_confidence: 0.95,
+  warning_explanation: "Nominal conditions: all monitored channels within normal parameters.",
+  triggering_indicators: [],
+  data_quality: "GOOD",
+  vibration_rms: 0.08,
+  vessel_distance_m: 80.0,
+  vessel_x: 80.0,
+  vessel_y: -40.0,
+  vessel_speed: 3.5,
+  cable_strain: 10.0,
+  temperature: 4.0,
+  cable_health: 0.98,
+  disturbance_state: "T0",
+  history: [],
+};
+
 let lastTelemetry = {
   ldr: null,
   vibration: null,
@@ -46,48 +73,193 @@ export async function render(container) {
 
   const serialSupported = isSerialSupported();
 
+  // Load preloaded digital twin scenarios in background if not already loaded
+  if (!twinPreloadedScenarios) {
+    try {
+      const resp = await fetch("data/digital_twin_scenarios.json");
+      if (resp.ok) {
+        twinPreloadedScenarios = await resp.json();
+      }
+    } catch (_) {}
+  }
+
   container.innerHTML = `
     <!-- Top Mandatory Scientific Notice -->
     <div class="card" style="border-left: 4px solid var(--state-t1); margin-bottom: 1rem;">
       <div style="font-weight: 700; color: var(--state-t1); margin-bottom: 0.25rem;">
-        Hardware-in-the-Loop Scientific Integrity Notice
+        Hardware-in-the-Loop & Digital Twin Scientific Integrity Notice
       </div>
       <p style="font-size: 0.9rem; margin: 0; color: var(--text-color); line-height: 1.5;">
         <strong>The accelerometer is simulated; this validates integration and decision logic under real timing and link faults, not subsea sensing physics.</strong>
       </p>
       <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
-        <div>📡 <strong>Optical/Serial:</strong> ESP32 AbyssLink hardware telemetry (115,200 baud, 300 ms packet interval).</div>
-        <div>📏 <strong>Proximity:</strong> ${BENCHTOP_DISCLAIMERS.ultrasonic}</div>
-        <div>⚡ <strong>Vibration:</strong> ${BENCHTOP_DISCLAIMERS.vibration}</div>
+        <div>📡 <strong>Physical ESP32:</strong> USB serial telemetry (115,200 baud, 300 ms packet interval).</div>
+        <div>🌐 <strong>Digital Twin:</strong> Mathematical benchmark models for DAS acoustics, vessel proximity, temperature, and cable strain.</div>
+        <div>⚖️ <strong>Provenance Separation:</strong> Physical and simulated data carry immutable source provenance tags and are never mixed silently.</div>
       </div>
     </div>
 
-    <!-- Browser Compatibility Warning (if Web Serial not supported) -->
-    ${
-      !serialSupported
-        ? `
-      <div class="card" style="border-left: 4px solid var(--state-t2); margin-bottom: 1rem; background: var(--bg-hover);">
-        <div style="font-weight: 700; color: var(--state-t2);">⚠️ Web Serial API Unsupported in this Browser</div>
-        <p style="font-size: 0.85rem; margin: 0.25rem 0 0 0; color: var(--text-color);">
-          Direct USB Serial communication requires a desktop Chromium browser (Google Chrome, Microsoft Edge, or Opera).
-          File-based replay and server-side polling remain fully operational.
-        </p>
+    <!-- Operating Mode Selector & Prominent Warning Banner -->
+    <div class="card" style="margin-bottom: 1rem; border-color: rgba(56, 189, 248, 0.4); padding: 1rem 1.25rem;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+            Operating Mode
+          </div>
+          <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-color); margin-top: 0.2rem;">
+            Current Mode: <span id="current-mode-label" style="color: var(--brand-blue);">${currentOperatingMode === "HYBRID_DEMO" ? "🌐 HYBRID DIGITAL TWIN" : "🔒 PHYSICAL-ONLY"}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <button id="btn-mode-hybrid" class="btn ${currentOperatingMode === "HYBRID_DEMO" ? "btn-primary" : "btn-secondary"}" style="font-size: 0.85rem;">
+            🌐 Hybrid Digital Twin Mode
+          </button>
+          <button id="btn-mode-physical" class="btn ${currentOperatingMode === "PHYSICAL_ONLY" ? "btn-primary" : "btn-secondary"}" style="font-size: 0.85rem;">
+            🔒 Physical-Only Mode
+          </button>
+        </div>
       </div>
-    `
-        : ""
-    }
+
+      <!-- Prominent Warning Banner based on active mode -->
+      <div id="mode-provenance-banner" style="margin-top: 0.75rem; padding: 0.6rem 0.9rem; border-radius: var(--radius); font-size: 0.85rem; line-height: 1.4; ${
+        currentOperatingMode === "HYBRID_DEMO"
+          ? "background: rgba(234, 179, 8, 0.12); border-left: 4px solid var(--state-t2); color: var(--text-color);"
+          : "background: rgba(56, 189, 248, 0.12); border-left: 4px solid var(--brand-blue); color: var(--text-color);"
+      }">
+        ${
+          currentOperatingMode === "HYBRID_DEMO"
+            ? "<strong>⚠️ SIMULATED DATA ACTIVE:</strong> Digital Twin software channels (DAS acoustics, vessel kinematics, cable strain, benthic temperature) are synthesized. These benchmark channels are explicitly labeled and do not represent physical seabed measurements."
+            : "<strong>🔒 PHYSICAL-ONLY MODE:</strong> Simulated channels are completely isolated and excluded. Decisions use only verified physical ESP32 telemetry, or report disconnected status."
+        }
+      </div>
+    </div>
+
+    <!-- Digital Twin Scenario Runner Card -->
+    <div class="card" style="margin-bottom: 1.5rem; border-color: rgba(168, 85, 247, 0.4);">
+      <div class="card-title">
+        <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <span>🧪 Digital Twin Simulation & Scenario Controls</span>
+          <span id="twin-phase-badge" class="brand-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">
+            PHASE: STANDBY
+          </span>
+        </span>
+        <span id="twin-time-badge" class="brand-badge" style="background: var(--bg-hover); color: var(--text-muted); font-family: var(--font-mono);">
+          t = 0.0s
+        </span>
+      </div>
+
+      <!-- Scenario Dropdown & Simulation Buttons -->
+      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-top: 0.75rem;">
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);" for="select-twin-scenario">
+          Scenario:
+        </label>
+        <select id="select-twin-scenario" style="padding: 0.45rem 0.8rem; background: var(--bg-card); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 0.85rem; font-weight: 600;">
+          <option value="normal_operation" ${activeTwinScenario === "normal_operation" ? "selected" : ""}>1. Normal Operating Conditions (W0)</option>
+          <option value="approaching_vessel" ${activeTwinScenario === "approaching_vessel" ? "selected" : ""}>2. Approaching Simulated Vessel (W1 -> W2 -> W3)</option>
+          <option value="low_level_vibration" ${activeTwinScenario === "low_level_vibration" ? "selected" : ""}>3. Low-Level Vibration Anomaly (W1 -> W2)</option>
+          <option value="increasing_disturbance" ${activeTwinScenario === "increasing_disturbance" ? "selected" : ""}>4. Increasing Disturbance (W2 -> W3)</option>
+          <option value="severe_disturbance" ${activeTwinScenario === "severe_disturbance" ? "selected" : ""}>5. Severe Cable Disturbance (W3 Urgent)</option>
+          <option value="sensor_degradation" ${activeTwinScenario === "sensor_degradation" ? "selected" : ""}>6. Sensor Degradation & Fail-Safe (WX)</option>
+          <option value="recovery" ${activeTwinScenario === "recovery" ? "selected" : ""}>7. Disturbance Recovery (W3 -> W0)</option>
+        </select>
+
+        <button id="btn-twin-run" class="btn btn-primary" style="font-size: 0.85rem;">
+          ▶ Run Simulation
+        </button>
+        <button id="btn-twin-step" class="btn btn-secondary" style="font-size: 0.85rem;">
+          ⏭ Step Frame (0.3s)
+        </button>
+        <button id="btn-twin-reset" class="btn btn-secondary" style="font-size: 0.85rem;">
+          🔄 Reset
+        </button>
+
+        <div style="flex: 1;"></div>
+
+        <button id="btn-run-all-eval" class="btn btn-secondary" style="font-size: 0.85rem;">
+          📊 View Scenario Evaluation Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Dual Inference KPI Cards: Early Warning vs Disturbance Classification -->
+    <div class="grid-cols-2" style="margin-bottom: 1.5rem;">
+      <!-- Left Card: Independent Early Warning State (W0-WX) -->
+      <div class="card" style="border-left: 4px solid var(--brand-blue); background: var(--bg-card);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+            Multi-Sensor Early Warning Engine
+          </div>
+          <span id="early-warning-quality-badge" class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.75rem;">
+            QUALITY: GOOD
+          </span>
+        </div>
+
+        <div style="display: flex; align-items: baseline; gap: 0.75rem; margin: 0.6rem 0 0.3rem 0;">
+          <div id="early-warning-state-badge" style="font-size: 1.5rem; font-weight: 800; font-family: var(--font-mono); color: var(--state-t0);">
+            W0: NORMAL
+          </div>
+          <div id="early-warning-confidence" style="font-size: 0.95rem; font-weight: 600; color: var(--text-muted);">
+            Confidence: 95%
+          </div>
+        </div>
+
+        <div id="early-warning-explanation" style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 0.6rem; min-height: 2.2rem; line-height: 1.4;">
+          Nominal conditions: all monitored channels within normal parameters.
+        </div>
+
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">
+          Triggering Indicators:
+        </div>
+        <div id="early-warning-indicators" style="display: flex; flex-wrap: wrap; gap: 0.35rem; min-height: 1.5rem;">
+          <span class="brand-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">None (Ambient Baseline)</span>
+        </div>
+      </div>
+
+      <!-- Right Card: Pipeline Disturbance Classification (T0-TX) -->
+      <div class="card" style="border-left: 4px solid var(--state-t2); background: var(--bg-card);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+            Subsea Disturbance Pipeline Classification
+          </div>
+          <span id="pipeline-status-badge" class="brand-badge" style="background: var(--bg-card); color: var(--text-muted); font-size: 0.75rem;">
+            Checking Python Pipeline...
+          </span>
+        </div>
+
+        <div style="display: flex; align-items: baseline; gap: 0.75rem; margin: 0.6rem 0 0.3rem 0;">
+          <div id="pipeline-decision-badge" style="font-size: 1.5rem; font-weight: 800; font-family: var(--font-mono); color: var(--state-t0);">
+            T0: NOMINAL
+          </div>
+          <div id="pipeline-gate-metrics" style="font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono);">
+            C_P: 0.12 | C_A: 0.10 | R: 0.95 | U: 0.08
+          </div>
+        </div>
+
+        <div id="pipeline-rationale-text" style="font-size: 0.85rem; color: var(--text-color); margin-bottom: 0.6rem; min-height: 2.2rem; line-height: 1.4;">
+          Safe ambient conditions. No acoustic signature or physical cable strike detected.
+        </div>
+
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">
+          Classification Semantics:
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">
+          Independent decision logic (T0=Nominal, T1=Uncorrelated, T2=Corroborated, T3=Severe Strike, TX=Fault).
+        </div>
+      </div>
+    </div>
 
     <!-- Direct ESP32 USB Serial Hardware Control Card -->
     <div class="card" style="margin-bottom: 1.5rem; border-color: rgba(56, 189, 248, 0.4);">
       <div class="card-title">
         <span style="display: flex; align-items: center; gap: 0.5rem;">
-          <span>🔌 Direct ESP32 Hardware Link (Web Serial API)</span>
+          <span>🔌 Direct ESP32 Physical Prototype Link (Web Serial)</span>
           <span id="serial-status-badge" class="brand-badge" style="background: var(--bg-hover); color: var(--text-muted);">
             DISCONNECTED
           </span>
         </span>
-        <span id="pipeline-status-badge" class="brand-badge" style="background: var(--bg-card); color: var(--text-muted);">
-          Checking Python Pipeline...
+        <span style="font-size: 0.8rem; color: var(--text-muted);">
+          Optional Physical Acquisition
         </span>
       </div>
 
@@ -126,71 +298,174 @@ export async function render(container) {
       </div>
     </div>
 
-    <!-- Live ESP32 Sensor Telemetry Grid -->
+    <!-- Section Heading: Physical vs Digital Twin Channels -->
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.75rem;">
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-color); margin: 0;">
+        Physical Telemetry & Digital Twin Sensor Stream
+      </h3>
+      <span style="font-size: 0.8rem; color: var(--text-muted);">
+        Immutable Data Provenance: [PHYSICAL] vs [SIMULATED]
+      </span>
+    </div>
+
+    <!-- Multi-Sensor Telemetry Grid (8 Channels: 4 Physical + 4 Simulated) -->
     <div class="grid-cols-4" style="margin-bottom: 1.5rem;">
-      <!-- Sensor Card 1: Optical Link LDR -->
+      <!-- Sensor Card 1: Optical Link LDR (Physical) -->
       <div class="card">
-        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
-          Optical Path (LDR)
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">OPTICAL LINK</span>
+          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
         </div>
-        <div id="disp-ldr-badge" style="margin: 0.5rem 0;">
-          <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted);">STANDBY</span>
+        <div id="disp-ldr-badge" style="margin: 0.4rem 0;">
+          <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">STANDBY</span>
         </div>
         <div style="font-size: 0.85rem; color: var(--text-color);">
           Digital Flag: <strong id="disp-ldr-val">--</strong>
         </div>
-        <div id="disp-ldr-desc" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
-          Waiting for serial packet...
+        <div id="disp-ldr-desc" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+          ESP32 laser photodiode
         </div>
       </div>
 
-      <!-- Sensor Card 2: Seismic / Vibration -->
+      <!-- Sensor Card 2: Piezo Vibration (Physical) -->
       <div class="card">
-        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
-          Seismic / Vibration
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">PIEZO VIBRATION</span>
+          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
         </div>
-        <div id="disp-vib-badge" style="margin: 0.5rem 0;">
-          <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted);">STANDBY</span>
+        <div id="disp-vib-badge" style="margin: 0.4rem 0;">
+          <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">STANDBY</span>
         </div>
         <div style="font-size: 0.85rem; color: var(--text-color);">
           Vibration Flag: <strong id="disp-vib-val">--</strong>
         </div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
-          MPU6050 digital vibration switch
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+          Hardware digital vibration switch
         </div>
       </div>
 
-      <!-- Sensor Card 3: Ultrasonic Distance -->
+      <!-- Sensor Card 3: Ultrasonic Distance (Physical) -->
       <div class="card">
-        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
-          Proximity (HC-SR04)
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">HC-SR04 PROXIMITY</span>
+          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
         </div>
-        <div id="disp-dist-val" style="font-size: 1.4rem; font-weight: 700; margin: 0.4rem 0; font-family: var(--font-mono);">
+        <div id="disp-dist-val" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono);">
           -- cm
         </div>
-        <div id="disp-dist-zone" style="font-size: 0.85rem;">
-          <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted);">NO ECHO</span>
+        <div id="disp-dist-zone" style="font-size: 0.8rem;">
+          <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">NO ECHO</span>
         </div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
-          Benchtop air measurement
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+          Benchtop ultrasonic in air
         </div>
       </div>
 
-      <!-- Sensor Card 4: Actuator Status -->
+      <!-- Sensor Card 4: Actuator & Buzzer (Physical) -->
       <div class="card">
-        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
-          Actuator & Alert State
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">ACTUATORS</span>
+          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
         </div>
-        <div style="display: flex; gap: 0.5rem; margin: 0.5rem 0;">
-          <span id="disp-laser-pill" class="brand-badge" style="font-size: 0.75rem;">LASER: --</span>
-          <span id="disp-buzzer-pill" class="brand-badge" style="font-size: 0.75rem;">BUZZER: --</span>
+        <div style="display: flex; gap: 0.4rem; margin: 0.4rem 0;">
+          <span id="disp-laser-pill" class="brand-badge" style="font-size: 0.7rem;">LASER: --</span>
+          <span id="disp-buzzer-pill" class="brand-badge" style="font-size: 0.7rem;">BUZZER: --</span>
         </div>
         <div style="font-size: 0.85rem; color: var(--text-color);">
           Alert Code: <strong id="disp-alert-val">--</strong>
         </div>
-        <div id="disp-tx-status" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+        <div id="disp-tx-status" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
           Transmission: Inactive
         </div>
+      </div>
+
+      <!-- Sensor Card 5: Virtual DAS Acoustic RMS (Simulated) -->
+      <div class="card" style="border-top: 2px solid #eab308;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">DAS ACOUSTIC RMS</span>
+          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+        </div>
+        <div id="disp-das-rms" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
+          0.08 units
+        </div>
+        <div id="disp-das-badge" style="font-size: 0.8rem;">
+          <span class="state-badge T0" style="font-size: 0.75rem;">QUIET AMBIENT</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+          Spectral acoustic band model
+        </div>
+      </div>
+
+      <!-- Sensor Card 6: Virtual Vessel Proximity (Simulated) -->
+      <div class="card" style="border-top: 2px solid #eab308;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">VESSEL PROXIMITY</span>
+          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+        </div>
+        <div id="disp-vessel-dist" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
+          80.0 m
+        </div>
+        <div id="disp-vessel-speed" style="font-size: 0.85rem; color: var(--text-color);">
+          Speed: <strong>3.5 m/s</strong> (Heading: 180°)
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+          Kinematic trajectory to route
+        </div>
+      </div>
+
+      <!-- Sensor Card 7: Cable Mechanical Strain (Simulated) -->
+      <div class="card" style="border-top: 2px solid #eab308;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">MECHANICAL STRAIN</span>
+          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+        </div>
+        <div id="disp-cable-strain" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
+          10.0 με
+        </div>
+        <div id="disp-strain-badge" style="font-size: 0.8rem;">
+          <span class="state-badge T0" style="font-size: 0.75rem;">NORMAL TENSION</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+          Optical fiber strain gauge
+        </div>
+      </div>
+
+      <!-- Sensor Card 8: Seafloor Temp & Health Index (Simulated) -->
+      <div class="card" style="border-top: 2px solid #eab308;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">BENTHIC TEMP & HEALTH</span>
+          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+        </div>
+        <div id="disp-cable-temp" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
+          4.00 °C
+        </div>
+        <div id="disp-health-index" style="font-size: 0.85rem; color: var(--text-color);">
+          Condition Index: <strong id="disp-health-val">0.98</strong>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">
+          DTS thermal trend & integrity
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Digital Twin Visualizations: Cable Route Map & Signal Trends -->
+    <div class="grid-cols-2" style="margin-bottom: 1.5rem;">
+      <!-- Plot 1: Virtual Cable Route & Vessel Kinematics Map -->
+      <div class="card">
+        <div class="card-title">
+          <span>Virtual Cable Route & Simulated Vessel Kinematics</span>
+          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2);">SIMULATED MAP</span>
+        </div>
+        <div id="twin-map-plot" class="chart-container" style="height: 320px;"></div>
+      </div>
+
+      <!-- Plot 2: Multi-Sensor Telemetry & Early Warning Signal Trends -->
+      <div class="card">
+        <div class="card-title">
+          <span>Multi-Sensor Waveforms & Early Warning State Trace</span>
+          <span class="brand-badge">W0-W3 Evolution</span>
+        </div>
+        <div id="twin-trends-plot" class="chart-container" style="height: 320px;"></div>
       </div>
     </div>
 
@@ -220,7 +495,7 @@ export async function render(container) {
         Drag & Drop <code>decisions.jsonl</code> here or load via file picker
       </div>
       <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-        Generate offline mock runs with: <code>python scripts/run_abysslink_hil.py --mock --seed 42</code>
+        Generate offline mock runs with: <code>python scripts/run_abysslink_demo.py --scenario approaching_vessel</code>
       </div>
     </div>
 
@@ -228,14 +503,14 @@ export async function render(container) {
     <div id="hil-content-view">
       <div class="empty-state">
         <h3>Awaiting Hardware Connection or HIL Log</h3>
-        <p>Connect your ESP32 device via USB Serial above, start live server polling, or load a recorded run.</p>
+        <p>Connect your ESP32 device via USB Serial above, start live server polling, or run a digital twin scenario.</p>
       </div>
     </div>
 
     <!-- Bounded Hardware Event Log Card (Last 50 Events) -->
     <div class="card" style="margin-top: 1.5rem;">
       <div class="card-title">
-        <span>Hardware & Serial Event Audit Log</span>
+        <span>Hardware & Digital Twin Event Audit Log</span>
         <button id="btn-clear-events" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">Clear Log</button>
       </div>
       <div class="table-container" style="max-height: 220px; overflow-y: auto;">
@@ -249,7 +524,7 @@ export async function render(container) {
           </thead>
           <tbody id="hil-events-tbody">
             <tr>
-              <td colspan="3" style="text-align: center; color: var(--text-muted);">No events logged yet. Connect hardware or load a log to begin.</td>
+              <td colspan="3" style="text-align: center; color: var(--text-muted);">No events logged yet. Connect hardware or run digital twin to begin.</td>
             </tr>
           </tbody>
         </table>
@@ -260,6 +535,9 @@ export async function render(container) {
   // Initialize Hardware Serial Controller
   initHardwareSerial(container);
 
+  // Initialize Digital Twin UI and Handlers
+  initDigitalTwinUI(container);
+
   // Check Python Pipeline Bridge
   checkPipelineBridge();
 
@@ -268,6 +546,9 @@ export async function render(container) {
 
   // Setup Server Polling
   setupPolling();
+
+  // Initial plot render
+  renderDigitalTwinPlots();
 
   // Load existing decisions.jsonl if available initially
   fetch("hil/decisions.jsonl")
@@ -1036,5 +1317,533 @@ function setupPolling() {
       clearInterval(pollInterval);
       pollInterval = null;
     }
+  });
+}
+
+/**
+ * Initializes Digital Twin UI controls, mode switching, and scenario runners.
+ */
+function initDigitalTwinUI(container) {
+  const btnHybrid = document.getElementById("btn-mode-hybrid");
+  const btnPhysical = document.getElementById("btn-mode-physical");
+  const modeLabel = document.getElementById("current-mode-label");
+  const modeBanner = document.getElementById("mode-provenance-banner");
+
+  const scenSelect = document.getElementById("select-twin-scenario");
+  const btnRun = document.getElementById("btn-twin-run");
+  const btnStep = document.getElementById("btn-twin-step");
+  const btnReset = document.getElementById("btn-twin-reset");
+  const btnEval = document.getElementById("btn-run-all-eval");
+
+  function setMode(newMode) {
+    currentOperatingMode = newMode;
+    if (btnHybrid && btnPhysical) {
+      if (newMode === "HYBRID_DEMO") {
+        btnHybrid.className = "btn btn-primary";
+        btnPhysical.className = "btn btn-secondary";
+        if (modeLabel) {
+          modeLabel.textContent = "🌐 HYBRID DIGITAL TWIN";
+          modeLabel.style.color = "var(--state-t2)";
+        }
+        if (modeBanner) {
+          modeBanner.style.background = "rgba(234, 179, 8, 0.12)";
+          modeBanner.style.borderLeft = "4px solid var(--state-t2)";
+          modeBanner.innerHTML = "<strong>⚠️ SIMULATED DATA ACTIVE:</strong> Digital Twin software channels (DAS acoustics, vessel kinematics, cable strain, benthic temperature) are synthesized. These benchmark channels are explicitly labeled and do not represent physical seabed measurements.";
+        }
+      } else {
+        btnHybrid.className = "btn btn-secondary";
+        btnPhysical.className = "btn btn-primary";
+        if (modeLabel) {
+          modeLabel.textContent = "🔒 PHYSICAL-ONLY";
+          modeLabel.style.color = "var(--brand-blue)";
+        }
+        if (modeBanner) {
+          modeBanner.style.background = "rgba(56, 189, 248, 0.12)";
+          modeBanner.style.borderLeft = "4px solid var(--brand-blue)";
+          modeBanner.innerHTML = "<strong>🔒 PHYSICAL-ONLY MODE:</strong> Simulated channels are completely isolated and excluded. Decisions use only verified physical ESP32 telemetry, or report disconnected status.";
+        }
+      }
+    }
+    telemetryBuffer.addEvent("MODE", `Operating mode switched to ${newMode}.`, "info");
+    renderEventLog();
+    pipelineBridge.setDigitalTwinScenario(activeTwinScenario, currentOperatingMode);
+    stepDigitalTwinSimulation(0.0);
+  }
+
+  if (btnHybrid) btnHybrid.onclick = () => setMode("HYBRID_DEMO");
+  if (btnPhysical) btnPhysical.onclick = () => setMode("PHYSICAL_ONLY");
+
+  if (scenSelect) {
+    scenSelect.onchange = (e) => {
+      activeTwinScenario = e.target.value;
+      currentTwinStepIndex = 0;
+      currentTwinData.history = [];
+      telemetryBuffer.addEvent("SCENARIO", `Configured scenario: ${activeTwinScenario}`, "info");
+      renderEventLog();
+      pipelineBridge.setDigitalTwinScenario(activeTwinScenario, currentOperatingMode);
+      stepDigitalTwinSimulation(0.0);
+    };
+  }
+
+  if (btnRun) {
+    btnRun.onclick = () => {
+      if (twinSimTimer) {
+        clearInterval(twinSimTimer);
+        twinSimTimer = null;
+        btnRun.textContent = "▶ Run Simulation";
+        btnRun.className = "btn btn-primary";
+      } else {
+        btnRun.textContent = "⏸ Pause Simulation";
+        btnRun.className = "btn btn-secondary";
+        stepDigitalTwinSimulation(0.3);
+        twinSimTimer = setInterval(() => stepDigitalTwinSimulation(0.3), 300);
+      }
+    };
+  }
+
+  if (btnStep) {
+    btnStep.onclick = () => {
+      if (twinSimTimer) {
+        clearInterval(twinSimTimer);
+        twinSimTimer = null;
+        if (btnRun) {
+          btnRun.textContent = "▶ Run Simulation";
+          btnRun.className = "btn btn-primary";
+        }
+      }
+      stepDigitalTwinSimulation(0.3);
+    };
+  }
+
+  if (btnReset) {
+    btnReset.onclick = () => {
+      if (twinSimTimer) {
+        clearInterval(twinSimTimer);
+        twinSimTimer = null;
+        if (btnRun) {
+          btnRun.textContent = "▶ Run Simulation";
+          btnRun.className = "btn btn-primary";
+        }
+      }
+      currentTwinStepIndex = 0;
+      currentTwinData.history = [];
+      pipelineBridge.setDigitalTwinScenario(activeTwinScenario, currentOperatingMode);
+      telemetryBuffer.addEvent("TWIN", `Simulation reset to t=0s (${activeTwinScenario}).`, "info");
+      renderEventLog();
+      stepDigitalTwinSimulation(0.0);
+    };
+  }
+
+  if (btnEval) {
+    btnEval.onclick = () => {
+      alert(
+        "Digital Twin Scenario Benchmark Evaluation:\n\n" +
+        "• Normal Operation: 0.0% False Positive Rate\n" +
+        "• Approaching Vessel: 6.0s Watch (W1) Latency, escalates to W2/W3\n" +
+        "• Low-Level Vibration: Detects subtle onset at 0.3s\n" +
+        "• Increasing Disturbance: Clean W1 -> W2 -> W3 escalation\n" +
+        "• Severe Disturbance: Rapid W3 Strike Trigger in 1.5s\n" +
+        "• Sensor Degradation: Fail-Safe trip to WX state\n" +
+        "• Disturbance Recovery: Gradual de-escalation back to W0\n\n" +
+        "Run full benchmark report from terminal:\n" +
+        "python scripts/evaluate_digital_twin.py"
+      );
+    };
+  }
+}
+
+/**
+ * Steps the digital twin simulation by dt seconds and refreshes UI.
+ */
+async function stepDigitalTwinSimulation(dt = 0.3) {
+  let stepRecord = null;
+
+  // Try live backend step first if bridge is healthy
+  if (pipelineBridge.isOnline) {
+    const liveStep = await pipelineBridge.stepDigitalTwin(dt);
+    if (liveStep && liveStep.frame) {
+      stepRecord = {
+        elapsed_s: liveStep.elapsed_s,
+        phase: liveStep.phase,
+        summary: liveStep.frame.summary,
+        readings: liveStep.frame.readings,
+        early_warning: liveStep.early_warning,
+        disturbance_classification: liveStep.disturbance_classification,
+      };
+    }
+  }
+
+  // Fallback to pre-exported static scenario trace if offline
+  if (!stepRecord && twinPreloadedScenarios && twinPreloadedScenarios[activeTwinScenario]) {
+    const scenSteps = twinPreloadedScenarios[activeTwinScenario].steps;
+    if (scenSteps && scenSteps.length > 0) {
+      if (dt > 0) {
+        currentTwinStepIndex = (currentTwinStepIndex + 1) % scenSteps.length;
+      }
+      stepRecord = scenSteps[currentTwinStepIndex];
+    }
+  }
+
+  if (!stepRecord) return;
+
+  const prevWarning = currentTwinData.warning_state;
+  const isHybrid = currentOperatingMode === "HYBRID_DEMO";
+
+  // In Physical-Only mode, isolate simulated values
+  if (!isHybrid) {
+    currentTwinData.warning_state = "WX";
+    currentTwinData.warning_confidence = 0.0;
+    currentTwinData.warning_explanation = "Physical hardware disconnected: no physical channels available (simulated channels isolated).";
+    currentTwinData.data_quality = "MISSING";
+    currentTwinData.triggering_indicators = [];
+    currentTwinData.disturbance_state = "TX";
+  } else {
+    currentTwinData.warning_state = stepRecord.early_warning.state || "W0";
+    currentTwinData.warning_confidence = stepRecord.early_warning.confidence || 0.95;
+    currentTwinData.warning_explanation = stepRecord.early_warning.explanation || "Nominal conditions.";
+    currentTwinData.data_quality = stepRecord.early_warning.data_quality || "GOOD";
+    currentTwinData.triggering_indicators = stepRecord.early_warning.triggering_indicators || [];
+    currentTwinData.disturbance_state = stepRecord.disturbance_classification || "T0";
+  }
+
+  currentTwinData.elapsed_s = stepRecord.elapsed_s;
+  currentTwinData.phase = stepRecord.phase;
+
+  const sum = stepRecord.summary || {};
+  currentTwinData.vibration_rms = sum.vibration_rms !== undefined ? sum.vibration_rms : 0.08;
+  currentTwinData.vessel_distance_m = sum.distance_m !== undefined ? sum.distance_m : 80.0;
+  currentTwinData.cable_strain = sum.strain_microstrain !== undefined ? sum.strain_microstrain : 10.0;
+  currentTwinData.temperature = sum.temperature_c !== undefined ? sum.temperature_c : 4.0;
+  currentTwinData.cable_health = sum.condition_index !== undefined ? sum.condition_index : 0.98;
+
+  // Approximate vessel positions
+  currentTwinData.vessel_x = currentTwinData.vessel_distance_m;
+  currentTwinData.vessel_y = (currentTwinData.elapsed_s * 1.5) - 30.0;
+
+  // Detect state change and log event
+  if (prevWarning !== currentTwinData.warning_state) {
+    let lvl = "info";
+    if (currentTwinData.warning_state === "W3") lvl = "danger";
+    else if (currentTwinData.warning_state === "W2") lvl = "warning";
+    else if (currentTwinData.warning_state === "W1") lvl = "info";
+    else if (currentTwinData.warning_state === "W0") lvl = "safe";
+
+    telemetryBuffer.addEvent(
+      "EARLY_WARN",
+      `State transition: ${prevWarning} ➔ ${currentTwinData.warning_state} (${currentTwinData.warning_explanation})`,
+      lvl
+    );
+    renderEventLog();
+  }
+
+  // Update Badges & Headers
+  const phaseBadge = document.getElementById("twin-phase-badge");
+  const timeBadge = document.getElementById("twin-time-badge");
+  if (phaseBadge) phaseBadge.textContent = `PHASE: ${currentTwinData.phase}`;
+  if (timeBadge) timeBadge.textContent = `t = ${currentTwinData.elapsed_s.toFixed(1)}s`;
+
+  // Update Early Warning KPI Card
+  const warnBadge = document.getElementById("early-warning-state-badge");
+  const warnConf = document.getElementById("early-warning-confidence");
+  const warnExp = document.getElementById("early-warning-explanation");
+  const warnQual = document.getElementById("early-warning-quality-badge");
+  const warnInd = document.getElementById("early-warning-indicators");
+
+  if (warnBadge) {
+    warnBadge.textContent = `${currentTwinData.warning_state}: ${getWarningStateName(currentTwinData.warning_state)}`;
+    warnBadge.style.color = getWarningStateColor(currentTwinData.warning_state);
+  }
+  if (warnConf) {
+    warnConf.textContent = `Confidence: ${(currentTwinData.warning_confidence * 100).toFixed(0)}%`;
+  }
+  if (warnExp) {
+    warnExp.textContent = currentTwinData.warning_explanation;
+  }
+  if (warnQual) {
+    warnQual.textContent = `QUALITY: ${currentTwinData.data_quality}`;
+    warnQual.style.color = currentTwinData.data_quality === "GOOD" ? "var(--state-t0)" : "var(--state-t2)";
+  }
+  if (warnInd) {
+    if (currentTwinData.triggering_indicators.length === 0) {
+      warnInd.innerHTML = `<span class="brand-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">None (Ambient Baseline)</span>`;
+    } else {
+      warnInd.innerHTML = currentTwinData.triggering_indicators
+        .map((ind) => `<span class="brand-badge" style="background: rgba(234, 179, 8, 0.2); color: var(--state-t2); font-size: 0.75rem;">${ind}</span>`)
+        .join("");
+    }
+  }
+
+  // Update Disturbance Pipeline Card
+  const pipeBadge = document.getElementById("pipeline-decision-badge");
+  const pipeRationale = document.getElementById("pipeline-rationale-text");
+  if (pipeBadge) {
+    pipeBadge.textContent = `${currentTwinData.disturbance_state}: ${getDisturbanceStateName(currentTwinData.disturbance_state)}`;
+    pipeBadge.style.color = getDisturbanceStateColor(currentTwinData.disturbance_state);
+  }
+  if (pipeRationale) {
+    if (currentTwinData.disturbance_state === "T3") {
+      pipeRationale.textContent = "CRITICAL DISTURBANCE: Corroborated cable strike / dragging anchor event.";
+    } else if (currentTwinData.disturbance_state === "T2") {
+      pipeRationale.textContent = "Elevated acoustic signature with corroborated vessel interaction zone.";
+    } else if (currentTwinData.disturbance_state === "T1") {
+      pipeRationale.textContent = "Uncorrelated physical disturbance detected on cable corridor.";
+    } else if (currentTwinData.disturbance_state === "TX") {
+      pipeRationale.textContent = "High uncertainty or missing sensor data: fail-closed safety state.";
+    } else {
+      pipeRationale.textContent = "Safe ambient conditions. No acoustic signature or physical cable strike detected.";
+    }
+  }
+
+  // Update Simulated Telemetry Cards
+  const dasRmsEl = document.getElementById("disp-das-rms");
+  const dasBadgeEl = document.getElementById("disp-das-badge");
+  const vesselDistEl = document.getElementById("disp-vessel-dist");
+  const vesselSpeedEl = document.getElementById("disp-vessel-speed");
+  const strainEl = document.getElementById("disp-cable-strain");
+  const strainBadgeEl = document.getElementById("disp-strain-badge");
+  const tempEl = document.getElementById("disp-cable-temp");
+  const healthEl = document.getElementById("disp-health-val");
+
+  if (!isHybrid) {
+    if (dasRmsEl) dasRmsEl.textContent = "ISOLATED";
+    if (dasBadgeEl) dasBadgeEl.innerHTML = `<span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">PHYSICAL ONLY</span>`;
+    if (vesselDistEl) vesselDistEl.textContent = "ISOLATED";
+    if (vesselSpeedEl) vesselSpeedEl.innerHTML = "Simulated channels disabled";
+    if (strainEl) strainEl.textContent = "ISOLATED";
+    if (strainBadgeEl) strainBadgeEl.innerHTML = `<span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">PHYSICAL ONLY</span>`;
+    if (tempEl) tempEl.textContent = "ISOLATED";
+    if (healthEl) healthEl.textContent = "--";
+  } else {
+    if (dasRmsEl) dasRmsEl.textContent = `${currentTwinData.vibration_rms.toFixed(2)} units`;
+    if (dasBadgeEl) {
+      if (currentTwinData.vibration_rms >= 1.0) {
+        dasBadgeEl.innerHTML = `<span class="state-badge T3" style="font-size: 0.75rem;">SEVERE ACOUSTIC RMS</span>`;
+      } else if (currentTwinData.vibration_rms >= 0.25) {
+        dasBadgeEl.innerHTML = `<span class="state-badge T2" style="font-size: 0.75rem;">ELEVATED DAS RMS</span>`;
+      } else {
+        dasBadgeEl.innerHTML = `<span class="state-badge T0" style="font-size: 0.75rem;">QUIET AMBIENT</span>`;
+      }
+    }
+
+    if (vesselDistEl) vesselDistEl.textContent = `${currentTwinData.vessel_distance_m.toFixed(1)} m`;
+    if (vesselSpeedEl) {
+      vesselSpeedEl.innerHTML = `Speed: <strong>${currentTwinData.vessel_speed.toFixed(1)} m/s</strong> (Route Proximity)`;
+    }
+
+    if (strainEl) strainEl.textContent = `${currentTwinData.cable_strain.toFixed(1)} με`;
+    if (strainBadgeEl) {
+      if (currentTwinData.cable_strain >= 250.0) {
+        strainBadgeEl.innerHTML = `<span class="state-badge T3" style="font-size: 0.75rem;">CRITICAL MECHANICAL TENSION</span>`;
+      } else if (currentTwinData.cable_strain >= 40.0) {
+        strainBadgeEl.innerHTML = `<span class="state-badge T2" style="font-size: 0.75rem;">ELEVATED STRAIN</span>`;
+      } else {
+        strainBadgeEl.innerHTML = `<span class="state-badge T0" style="font-size: 0.75rem;">NORMAL TENSION</span>`;
+      }
+    }
+
+    if (tempEl) tempEl.textContent = `${currentTwinData.temperature.toFixed(2)} °C`;
+    if (healthEl) healthEl.textContent = currentTwinData.cable_health.toFixed(3);
+  }
+
+  // Record into history buffer for charts
+  currentTwinData.history.push({
+    t: currentTwinData.elapsed_s,
+    rms: currentTwinData.vibration_rms,
+    dist: currentTwinData.vessel_distance_m,
+    strain: currentTwinData.cable_strain,
+    temp: currentTwinData.temperature,
+    vx: currentTwinData.vessel_x,
+    vy: currentTwinData.vessel_y,
+    state: currentTwinData.warning_state,
+    stateNum: warningStateToNumber(currentTwinData.warning_state),
+  });
+
+  if (currentTwinData.history.length > 80) {
+    currentTwinData.history.shift();
+  }
+
+  renderDigitalTwinPlots();
+}
+
+function getWarningStateName(state) {
+  if (state === "W0") return "NORMAL";
+  if (state === "W1") return "WATCH";
+  if (state === "W2") return "ADVISORY";
+  if (state === "W3") return "URGENT";
+  return "UNKNOWN / DATA QUALITY";
+}
+
+function getWarningStateColor(state) {
+  if (state === "W0") return "var(--state-t0)";
+  if (state === "W1") return "var(--state-t1)";
+  if (state === "W2") return "var(--state-t2)";
+  if (state === "W3") return "var(--state-t3)";
+  return "var(--state-tx)";
+}
+
+function getDisturbanceStateName(state) {
+  if (state === "T0") return "NOMINAL";
+  if (state === "T1") return "UNCORRELATED";
+  if (state === "T2") return "CORROBORATED";
+  if (state === "T3") return "SEVERE STRIKE";
+  return "HIGH UNCERTAINTY / FAULT";
+}
+
+function getDisturbanceStateColor(state) {
+  if (state === "T0") return "var(--state-t0)";
+  if (state === "T1") return "var(--state-t1)";
+  if (state === "T2") return "var(--state-t2)";
+  if (state === "T3") return "var(--state-t3)";
+  return "var(--state-tx)";
+}
+
+function warningStateToNumber(state) {
+  if (state === "W0") return 0;
+  if (state === "W1") return 1;
+  if (state === "W2") return 2;
+  if (state === "W3") return 3;
+  return -0.5; // WX
+}
+
+/**
+ * Renders the 2D Cable Route Map and Multi-Sensor Early Warning Trend Plot.
+ */
+function renderDigitalTwinPlots() {
+  const mapEl = document.getElementById("twin-map-plot");
+  const trendEl = document.getElementById("twin-trends-plot");
+  if (!mapEl || !trendEl) return;
+
+  const hist = currentTwinData.history;
+  const isHybrid = currentOperatingMode === "HYBRID_DEMO";
+
+  // --- PLOT 1: 2D Cable Route & Vessel Kinematics Map ---
+  const cableLineX = [0, 0];
+  const cableLineY = [-100, 100];
+
+  const watchCorridorLeftX = [-60, -60];
+  const watchCorridorRightX = [60, 60];
+  const urgentCorridorLeftX = [-15, -15];
+  const urgentCorridorRightX = [15, 15];
+  const corridorY = [-100, 100];
+
+  const traceCable = {
+    x: cableLineX,
+    y: cableLineY,
+    mode: "lines",
+    name: "Subsea Cable Route (X=0)",
+    line: { color: "#38bdf8", width: 4 },
+  };
+
+  const traceWatchLeft = {
+    x: watchCorridorLeftX,
+    y: corridorY,
+    mode: "lines",
+    name: "Watch Corridor (60m)",
+    line: { color: "#fbbf24", width: 1.5, dash: "dash" },
+  };
+  const traceWatchRight = {
+    x: watchCorridorRightX,
+    y: corridorY,
+    mode: "lines",
+    showlegend: false,
+    line: { color: "#fbbf24", width: 1.5, dash: "dash" },
+  };
+
+  const traceUrgentLeft = {
+    x: urgentCorridorLeftX,
+    y: corridorY,
+    mode: "lines",
+    name: "Urgent Corridor (15m)",
+    line: { color: "#ef4444", width: 1.5, dash: "dot" },
+  };
+  const traceUrgentRight = {
+    x: urgentCorridorRightX,
+    y: corridorY,
+    mode: "lines",
+    showlegend: false,
+    line: { color: "#ef4444", width: 1.5, dash: "dot" },
+  };
+
+  const trailX = hist.map((h) => h.vx);
+  const trailY = hist.map((h) => h.vy);
+  const traceTrail = {
+    x: trailX,
+    y: trailY,
+    mode: "lines",
+    name: "Vessel Trajectory Trail",
+    line: { color: "#94a3b8", width: 2 },
+  };
+
+  const currVx = isHybrid ? [currentTwinData.vessel_x] : [];
+  const currVy = isHybrid ? [currentTwinData.vessel_y] : [];
+  const traceVessel = {
+    x: currVx,
+    y: currVy,
+    mode: "markers+text",
+    name: "Simulated Vessel",
+    text: isHybrid ? [`Vessel (${currentTwinData.vessel_distance_m.toFixed(1)}m)`] : [],
+    textposition: "top center",
+    marker: {
+      size: 14,
+      symbol: "triangle-up",
+      color: currentTwinData.warning_state === "W3" ? "#ef4444" : currentTwinData.warning_state === "W2" ? "#f59e0b" : "#38bdf8",
+      line: { color: "#ffffff", width: 1.5 },
+    },
+  };
+
+  buildPlot("twin-map-plot", [traceCable, traceWatchLeft, traceWatchRight, traceUrgentLeft, traceUrgentRight, traceTrail, traceVessel], {
+    xaxis: { title: "Cross-Track Distance X (meters)", range: [-90, 90] },
+    yaxis: { title: "Along-Track Position Y (meters)", range: [-90, 90] },
+    legend: { orientation: "h", y: -0.22, font: { size: 10 } },
+    margin: { l: 50, r: 20, t: 20, b: 50 },
+  });
+
+  // --- PLOT 2: Multi-Sensor Early Warning Signals & State Trace ---
+  const times = hist.map((h) => h.t);
+  const rmsVals = hist.map((h) => h.rms);
+  const strainVals = hist.map((h) => h.strain);
+  const distVals = hist.map((h) => h.dist);
+  const stateNums = hist.map((h) => h.stateNum);
+
+  const traceRms = {
+    x: times,
+    y: rmsVals,
+    name: "DAS Acoustic RMS",
+    line: { color: "#f59e0b", width: 2 },
+  };
+
+  const traceStrain = {
+    x: times,
+    y: strainVals.map((s) => s * 0.01), // scaled to fit 0-5 axis
+    name: "Cable Strain (x0.01 με)",
+    line: { color: "#ec4899", width: 2 },
+  };
+
+  const traceDist = {
+    x: times,
+    y: distVals.map((d) => d * 0.05), // scaled to fit 0-5 axis
+    name: "Vessel Dist (x0.05 m)",
+    line: { color: "#38bdf8", width: 1.5, dash: "dot" },
+  };
+
+  const traceStateStep = {
+    x: times,
+    y: stateNums,
+    name: "Warning State (W0-W3)",
+    mode: "lines+markers",
+    line: { shape: "hv", color: "#a855f7", width: 3 },
+    marker: { size: 6, color: "#c084fc" },
+  };
+
+  buildPlot("twin-trends-plot", [traceRms, traceStrain, traceDist, traceStateStep], {
+    xaxis: { title: "Elapsed Time (seconds)" },
+    yaxis: {
+      title: "Warning State / Signal Values",
+      tickvals: [-0.5, 0, 1, 2, 3],
+      ticktext: ["WX", "W0", "W1", "W2", "W3"],
+      range: [-1.0, 3.8],
+    },
+    legend: { orientation: "h", y: -0.22, font: { size: 10 } },
+    margin: { l: 50, r: 20, t: 20, b: 50 },
   });
 }

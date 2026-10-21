@@ -154,7 +154,8 @@ export class PipelineBridgeClient {
       const resp = await fetch("api/status.json");
       if (resp.ok) {
         const data = await resp.json();
-        this.isOnline = data.mode === "live_pipeline";
+        this.isOnline = data.status === "online" && data.mode !== "static";
+        this.statusData = data;
       } else {
         this.isOnline = false;
       }
@@ -184,6 +185,34 @@ export class PipelineBridgeClient {
       console.warn("Pipeline bridge process error:", e);
       return null;
     }
+  }
+
+  async setDigitalTwinScenario(scenario, mode = "HYBRID_DEMO", seed = 42) {
+    try {
+      const resp = await fetch(`${this.baseUrl}/api/twin/set_scenario`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scenario, mode, seed }),
+      });
+      if (resp.ok) return await resp.json();
+    } catch (e) {
+      console.warn("Failed to set digital twin scenario:", e);
+    }
+    return null;
+  }
+
+  async stepDigitalTwin(dt = 0.3) {
+    try {
+      const resp = await fetch(`${this.baseUrl}/api/twin/step`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dt }),
+      });
+      if (resp.ok) return await resp.json();
+    } catch (e) {
+      console.warn("Failed to step digital twin:", e);
+    }
+    return null;
   }
 
   async resetSession() {

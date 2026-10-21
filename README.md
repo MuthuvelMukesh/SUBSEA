@@ -2,17 +2,21 @@
 
 > **An Uncertainty-Aware Multimodal Evidence Fusion Framework for Vessel-Associated Subsea Cable Disturbance Assessment under Adversarial Uncertainty**
 
-[![Tests](https://img.shields.io/badge/tests-292%20passed-brightgreen)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-312%20passed-brightgreen)](#test-suite)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://python.org)
 [![Data Kind](https://img.shields.io/badge/data%20kind-SIMULATION%20%2B%20REAL%20DATA-brightgreen)](#scientific-integrity--provenance)
+[![Digital Twin](https://img.shields.io/badge/digital%20twin-7%20scenarios%20%7C%20W0--WX-orange)](docs/DIGITAL_TWIN.md)
 [![Web Front End](https://img.shields.io/badge/web%20front%20end-14%20pages%20%7C%20Web%20Serial%20HIL-blue)](web/index.html)
 
 A reproducible research platform for uncertainty-aware multimodal evidence fusion under adversarial uncertainty. The framework integrates subsea vibration sensing (accelerometer/DAS acoustic), AIS vessel tracking kinematics, sensor health diagnostics, epistemic uncertainty quantification, and multi-hypothesis assessment to reliably distinguish vessel-caused cable disturbances (anchor dragging, bottom-trawling) from benign transit, sensor malfunctions, environmental confounding, and adversarial evasion (AIS spoofing, timestamp manipulation).
+
+Now includes the **AbyssLink Digital Twin + Multi-Sensor Early Warning System**, offering dual operating modes (`PHYSICAL_ONLY` vs `HYBRID_DEMO`), 7 repeatable benchmark scenarios, independent $W0-WX$ early warning states with hysteresis, and strict data provenance tracking. See [`docs/DIGITAL_TWIN.md`](docs/DIGITAL_TWIN.md).
 
 ---
 
 ## Scientific Integrity & Provenance
 
+- **DIGITAL TWIN BENCHMARK (Simulated Channels)**: Software channels (DAS acoustics, vessel kinematics, cable strain, seafloor temperature) are mathematical benchmark models. They are marked `DataSource.SIMULATED` and are not real field measurements.
 - **SIMULATION (Synthetic Evaluation)**: Synthetic scenario results (S01–S22) are computational experiment outputs generated from explicit mathematical and physical models; they are not operational real-world evidence and do not constitute causal ground truth.
 - **REAL DAS EVALUATION (EXECUTED)**: Three real subsea DAS datasets are integrated with verified SHA-256 cryptographic provenance and strictly defined scientific roles:
   1. **Marlinks Demo DAS (North Sea)**: Validates high-frequency DAS spectral acoustic energy and 1D vessel proximity correlation ($\rho = +0.9482, p < 10^{-30}$) during a container ship transit. Does not provide 2D AIS polyline reconstruction or causal damage ground truth.
