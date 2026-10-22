@@ -15,12 +15,17 @@ export class HardwareSerialController {
     this.onStateChange = callbacks.onStateChange || (() => {});
     this.onLog = callbacks.onLog || (() => {});
     this.onRawLine = callbacks.onRawLine || (() => {});
+    this.onBaudMismatch = callbacks.onBaudMismatch || (() => {});
 
     this.port = null;
     this.reader = null;
     this.writer = null;
     this.state = "DISCONNECTED"; // DISCONNECTED, CONNECTING, CONNECTED, ERROR
     this.keepReading = false;
+    this.currentBaudRate = 115200;
+
+    this._consecutiveGarbageFrames = 0;
+    this._lastGarbageWarnTime = 0;
 
     this.stats = {
       receivedCount: 0,
@@ -61,6 +66,10 @@ export class HardwareSerialController {
       this.port = await navigator.serial.requestPort();
 
       const baudRate = options.baudRate || 115200;
+      this.currentBaudRate = baudRate;
+      this._consecutiveGarbageFrames = 0;
+      this._lastGarbageWarnTime = 0;
+
       this._setState("CONNECTING", `Opening port at ${baudRate} baud...`);
       await this.port.open({
         baudRate: baudRate,
@@ -110,6 +119,29 @@ export class HardwareSerialController {
         this.port = null;
         throw err;
       }
+    }
+  }
+
+  async resetEsp() {
+    if (!this.port || this.state !== "CONNECTED") {
+      this.onLog("warning", "Cannot reset ESP32: Serial port is not connected.");
+      return false;
+    }
+    try {
+      this.onLog("warning", "Sending hardware reboot pulse (RTS) to ESP32...");
+      if (this.port.setSignals) {
+        await this.port.setSignals({ dataTerminalReady: false, requestToSend: true });
+        await new Promise((r) => setTimeout(r, 120));
+        await this.port.setSignals({ dataTerminalReady: false, requestToSend: false });
+        this.onLog("safe", "ESP32 hardware rebooted via RTS signal.");
+        return true;
+      } else {
+        this.onLog("warning", "Hardware signal control not supported by current USB-UART driver.");
+        return false;
+      }
+    } catch (err) {
+      this.onLog("warning", `Hardware reset signal failed: ${err.message}`);
+      return false;
     }
   }
 
@@ -209,28 +241,63 @@ export class HardwareSerialController {
       ? Math.round((this._rateWindow.length / 2) * 10) / 10
       : 0;
 
-    // Check if line is valid JSON
-    let packet;
+    // Check if frame contains replacement character \ufffd (indicates UART framing / baud error)
+    const hasReplacementChars = rawClean.includes("\ufffd") || /[\x00-\x08\x0B\x0C\x0E-\x1F]/.test(rawClean);
+
+    // 1. Try parsing JSON directly
+    let packet = null;
     try {
       packet = JSON.parse(rawClean);
     } catch (_) {
-      this.stats.malformedCount++;
-      this.onLog("warning", `Non-JSON or malformed serial frame: ${rawClean.slice(0, 60)}`);
+      // 2. Resilient JSON extraction: look for valid substring between first '{' and last '}'
+      const firstBrace = rawClean.indexOf("{");
+      const lastBrace = rawClean.lastIndexOf("}");
+      if (firstBrace !== -1 && lastBrace > firstBrace) {
+        try {
+          const candidate = rawClean.substring(firstBrace, lastBrace + 1);
+          packet = JSON.parse(candidate);
+        } catch (_) {}
+      }
+    }
+
+    if (packet && typeof packet === "object") {
+      this._consecutiveGarbageFrames = 0;
+      this.stats.receivedCount++;
+      if (packet.type === "ack") {
+        this.onAck(packet);
+      } else {
+        this.onPacket(packet, rawClean);
+      }
       return;
     }
 
-    if (!packet || typeof packet !== "object") {
-      this.stats.malformedCount++;
+    // If frame is NOT valid JSON:
+    this.stats.malformedCount++;
+
+    if (hasReplacementChars) {
+      this._consecutiveGarbageFrames++;
+      const suggestedBaud = this.currentBaudRate === 115200 ? 9600 : 115200;
+
+      // Throttle warning log to once every 2.5 seconds to avoid flooding the log
+      if (now - this._lastGarbageWarnTime > 2500) {
+        this._lastGarbageWarnTime = now;
+        this.onLog(
+          "danger",
+          `⚠️ Baud Rate Mismatch / Framing Error: Port received corrupt bytes (\\ufffd). Connected at ${this.currentBaudRate} baud. If your device uses ${suggestedBaud} baud, switch baud rate and reconnect, or verify Serial.begin(${this.currentBaudRate}) in your Arduino sketch.`
+        );
+      }
+
+      this.onBaudMismatch({
+        currentBaud: this.currentBaudRate,
+        suggestedBaud: suggestedBaud,
+        sample: rawClean.slice(0, 40),
+      });
       return;
     }
 
-    this.stats.receivedCount++;
-
-    if (packet.type === "ack") {
-      this.onAck(packet);
-    } else {
-      this.onPacket(packet, rawClean);
-    }
+    // Normal non-JSON string print (e.g. bootloader logs, user debug prints)
+    this._consecutiveGarbageFrames = 0;
+    this.onLog("info", `ESP32 Print: ${rawClean.slice(0, 80)}`);
   }
 
   _handleUsbDisconnect(event) {

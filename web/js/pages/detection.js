@@ -125,11 +125,28 @@ export async function render(container) {
 
       <!-- Hardware Action Controls Row -->
       <div style="display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; margin-top: 0.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+          <label for="select-serial-baud" style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted);">Baud:</label>
+          <select id="select-serial-baud" style="padding: 0.4rem 0.65rem; background: var(--bg-card); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.82rem; font-weight: 700; font-family: var(--font-mono);">
+            <option value="115200" selected>115,200 (AbyssLink Default)</option>
+            <option value="9600">9,600 (Standard Arduino)</option>
+            <option value="57600">57,600</option>
+            <option value="74880">74,880 (ESP32 Bootloader)</option>
+            <option value="38400">38,400</option>
+            <option value="19200">19,200</option>
+            <option value="230400">230,400</option>
+            <option value="921600">921,600</option>
+          </select>
+        </div>
+
         <button id="btn-serial-connect" class="btn btn-primary" ${!serialSupported ? "disabled" : ""}>
-          🔌 Connect ESP32 (115200 Baud)
+          🔌 Connect ESP32
         </button>
         <button id="btn-serial-disconnect" class="btn btn-secondary" disabled>
           Disconnect
+        </button>
+        <button id="btn-serial-reset-esp" class="btn btn-secondary" disabled title="Send hardware RTS reset pulse to reboot ESP32">
+          🔄 Reboot ESP32
         </button>
 
         <div style="width: 1px; height: 22px; background: var(--border-color); margin: 0 0.2rem;"></div>
@@ -148,9 +165,29 @@ export async function render(container) {
         </button>
       </div>
 
+      <!-- Actionable Baud Rate Mismatch & Troubleshooting Banner -->
+      <div id="baud-mismatch-banner" style="display: none; margin-top: 0.75rem; padding: 0.75rem 1rem; border-radius: 6px; background: rgba(239, 68, 68, 0.12); border: 1px solid #ef4444; color: var(--text-main); font-size: 0.82rem; line-height: 1.45;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+          <div>
+            <strong style="color: #ef4444;">⚠️ Baud Rate Mismatch / Framing Noise Detected:</strong>
+            <div id="baud-mismatch-text" style="color: var(--text-main); margin-top: 0.15rem;">
+              The serial port is receiving corrupt replacement bytes (\ufffd). Your ESP32 is likely running at 9600 baud instead of 115200.
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="btn-auto-switch-baud" class="btn btn-primary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+              ⚡ Switch to 9600 Baud & Reconnect
+            </button>
+            <button id="btn-mismatch-reboot" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+              🔄 Reboot ESP32 (RTS)
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Hardware Link Statistics -->
       <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 0.75rem; padding: 0.6rem 1rem; background: var(--bg-subtle); border-radius: 6px; font-size: 0.82rem;">
-        <div><strong>Baud Rate:</strong> <span style="font-family: var(--font-mono);">115,200</span></div>
+        <div><strong>Baud Rate:</strong> <span id="stat-baud-rate" style="font-family: var(--font-mono); font-weight: 700;">115,200</span></div>
         <div><strong>Packets Received:</strong> <span id="stat-pkt-count" style="font-family: var(--font-mono); font-weight: 700;">0</span></div>
         <div><strong>Ingestion Rate:</strong> <span id="stat-pkt-rate" style="font-family: var(--font-mono);">0.0 Hz</span></div>
         <div><strong>Malformed Frames:</strong> <span id="stat-malformed-count" style="font-family: var(--font-mono);">0</span></div>
@@ -426,6 +463,21 @@ function initHardwareSerial(container) {
   const stopTxBtn = document.getElementById("btn-serial-stop-tx");
   const exportRawBtn = document.getElementById("btn-export-raw-jsonl");
   const clearEventsBtn = document.getElementById("btn-clear-detection-events");
+  const baudSelect = document.getElementById("select-serial-baud");
+  const resetEspBtn = document.getElementById("btn-serial-reset-esp");
+  const mismatchRebootBtn = document.getElementById("btn-mismatch-reboot");
+  const autoSwitchBaudBtn = document.getElementById("btn-auto-switch-baud");
+  const baudMismatchBanner = document.getElementById("baud-mismatch-banner");
+  const baudMismatchText = document.getElementById("baud-mismatch-text");
+
+  // Restore saved baud preference if present
+  if (baudSelect) {
+    const savedBaud = localStorage.getItem("abysslink_serial_baud");
+    if (savedBaud) baudSelect.value = savedBaud;
+    baudSelect.addEventListener("change", (e) => {
+      localStorage.setItem("abysslink_serial_baud", e.target.value);
+    });
+  }
 
   serialController = new HardwareSerialController({
     onPacket: handleIncomingSensorPacket,
@@ -435,19 +487,57 @@ function initHardwareSerial(container) {
       telemetryBuffer.addEvent("SERIAL", msg, lvl);
       renderDetectionEventLog();
     },
+    onBaudMismatch: ({ currentBaud, suggestedBaud, sample }) => {
+      if (baudMismatchBanner && baudMismatchText) {
+        baudMismatchText.innerHTML = `Connected at <strong>${currentBaud} baud</strong>, but receiving framing noise (<code>${sample}</code>). Your ESP32 is likely running at <strong>${suggestedBaud} baud</strong>.`;
+        if (autoSwitchBaudBtn) {
+          autoSwitchBaudBtn.textContent = `⚡ Switch to ${suggestedBaud} Baud & Reconnect`;
+          autoSwitchBaudBtn.dataset.targetBaud = String(suggestedBaud);
+        }
+        baudMismatchBanner.style.display = "block";
+      }
+    },
   });
 
   if (connectBtn) {
     connectBtn.addEventListener("click", async () => {
       try {
-        await serialController.connect({ baudRate: 115200 });
+        const baud = parseInt(baudSelect?.value || "115200", 10);
+        if (baudMismatchBanner) baudMismatchBanner.style.display = "none";
+        await serialController.connect({ baudRate: baud });
       } catch (_) {}
     });
   }
 
   if (disconnectBtn) {
     disconnectBtn.addEventListener("click", async () => {
+      if (baudMismatchBanner) baudMismatchBanner.style.display = "none";
       await serialController.disconnect();
+    });
+  }
+
+  const handleRebootClick = async () => {
+    if (serialController) {
+      await serialController.resetEsp();
+    }
+  };
+  if (resetEspBtn) resetEspBtn.addEventListener("click", handleRebootClick);
+  if (mismatchRebootBtn) mismatchRebootBtn.addEventListener("click", handleRebootClick);
+
+  if (autoSwitchBaudBtn) {
+    autoSwitchBaudBtn.addEventListener("click", async () => {
+      const targetBaud = parseInt(autoSwitchBaudBtn.dataset.targetBaud || "9600", 10);
+      if (baudSelect) baudSelect.value = String(targetBaud);
+      localStorage.setItem("abysslink_serial_baud", String(targetBaud));
+      if (baudMismatchBanner) baudMismatchBanner.style.display = "none";
+
+      telemetryBuffer.addEvent("SERIAL", `Auto-switching baud rate from ${serialController.currentBaudRate} to ${targetBaud}...`, "warning");
+      await serialController.disconnect();
+      setTimeout(async () => {
+        try {
+          await serialController.connect({ baudRate: targetBaud });
+        } catch (_) {}
+      }, 250);
     });
   }
 
@@ -501,6 +591,13 @@ function handleSerialStateChange(state, detail) {
   const disconnectBtn = document.getElementById("btn-serial-disconnect");
   const startTxBtn = document.getElementById("btn-serial-start-tx");
   const stopTxBtn = document.getElementById("btn-serial-stop-tx");
+  const resetEspBtn = document.getElementById("btn-serial-reset-esp");
+  const baudStatEl = document.getElementById("stat-baud-rate");
+  const baudMismatchBanner = document.getElementById("baud-mismatch-banner");
+
+  if (baudStatEl && serialController) {
+    baudStatEl.textContent = serialController.currentBaudRate.toLocaleString();
+  }
 
   if (badge) {
     badge.textContent = state;
@@ -535,11 +632,15 @@ function handleSerialStateChange(state, detail) {
         modeBadge.style.color = "var(--text-muted)";
         modeBadge.style.background = "var(--bg-subtle)";
       }
+      if (baudMismatchBanner) {
+        baudMismatchBanner.style.display = "none";
+      }
     }
   }
 
   if (connectBtn) connectBtn.disabled = state === "CONNECTED" || state === "CONNECTING";
   if (disconnectBtn) disconnectBtn.disabled = state !== "CONNECTED";
+  if (resetEspBtn) resetEspBtn.disabled = state !== "CONNECTED";
   if (startTxBtn) startTxBtn.disabled = state !== "CONNECTED" || isTransmissionActive;
   if (stopTxBtn) stopTxBtn.disabled = state !== "CONNECTED" || !isTransmissionActive;
 }
