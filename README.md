@@ -2,15 +2,18 @@
 
 > **An Uncertainty-Aware Multimodal Evidence Fusion Framework for Vessel-Associated Subsea Cable Disturbance Assessment under Adversarial Uncertainty**
 
-[![Tests](https://img.shields.io/badge/tests-312%20passed-brightgreen)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-319%20passed-brightgreen)](#test-suite)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://python.org)
 [![Data Kind](https://img.shields.io/badge/data%20kind-SIMULATION%20%2B%20REAL%20DATA-brightgreen)](#scientific-integrity--provenance)
 [![Digital Twin](https://img.shields.io/badge/digital%20twin-7%20scenarios%20%7C%20W0--WX-orange)](docs/DIGITAL_TWIN.md)
-[![Web Front End](https://img.shields.io/badge/web%20front%20end-14%20pages%20%7C%20Web%20Serial%20HIL-blue)](web/index.html)
+[![Web Front End](https://img.shields.io/badge/web%20front%20end-3%20Modules%20%7C%20Web%20Serial%20HIL-blue)](web/index.html)
 
 A reproducible research platform for uncertainty-aware multimodal evidence fusion under adversarial uncertainty. The framework integrates subsea vibration sensing (accelerometer/DAS acoustic), AIS vessel tracking kinematics, sensor health diagnostics, epistemic uncertainty quantification, and multi-hypothesis assessment to reliably distinguish vessel-caused cable disturbances (anchor dragging, bottom-trawling) from benign transit, sensor malfunctions, environmental confounding, and adversarial evasion (AIS spoofing, timestamp manipulation).
 
-Now includes the **AbyssLink Digital Twin + Multi-Sensor Early Warning System**, offering dual operating modes (`PHYSICAL_ONLY` vs `HYBRID_DEMO`), 7 repeatable benchmark scenarios, independent $W0-WX$ early warning states with hysteresis, and strict data provenance tracking. See [`docs/DIGITAL_TWIN.md`](docs/DIGITAL_TWIN.md).
+The operational dashboard is organized into three distinct, decoupled modules:
+1. **Detection (`#/detection`) [Default Landing Page]**: Primary operational dashboard integrating live physical ESP32 hardware via Web Serial API (115,200 baud), displaying validated telemetry, primary disturbance classification ($T0-TX$), continuous fusion gate metrics ($C_P, C_A, R, U$), and timestamped audit logs.
+2. **Early Warning (`#/early-warning`)**: Advance hazard watch engine evaluating independent warning states ($W0-WX$), multi-sensor corroboration gates, persistence tracking, data quality health checks, actionable operator guidance, 2D subsea cable route map, and the 7-scenario Digital Twin testbed.
+3. **Research & Validation (`#/research`)**: Centralized scientific laboratory hub isolating offline synthetic benchmarks (S01–S22), baseline comparisons (SVM, Random Forest, 1D-CNN vs Proposed), adversarial stress testing, real submarine DAS field data, and in-browser cryptographic SHA-256 provenance verification.
 
 ---
 

@@ -3,27 +3,33 @@
  */
 
 const ROUTES = {
-  "overview": { title: "1. Overview & Architecture", module: "./pages/overview.js" },
-  "scenarios": { title: "2. Scenario Explorer (S01–S22)", module: "./pages/scenarios.js" },
-  "signals": { title: "3. Signals & Spectrum", module: "./pages/signals.js" },
-  "geometry": { title: "4. Geometry & Kinematics", module: "./pages/geometry.js" },
-  "timeline": { title: "5. Evidence & Uncertainty Timeline", module: "./pages/timeline.js" },
-  "decision-path": { title: "6. Decision Path Explainer", module: "./pages/decision_path.js" },
-  "hypotheses": { title: "7. Hypotheses & Evidence Audit", module: "./pages/hypotheses.js" },
-  "adversarial": { title: "8. Adversarial Lab (AER & FHER)", module: "./pages/adversarial.js" },
-  "baselines": { title: "9. Baselines & Ablation Studies", module: "./pages/baselines.js" },
-  "robustness": { title: "10. Robustness & Calibration", module: "./pages/robustness.js" },
-  "real-das": { title: "11. Real Submarine DAS Deployments", module: "./pages/real_das.js" },
-  "hil": { title: "12. Live Hardware-in-the-Loop (HIL)", module: "./pages/hil.js" },
-  "provenance": { title: "13. In-Browser Provenance Verification", module: "./pages/provenance.js" },
-  "publications": { title: "14. Publication Figures & Tables", module: "./pages/publications.js" },
+  // Primary Operational Modules (Master Prompt Navigation Order)
+  "detection": { title: "1. Disturbance Detection (Landing)", module: "./pages/detection.js" },
+  "early-warning": { title: "2. Early Warning & Multi-Sensor Watch", module: "./pages/early_warning.js" },
+  "research": { title: "3. Research, Benchmarks & Validation", module: "./pages/research.js" },
+
+  // Specialized Research Submodules & Legacy Aliases
+  "overview": { title: "Overview & Architecture", module: "./pages/overview.js" },
+  "scenarios": { title: "Scenario Explorer (S01–S22)", module: "./pages/scenarios.js" },
+  "signals": { title: "Signals & Spectrum", module: "./pages/signals.js" },
+  "geometry": { title: "Geometry & Kinematics", module: "./pages/geometry.js" },
+  "timeline": { title: "Evidence & Uncertainty Timeline", module: "./pages/timeline.js" },
+  "decision-path": { title: "Decision Path Explainer", module: "./pages/decision_path.js" },
+  "hypotheses": { title: "Hypotheses & Evidence Audit", module: "./pages/hypotheses.js" },
+  "adversarial": { title: "Adversarial Lab (AER & FHER)", module: "./pages/adversarial.js" },
+  "baselines": { title: "Baselines & Ablation Studies", module: "./pages/baselines.js" },
+  "robustness": { title: "Robustness & Calibration", module: "./pages/robustness.js" },
+  "real-das": { title: "Real Submarine DAS Deployments", module: "./pages/real_das.js" },
+  "hil": { title: "Live Hardware-in-the-Loop (HIL)", module: "./pages/hil.js" },
+  "provenance": { title: "In-Browser Provenance Verification", module: "./pages/provenance.js" },
+  "publications": { title: "Publication Figures & Tables", module: "./pages/publications.js" },
 };
 
 let activePageModule = null;
 
 export async function navigateTo(routeKey) {
-  const cleanRoute = (routeKey || "overview").replace(/^#\/?/, "");
-  const route = ROUTES[cleanRoute] || ROUTES["overview"];
+  const cleanRoute = (routeKey || "detection").replace(/^#\/?/, "");
+  const route = ROUTES[cleanRoute] || ROUTES["detection"];
 
   // Tear down timers or listeners from previous page if defined
   if (activePageModule && typeof activePageModule.cleanup === "function") {
@@ -73,10 +79,10 @@ export async function navigateTo(routeKey) {
 
 export function initRouter() {
   window.addEventListener("hashchange", () => {
-    const hash = window.location.hash || "#/overview";
+    const hash = window.location.hash || "#/detection";
     navigateTo(hash);
   });
 
-  const initial = window.location.hash || "#/overview";
+  const initial = window.location.hash || "#/detection";
   navigateTo(initial);
 }

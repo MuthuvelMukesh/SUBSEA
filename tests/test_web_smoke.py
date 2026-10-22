@@ -24,6 +24,11 @@ BASE_URL = f"http://127.0.0.1:{PORT}"
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
 
 ROUTES = [
+    # Primary Operational Modules (Master Prompt Navigation Order)
+    "detection",
+    "early-warning",
+    "research",
+    # Specialized Research Submodules & Aliases
     "overview",
     "scenarios",
     "signals",
@@ -172,3 +177,82 @@ def test_missing_data_graceful_handling(web_server, browser_instance):
     assert main_content.is_visible()
 
     page.close()
+
+
+def test_primary_navigation_order(web_server, browser_instance):
+    """Verifies that the primary navigation menu lists Detection, Early Warning, and Research in exact order."""
+    page = browser_instance.new_page()
+    page.goto(f"{BASE_URL}/index.html#/detection", wait_until="networkidle")
+
+    nav_links = page.locator(".nav-menu a.nav-item")
+    first_three_hrefs = [nav_links.nth(i).get_attribute("href") for i in range(3)]
+    assert first_three_hrefs == ["#/detection", "#/early-warning", "#/research"], (
+        f"Incorrect primary navigation order: {first_three_hrefs}"
+    )
+    page.close()
+
+
+def test_default_landing_page(web_server, browser_instance):
+    """Verifies that loading the web root without hash lands on Detection by default."""
+    page = browser_instance.new_page()
+    page.goto(f"{BASE_URL}/index.html", wait_until="networkidle")
+
+    # Header title should indicate Detection (Landing)
+    page_title = page.locator("#page-title")
+    page_title.wait_for(state="visible", timeout=5000)
+    title_text = page_title.inner_text()
+    assert "Detection" in title_text, f"Default landing page is not Detection: {title_text}"
+
+    # Main content should contain the detection dashboard
+    badge = page.locator("#detection-mode-badge")
+    badge.wait_for(state="visible", timeout=5000)
+    assert badge.is_visible()
+
+    page.close()
+
+
+def test_detection_operational_page(web_server, browser_instance):
+    """Verifies that the Detection page renders physical sensor cards and gate metrics."""
+    page = browser_instance.new_page()
+    page.goto(f"{BASE_URL}/index.html#/detection", wait_until="networkidle")
+
+    # Wait for detection module to finish dynamic rendering
+    connect_btn = page.locator("#btn-serial-connect")
+    connect_btn.wait_for(state="visible", timeout=8000)
+    assert connect_btn.is_visible()
+
+    # Verify physical hardware card and telemetry cards
+    assert page.locator("#disp-ldr-val").is_visible()
+    assert page.locator("#disp-vib-val").is_visible()
+    assert page.locator("#disp-dist-val").is_visible()
+
+    # Verify detection states (T0-TX) and gate metrics
+    assert page.locator("#detection-state-badge").is_visible()
+    assert page.locator("#metric-cp").is_visible()
+    assert page.locator("#metric-ca").is_visible()
+    assert page.locator("#metric-u").is_visible()
+
+    page.close()
+
+
+def test_early_warning_page(web_server, browser_instance):
+    """Verifies that the Early Warning page renders W0-WX states, operator guidance, and scenario controls."""
+    page = browser_instance.new_page()
+    page.goto(f"{BASE_URL}/index.html#/early-warning", wait_until="networkidle")
+
+    # Wait for early warning module to finish dynamic rendering
+    warn_badge = page.locator("#early-warning-state-badge")
+    warn_badge.wait_for(state="visible", timeout=8000)
+    assert warn_badge.is_visible()
+
+    # Verify early warning state badge and guidance
+    assert page.locator("#early-warning-quality-badge").is_visible()
+    assert page.locator("#operator-guidance-content").is_visible()
+
+    # Verify scenario controls
+    assert page.locator("#select-twin-scenario").is_visible()
+    assert page.locator("#btn-twin-run").is_visible()
+    assert page.locator("#btn-twin-step").is_visible()
+
+    page.close()
+
