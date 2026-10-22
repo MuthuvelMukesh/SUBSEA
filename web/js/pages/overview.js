@@ -3,7 +3,7 @@
  */
 
 import { renderBanner } from "../banner.js";
-import { renderBadge, renderKPI, TOOLTIPS } from "../components.js";
+import { renderBadge, renderWarningBadge, renderKPI, TOOLTIPS } from "../components.js";
 
 export async function render(container) {
   renderBanner("SIMULATION");
@@ -25,6 +25,64 @@ export async function render(container) {
   };
 
   container.innerHTML = `
+    <!-- Live Operational Status & Quick Navigation -->
+    <div class="card" style="border-left: 4px solid var(--state-t0); background: var(--bg-card); padding: 1.25rem 1.5rem;">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span class="pulse-dot live"></span>
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">
+              AbyssLink Monitoring Infrastructure
+            </div>
+            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-top: 0.1rem; display: flex; align-items: center; gap: 0.6rem;">
+              <span>Operational Early Warning & Digital Twin System</span>
+              <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.75rem;">HEALTHY</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <a href="#/hil" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+            ⚡ Open Live HIL & Digital Twin Dashboard ➔
+          </a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Active Operating Mode</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-top: 0.2rem;">
+            🌐 Hybrid Digital Twin
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">Software benchmark channels enabled</div>
+        </div>
+
+        <div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Early Warning State</div>
+          <div style="margin-top: 0.2rem;">
+            ${renderWarningBadge("W0", "NORMAL")}
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">Advance acoustic/kinematic watch</div>
+        </div>
+
+        <div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Disturbance Decision</div>
+          <div style="margin-top: 0.2rem;">
+            ${renderBadge("T0")} <span style="font-size: 0.85rem; font-weight: 600; color: var(--state-t0);">NOMINAL</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">Decoupled multimodal fusion gate</div>
+        </div>
+
+        <div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Hardware Link Status</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted); margin-top: 0.2rem;">
+            🔌 Web Serial Ready
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-dim);">115200 Baud / 300ms packet interval</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Top KPI Grid -->
     <div class="grid-cols-4">
       ${renderKPI("Controlled Scenarios", kpis.scenarios_count, "S01–S22 Verified Matrix", "22 distinct operational and adversarial benchmark scenarios.")}

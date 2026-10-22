@@ -19,9 +19,20 @@ const ROUTES = {
   "publications": { title: "14. Publication Figures & Tables", module: "./pages/publications.js" },
 };
 
+let activePageModule = null;
+
 export async function navigateTo(routeKey) {
   const cleanRoute = (routeKey || "overview").replace(/^#\/?/, "");
   const route = ROUTES[cleanRoute] || ROUTES["overview"];
+
+  // Tear down timers or listeners from previous page if defined
+  if (activePageModule && typeof activePageModule.cleanup === "function") {
+    try {
+      activePageModule.cleanup();
+    } catch (e) {
+      console.warn("Error during page cleanup:", e);
+    }
+  }
 
   // Update active state in sidebar nav
   document.querySelectorAll(".nav-item").forEach((link) => {
@@ -46,6 +57,7 @@ export async function navigateTo(routeKey) {
 
   try {
     const pageMod = await import(route.module);
+    activePageModule = pageMod;
     contentEl.innerHTML = "";
     await pageMod.render(contentEl);
   } catch (err) {

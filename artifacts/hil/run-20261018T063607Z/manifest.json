@@ -1,0 +1,20 @@
+{
+  "data_kind": "HIL_SIMULATED_ACCEL",
+  "run_id": "run-20261018T063607Z",
+  "timestamp_utc": "2026-10-18T06:36:08.186386+00:00",
+  "seed": 42,
+  "config_hash": "cb9f33941798d5893c267d1201f534b12d65cc2e3f900d01f31c6c34fa20d3f8",
+  "raw_log_sha256": "94a28a066d0b6c8022e5ad2be59ec80792f7a38b9de84ecf514a7082a93d810f",
+  "decisions_log_sha256": "2339cf02c362d5a49b24abd2049ccb25a1171656324289d9fae2f068442a0e29",
+  "packet_count": 100,
+  "malformed_count": 0,
+  "decision_counts": {
+    "T0": 55,
+    "T1": 2,
+    "T2": 43,
+    "T3": 0,
+    "TX": 0
+  },
+  "duration_s": 0.393889,
+  "scientific_statement": "HIL evaluation validates software-firmware communication and telemetry adaptation. Accelerometer data is synthesized from binary vibration flags and does not represent subsea acoustic physics."
+}

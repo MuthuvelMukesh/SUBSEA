@@ -9,7 +9,14 @@
  */
 
 import { renderBanner } from "../banner.js";
-import { renderKPI, renderBadge, TOOLTIPS } from "../components.js";
+import {
+  renderKPI,
+  renderBadge,
+  renderWarningBadge,
+  renderProvenanceBadge,
+  renderQualityBadge,
+  TOOLTIPS,
+} from "../components.js";
 import { buildPlot, exportTableToCSV } from "../charts.js";
 import { isSerialSupported, HardwareSerialController } from "../hardware_serial.js";
 import {
@@ -19,6 +26,123 @@ import {
   PipelineBridgeClient,
   BENCHTOP_DISCLAIMERS,
 } from "../hardware_adapter.js";
+
+// Benchmark Evaluation Scorecard Data from artifacts/digital_twin/evaluation_report.md
+const BENCHMARK_EVAL_SCORECARD = [
+  {
+    scenario: "1. Normal Operation",
+    behavior: "Zero False Alarms",
+    metric: "False Positive Rate",
+    value: "0.0%",
+    status: "PASS",
+    details: "100 frames evaluated. Clean W0 baseline maintained with zero alarm leakage."
+  },
+  {
+    scenario: "2. Approaching Vessel",
+    behavior: "Advance Watch (W1->W2)",
+    metric: "W1 Latency / W2 Latency",
+    value: "6.0s / 6.6s",
+    status: "PASS",
+    details: "Watch triggered at 60m route perimeter, advisory escalated on sustained approach before corridor intrusion."
+  },
+  {
+    scenario: "3. Low-Level Vibration",
+    behavior: "Detect Subtle Anomaly",
+    metric: "Latency to W1/W2",
+    value: "0.3s",
+    status: "PASS",
+    details: "Subtle vibration anomaly detected at 0.3s without false escalation to W3 strike."
+  },
+  {
+    scenario: "4. Increasing Disturbance",
+    behavior: "Escalation to Urgent (W3)",
+    metric: "W3 Latency",
+    value: "1.5s",
+    status: "PASS",
+    details: "Clean progressive escalation tracking ramped strain and acoustic RMS."
+  },
+  {
+    scenario: "5. Severe Disturbance",
+    behavior: "Rapid Strike Warning (W3)",
+    metric: "Immediate W3 Latency",
+    value: "1.5s",
+    status: "PASS",
+    details: "Immediate multi-sensor corroboration triggers urgent alarm in 1.5s."
+  },
+  {
+    scenario: "6. Sensor Degradation",
+    behavior: "Fail-Safe Trip to WX",
+    metric: "WX Trigger Latency",
+    value: "10.2s",
+    status: "PASS",
+    details: "Stale and missing telemetry safely trips WX rather than masking faults as nominal."
+  },
+  {
+    scenario: "7. Disturbance Recovery",
+    behavior: "Return to Normal (W0)",
+    metric: "De-escalation Latency",
+    value: "20.1s",
+    status: "PASS",
+    details: "Exponential decay followed by staged de-escalation back to baseline."
+  }
+];
+
+const SCENARIO_METADATA = {
+  normal_operation: {
+    title: "1. Normal Operating Conditions",
+    states: "W0 (Normal Baseline)",
+    duration: "30.0s (100 frames)",
+    desc: "Evaluates ambient seafloor baseline with undisturbed acoustic signals, zero vessel encroachment, and nominal cable strain. Target: 0.0% false alarm rate.",
+    badgeClass: "W0",
+  },
+  approaching_vessel: {
+    title: "2. Approaching Simulated Vessel",
+    states: "W0 ➔ W1 ➔ W2 ➔ W3",
+    duration: "30.0s (100 frames)",
+    desc: "Vessel navigates across subsea cable route. Crosses 60m threshold at t=6.0s (triggers W1 Watch), sustains approach into W2 Advisory, and enters 15m danger corridor.",
+    badgeClass: "W2",
+  },
+  low_level_vibration: {
+    title: "3. Low-Level Vibration Anomaly",
+    states: "W0 ➔ W1 ➔ W2",
+    duration: "18.0s (60 frames)",
+    desc: "Simulates subtle acoustic and mechanical vibration anomaly without vessel presence. Rapidly detected at t=0.3s without spuriously escalating to W3 strike alarm.",
+    badgeClass: "W1",
+  },
+  increasing_disturbance: {
+    title: "4. Increasing Disturbance",
+    states: "W2 ➔ W3",
+    duration: "15.0s (50 frames)",
+    desc: "Monitors ramping acoustic RMS and escalating mechanical strain tension, triggering clean W2 Advisory to W3 Urgent strike transition in 1.5s.",
+    badgeClass: "W3",
+  },
+  severe_disturbance: {
+    title: "5. Severe Cable Disturbance",
+    states: "W3 (Urgent Strike)",
+    duration: "15.0s (50 frames)",
+    desc: "Direct multi-sensor impact: immediate DAS acoustic surge, heavy mechanical strain (>250 με), and vessel corridor entry triggering instant W3 alert in 1.5s.",
+    badgeClass: "W3",
+  },
+  sensor_degradation: {
+    title: "6. Sensor Degradation & Fail-Safe",
+    states: "W0 ➔ WX (Fail-Safe)",
+    duration: "21.0s (70 frames)",
+    desc: "Simulates hardware telemetry packet dropouts, stale timestamps, and contradictory sensor data. Safely trips to fail-safe state WX at t=10.2s without masking faults.",
+    badgeClass: "WX",
+  },
+  recovery: {
+    title: "7. Disturbance Recovery",
+    states: "W3 ➔ W2 ➔ W1 ➔ W0",
+    duration: "30.0s (100 frames)",
+    desc: "Evaluates post-strike exponential disturbance decay. Follows verified hysteresis logic to de-escalate back to nominal W0 baseline within 20.1s.",
+    badgeClass: "W0",
+  },
+};
+
+// Event log filter state & stepping lock
+let activeEventFilter = "ALL";
+let eventSearchTerm = "";
+let isSteppingInProgress = false;
 
 // Session singletons
 let serialController = null;
@@ -139,6 +263,7 @@ export async function render(container) {
     <div class="card" style="margin-bottom: 1.5rem; border-color: rgba(168, 85, 247, 0.4);">
       <div class="card-title">
         <span style="display: flex; align-items: center; gap: 0.5rem;">
+          <span id="sim-status-dot" class="pulse-dot" style="background-color: var(--text-muted);" title="Simulation Engine Status"></span>
           <span>🧪 Digital Twin Simulation & Scenario Controls</span>
           <span id="twin-phase-badge" class="brand-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">
             PHASE: STANDBY
@@ -171,7 +296,7 @@ export async function render(container) {
           ⏭ Step Frame (0.3s)
         </button>
         <button id="btn-twin-reset" class="btn btn-secondary" style="font-size: 0.85rem;">
-          🔄 Reset
+          🔄 Reset to Baseline
         </button>
 
         <div style="flex: 1;"></div>
@@ -179,6 +304,11 @@ export async function render(container) {
         <button id="btn-run-all-eval" class="btn btn-secondary" style="font-size: 0.85rem;">
           📊 View Scenario Evaluation Report
         </button>
+      </div>
+
+      <!-- Active Scenario Synopsis Box -->
+      <div id="scenario-synopsis-box" style="margin-top: 0.75rem; padding: 0.75rem 1rem; background: var(--bg-subtle); border: 1px solid var(--border-color); border-radius: var(--radius);">
+        <!-- Populated dynamically by updateScenarioSynopsis() -->
       </div>
     </div>
 
@@ -190,8 +320,8 @@ export async function render(container) {
           <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
             Multi-Sensor Early Warning Engine
           </div>
-          <span id="early-warning-quality-badge" class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.75rem;">
-            QUALITY: GOOD
+          <span id="early-warning-quality-badge">
+            ${renderQualityBadge(currentTwinData.data_quality)}
           </span>
         </div>
 
@@ -314,7 +444,7 @@ export async function render(container) {
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">OPTICAL LINK</span>
-          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
+          ${renderProvenanceBadge("PHYSICAL")}
         </div>
         <div id="disp-ldr-badge" style="margin: 0.4rem 0;">
           <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">STANDBY</span>
@@ -331,7 +461,7 @@ export async function render(container) {
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">PIEZO VIBRATION</span>
-          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
+          ${renderProvenanceBadge("PHYSICAL")}
         </div>
         <div id="disp-vib-badge" style="margin: 0.4rem 0;">
           <span class="state-badge" style="background: var(--bg-hover); color: var(--text-muted); font-size: 0.75rem;">STANDBY</span>
@@ -348,7 +478,7 @@ export async function render(container) {
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">HC-SR04 PROXIMITY</span>
-          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
+          ${renderProvenanceBadge("PHYSICAL")}
         </div>
         <div id="disp-dist-val" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono);">
           -- cm
@@ -365,7 +495,7 @@ export async function render(container) {
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">ACTUATORS</span>
-          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-size: 0.65rem;">PHYSICAL</span>
+          ${renderProvenanceBadge("PHYSICAL")}
         </div>
         <div style="display: flex; gap: 0.4rem; margin: 0.4rem 0;">
           <span id="disp-laser-pill" class="brand-badge" style="font-size: 0.7rem;">LASER: --</span>
@@ -383,7 +513,7 @@ export async function render(container) {
       <div class="card" style="border-top: 2px solid #eab308;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">DAS ACOUSTIC RMS</span>
-          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+          ${renderProvenanceBadge("SIMULATED")}
         </div>
         <div id="disp-das-rms" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
           0.08 units
@@ -400,7 +530,7 @@ export async function render(container) {
       <div class="card" style="border-top: 2px solid #eab308;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">VESSEL PROXIMITY</span>
-          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+          ${renderProvenanceBadge("SIMULATED")}
         </div>
         <div id="disp-vessel-dist" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
           80.0 m
@@ -417,7 +547,7 @@ export async function render(container) {
       <div class="card" style="border-top: 2px solid #eab308;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">MECHANICAL STRAIN</span>
-          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+          ${renderProvenanceBadge("SIMULATED")}
         </div>
         <div id="disp-cable-strain" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
           10.0 με
@@ -434,7 +564,7 @@ export async function render(container) {
       <div class="card" style="border-top: 2px solid #eab308;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">BENTHIC TEMP & HEALTH</span>
-          <span class="brand-badge" style="background: rgba(234, 179, 8, 0.15); color: var(--state-t2); font-size: 0.65rem;">SIMULATED</span>
+          ${renderProvenanceBadge("SIMULATED")}
         </div>
         <div id="disp-cable-temp" style="font-size: 1.3rem; font-weight: 700; margin: 0.3rem 0; font-family: var(--font-mono); color: var(--text-color);">
           4.00 °C
@@ -507,18 +637,37 @@ export async function render(container) {
       </div>
     </div>
 
-    <!-- Bounded Hardware Event Log Card (Last 50 Events) -->
+    <!-- Bounded Hardware Event Log Card (Filterable & Searchable) -->
     <div class="card" style="margin-top: 1.5rem;">
       <div class="card-title">
         <span>Hardware & Digital Twin Event Audit Log</span>
-        <button id="btn-clear-events" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">Clear Log</button>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Real-time Chronological Audit Trail</span>
       </div>
-      <div class="table-container" style="max-height: 220px; overflow-y: auto;">
+
+      <!-- Event Filter Bar & Search Input -->
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; margin-top: 0.25rem;">
+        <div id="event-filter-pills" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+          <button class="filter-pill active" data-filter="ALL">ALL</button>
+          <button class="filter-pill" data-filter="EARLY_WARN">EARLY_WARN</button>
+          <button class="filter-pill" data-filter="OPTICAL">OPTICAL</button>
+          <button class="filter-pill" data-filter="SEISMIC">SEISMIC</button>
+          <button class="filter-pill" data-filter="RADAR">RADAR</button>
+          <button class="filter-pill" data-filter="SERIAL">SERIAL</button>
+          <button class="filter-pill" data-filter="MODE">MODE</button>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" id="event-search-input" placeholder="Search event logs..." class="text-input" style="font-size: 0.78rem; padding: 0.25rem 0.55rem; width: 180px; border-radius: 4px;">
+          <button id="btn-clear-events" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.55rem;">Clear Log</button>
+        </div>
+      </div>
+
+      <div class="table-container" style="max-height: 240px; overflow-y: auto; margin-top: 0.5rem;">
         <table id="hil-events-table">
           <thead>
             <tr>
               <th style="width: 120px;">Timestamp</th>
-              <th style="width: 110px;">Subsystem</th>
+              <th style="width: 120px;">Subsystem</th>
               <th>Event Description</th>
             </tr>
           </thead>
@@ -530,6 +679,9 @@ export async function render(container) {
         </table>
       </div>
     </div>
+
+    <!-- Benchmark Evaluation Modal Container -->
+    <div id="eval-modal-container"></div>
   `;
 
   // Initialize Hardware Serial Controller
@@ -892,20 +1044,35 @@ function updateStatsBar() {
 }
 
 /**
- * Renders the bounded event audit log.
+ * Renders the bounded event audit log with category filtering and text search.
  */
 function renderEventLog() {
   const tbody = document.getElementById("hil-events-tbody");
   if (!tbody) return;
 
-  if (telemetryBuffer.events.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No events logged yet.</td></tr>`;
+  let filtered = telemetryBuffer.events;
+
+  if (activeEventFilter !== "ALL") {
+    filtered = filtered.filter((ev) => ev.category === activeEventFilter);
+  }
+
+  if (eventSearchTerm) {
+    filtered = filtered.filter(
+      (ev) =>
+        ev.message.toLowerCase().includes(eventSearchTerm) ||
+        ev.category.toLowerCase().includes(eventSearchTerm) ||
+        ev.timestamp.toLowerCase().includes(eventSearchTerm)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No matching events found.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = telemetryBuffer.events
+  tbody.innerHTML = filtered
     .map((ev) => {
-      let color = "var(--text-color)";
+      let color = "var(--text-main)";
       if (ev.level === "danger") color = "var(--state-t3)";
       if (ev.level === "warning") color = "var(--state-t1)";
       if (ev.level === "safe") color = "var(--state-t0)";
@@ -913,12 +1080,32 @@ function renderEventLog() {
       return `
       <tr>
         <td style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">${ev.timestamp}</td>
-        <td><span class="brand-badge" style="font-size: 0.75rem;">${ev.category}</span></td>
+        <td><span class="brand-badge" style="font-size: 0.72rem;">${ev.category}</span></td>
         <td style="color: ${color}; font-size: 0.85rem;">${ev.message}</td>
       </tr>
     `;
     })
     .join("");
+}
+
+function setupEventFiltering() {
+  const pills = document.querySelectorAll("#event-filter-pills .filter-pill");
+  pills.forEach((pill) => {
+    pill.onclick = () => {
+      pills.forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      activeEventFilter = pill.dataset.filter || "ALL";
+      renderEventLog();
+    };
+  });
+
+  const searchInput = document.getElementById("event-search-input");
+  if (searchInput) {
+    searchInput.oninput = (e) => {
+      eventSearchTerm = e.target.value.toLowerCase().trim();
+      renderEventLog();
+    };
+  }
 }
 
 /**
@@ -1380,6 +1567,7 @@ function initDigitalTwinUI(container) {
       currentTwinData.history = [];
       telemetryBuffer.addEvent("SCENARIO", `Configured scenario: ${activeTwinScenario}`, "info");
       renderEventLog();
+      updateScenarioSynopsis(activeTwinScenario);
       pipelineBridge.setDigitalTwinScenario(activeTwinScenario, currentOperatingMode);
       stepDigitalTwinSimulation(0.0);
     };
@@ -1387,14 +1575,22 @@ function initDigitalTwinUI(container) {
 
   if (btnRun) {
     btnRun.onclick = () => {
+      const simStatusDot = document.getElementById("sim-status-dot");
       if (twinSimTimer) {
         clearInterval(twinSimTimer);
         twinSimTimer = null;
-        btnRun.textContent = "▶ Run Simulation";
+        btnRun.innerHTML = "▶ Run Simulation";
         btnRun.className = "btn btn-primary";
+        if (simStatusDot) {
+          simStatusDot.className = "pulse-dot";
+          simStatusDot.style.backgroundColor = "var(--text-muted)";
+        }
       } else {
-        btnRun.textContent = "⏸ Pause Simulation";
+        btnRun.innerHTML = "⏸ Pause Simulation";
         btnRun.className = "btn btn-secondary";
+        if (simStatusDot) {
+          simStatusDot.className = "pulse-dot live";
+        }
         stepDigitalTwinSimulation(0.3);
         twinSimTimer = setInterval(() => stepDigitalTwinSimulation(0.3), 300);
       }
@@ -1402,16 +1598,32 @@ function initDigitalTwinUI(container) {
   }
 
   if (btnStep) {
-    btnStep.onclick = () => {
-      if (twinSimTimer) {
-        clearInterval(twinSimTimer);
-        twinSimTimer = null;
-        if (btnRun) {
-          btnRun.textContent = "▶ Run Simulation";
-          btnRun.className = "btn btn-primary";
+    btnStep.onclick = async () => {
+      if (isSteppingInProgress) return;
+      isSteppingInProgress = true;
+      btnStep.disabled = true;
+
+      try {
+        if (twinSimTimer) {
+          clearInterval(twinSimTimer);
+          twinSimTimer = null;
+          if (btnRun) {
+            btnRun.innerHTML = "▶ Run Simulation";
+            btnRun.className = "btn btn-primary";
+          }
+          const simStatusDot = document.getElementById("sim-status-dot");
+          if (simStatusDot) {
+            simStatusDot.className = "pulse-dot";
+            simStatusDot.style.backgroundColor = "var(--text-muted)";
+          }
         }
+        await stepDigitalTwinSimulation(0.3);
+      } finally {
+        setTimeout(() => {
+          isSteppingInProgress = false;
+          if (btnStep) btnStep.disabled = false;
+        }, 120);
       }
-      stepDigitalTwinSimulation(0.3);
     };
   }
 
@@ -1421,8 +1633,13 @@ function initDigitalTwinUI(container) {
         clearInterval(twinSimTimer);
         twinSimTimer = null;
         if (btnRun) {
-          btnRun.textContent = "▶ Run Simulation";
+          btnRun.innerHTML = "▶ Run Simulation";
           btnRun.className = "btn btn-primary";
+        }
+        const simStatusDot = document.getElementById("sim-status-dot");
+        if (simStatusDot) {
+          simStatusDot.className = "pulse-dot";
+          simStatusDot.style.backgroundColor = "var(--text-muted)";
         }
       }
       currentTwinStepIndex = 0;
@@ -1430,26 +1647,20 @@ function initDigitalTwinUI(container) {
       pipelineBridge.setDigitalTwinScenario(activeTwinScenario, currentOperatingMode);
       telemetryBuffer.addEvent("TWIN", `Simulation reset to t=0s (${activeTwinScenario}).`, "info");
       renderEventLog();
+      updateScenarioSynopsis(activeTwinScenario);
       stepDigitalTwinSimulation(0.0);
     };
   }
 
   if (btnEval) {
     btnEval.onclick = () => {
-      alert(
-        "Digital Twin Scenario Benchmark Evaluation:\n\n" +
-        "• Normal Operation: 0.0% False Positive Rate\n" +
-        "• Approaching Vessel: 6.0s Watch (W1) Latency, escalates to W2/W3\n" +
-        "• Low-Level Vibration: Detects subtle onset at 0.3s\n" +
-        "• Increasing Disturbance: Clean W1 -> W2 -> W3 escalation\n" +
-        "• Severe Disturbance: Rapid W3 Strike Trigger in 1.5s\n" +
-        "• Sensor Degradation: Fail-Safe trip to WX state\n" +
-        "• Disturbance Recovery: Gradual de-escalation back to W0\n\n" +
-        "Run full benchmark report from terminal:\n" +
-        "python scripts/evaluate_digital_twin.py"
-      );
+      openEvaluationModal();
     };
   }
+
+  // Initial scenario synopsis and event filtering setup
+  updateScenarioSynopsis(activeTwinScenario);
+  setupEventFiltering();
 }
 
 /**
@@ -1550,8 +1761,7 @@ async function stepDigitalTwinSimulation(dt = 0.3) {
   const warnInd = document.getElementById("early-warning-indicators");
 
   if (warnBadge) {
-    warnBadge.textContent = `${currentTwinData.warning_state}: ${getWarningStateName(currentTwinData.warning_state)}`;
-    warnBadge.style.color = getWarningStateColor(currentTwinData.warning_state);
+    warnBadge.innerHTML = renderWarningBadge(currentTwinData.warning_state, getWarningStateName(currentTwinData.warning_state));
   }
   if (warnConf) {
     warnConf.textContent = `Confidence: ${(currentTwinData.warning_confidence * 100).toFixed(0)}%`;
@@ -1560,8 +1770,7 @@ async function stepDigitalTwinSimulation(dt = 0.3) {
     warnExp.textContent = currentTwinData.warning_explanation;
   }
   if (warnQual) {
-    warnQual.textContent = `QUALITY: ${currentTwinData.data_quality}`;
-    warnQual.style.color = currentTwinData.data_quality === "GOOD" ? "var(--state-t0)" : "var(--state-t2)";
+    warnQual.innerHTML = renderQualityBadge(currentTwinData.data_quality);
   }
   if (warnInd) {
     if (currentTwinData.triggering_indicators.length === 0) {
@@ -1843,7 +2052,231 @@ function renderDigitalTwinPlots() {
       ticktext: ["WX", "W0", "W1", "W2", "W3"],
       range: [-1.0, 3.8],
     },
+    shapes: [
+      {
+        type: "line",
+        xref: "paper",
+        x0: 0,
+        x1: 1,
+        y0: 0.25,
+        y1: 0.25,
+        line: { color: "rgba(245, 158, 11, 0.4)", width: 1, dash: "dash" },
+      },
+      {
+        type: "line",
+        xref: "paper",
+        x0: 0,
+        x1: 1,
+        y0: 1.0,
+        y1: 1.0,
+        line: { color: "rgba(239, 68, 68, 0.4)", width: 1, dash: "dot" },
+      },
+    ],
+    annotations: [
+      {
+        xref: "paper",
+        x: 0.98,
+        y: 0.25,
+        xanchor: "right",
+        yanchor: "bottom",
+        text: "Advisory Threshold (0.25)",
+        showarrow: false,
+        font: { size: 9, color: "#f59e0b" },
+      },
+      {
+        xref: "paper",
+        x: 0.98,
+        y: 1.0,
+        xanchor: "right",
+        yanchor: "bottom",
+        text: "Strike Threshold (1.00)",
+        showarrow: false,
+        font: { size: 9, color: "#ef4444" },
+      },
+    ],
     legend: { orientation: "h", y: -0.22, font: { size: 10 } },
     margin: { l: 50, r: 20, t: 20, b: 50 },
   });
 }
+
+/**
+ * Updates the synopsis card with the selected scenario's purpose and expected progression.
+ */
+function updateScenarioSynopsis(scenarioKey) {
+  const meta = SCENARIO_METADATA[scenarioKey] || SCENARIO_METADATA.normal_operation;
+  const synopsisEl = document.getElementById("scenario-synopsis-box");
+  if (!synopsisEl) return;
+  synopsisEl.innerHTML = `
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem; margin-bottom: 0.35rem;">
+      <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">
+        ${meta.title}
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.75rem;">
+        <span style="color: var(--text-muted);">Expected Progression:</span>
+        <span class="state-badge ${meta.badgeClass}" style="font-size: 0.75rem;">${meta.states}</span>
+        <span class="brand-badge" style="font-family: var(--font-mono); font-size: 0.7rem;">${meta.duration}</span>
+      </div>
+    </div>
+    <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;">
+      ${meta.desc}
+    </div>
+  `;
+}
+
+/**
+ * Opens the interactive digital twin scenario evaluation modal report.
+ */
+function openEvaluationModal() {
+  const container = document.getElementById("eval-modal-container");
+  if (!container) return;
+
+  const rowsHtml = BENCHMARK_EVAL_SCORECARD.map((item) => `
+    <tr>
+      <td style="font-weight: 600; color: var(--text-main); font-size: 0.85rem;">${item.scenario}</td>
+      <td style="font-size: 0.82rem; color: var(--text-muted);">${item.behavior}</td>
+      <td style="font-size: 0.82rem; font-family: var(--font-mono);">${item.metric}</td>
+      <td style="font-weight: 700; font-family: var(--font-mono); color: var(--accent);">${item.value}</td>
+      <td><span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0); font-weight: 700;">${item.status}</span></td>
+      <td style="font-size: 0.78rem; color: var(--text-muted); max-width: 240px; white-space: normal;">${item.details}</td>
+    </tr>
+  `).join("");
+
+  container.innerHTML = `
+    <div class="modal-overlay" id="eval-modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">
+              📊 Digital Twin Benchmark Evaluation Report
+            </span>
+            <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--state-t0);">
+              ALL 7 PASS
+            </span>
+          </div>
+          <button id="btn-close-eval-modal" class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">✕ Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="card" style="border-left: 4px solid var(--state-t1); margin-bottom: 0.5rem;">
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+              Scientific Integrity Notice (Offline Seed 42 Benchmark)
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; line-height: 1.4;">
+              All evaluated channels are synthesized by benchmark models. Performance metrics reflect early warning algorithm convergence, false alarm rejection, and fail-safe trip speeds.
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table" id="eval-modal-table">
+              <thead>
+                <tr>
+                  <th>Scenario</th>
+                  <th>Target Behavior</th>
+                  <th>Evaluated Metric</th>
+                  <th>Value</th>
+                  <th>Status</th>
+                  <th>Detailed Finding</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-top: 0.5rem;">
+            <div class="card" style="padding: 0.75rem;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">False Alarm Rate</div>
+              <div style="font-size: 1.25rem; font-weight: 700; color: var(--state-t0); font-family: var(--font-mono);">0.0%</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim);">Zero alarm leakage on baseline</div>
+            </div>
+            <div class="card" style="padding: 0.75rem;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Watch Latency</div>
+              <div style="font-size: 1.25rem; font-weight: 700; color: var(--accent); font-family: var(--font-mono);">6.0s</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim);">Triggered at 60m perimeter</div>
+            </div>
+            <div class="card" style="padding: 0.75rem;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Severe Strike Trigger</div>
+              <div style="font-size: 1.25rem; font-weight: 700; color: var(--state-t3); font-family: var(--font-mono);">1.5s</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim);">Corroborated alert trigger</div>
+            </div>
+            <div class="card" style="padding: 0.75rem;">
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Fail-Safe Trip Speed</div>
+              <div style="font-size: 1.25rem; font-weight: 700; color: var(--state-tx); font-family: var(--font-mono);">10.2s</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim);">Safe trip to WX state</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-export-eval-csv" class="btn btn-secondary" style="font-size: 0.8rem;">
+            📥 Export Scorecard (CSV)
+          </button>
+          <button id="btn-export-eval-json" class="btn btn-secondary" style="font-size: 0.8rem;">
+            📥 Export Report (JSON)
+          </button>
+          <button id="btn-close-eval-modal-bottom" class="btn btn-primary" style="font-size: 0.8rem;">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const overlay = document.getElementById("eval-modal-overlay");
+  const closeTop = document.getElementById("btn-close-eval-modal");
+  const closeBottom = document.getElementById("btn-close-eval-modal-bottom");
+  const exportCsv = document.getElementById("btn-export-eval-csv");
+  const exportJson = document.getElementById("btn-export-eval-json");
+
+  const closeFn = () => closeEvaluationModal();
+  if (closeTop) closeTop.onclick = closeFn;
+  if (closeBottom) closeBottom.onclick = closeFn;
+  if (overlay) {
+    overlay.onclick = (e) => {
+      if (e.target === overlay) closeFn();
+    };
+  }
+
+  if (exportCsv) {
+    exportCsv.onclick = () => {
+      const table = document.getElementById("eval-modal-table");
+      if (table) exportTableToCSV(table, "digital_twin_evaluation_scorecard.csv");
+    };
+  }
+
+  if (exportJson) {
+    exportJson.onclick = () => {
+      const blob = new Blob([JSON.stringify(BENCHMARK_EVAL_SCORECARD, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "digital_twin_evaluation_scorecard.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+  }
+}
+
+/**
+ * Closes and removes the evaluation modal.
+ */
+function closeEvaluationModal() {
+  const container = document.getElementById("eval-modal-container");
+  if (container) container.innerHTML = "";
+}
+
+/**
+ * Clean lifecycle teardown for HIL page when navigating away.
+ */
+export function cleanup() {
+  if (twinSimTimer) {
+    clearInterval(twinSimTimer);
+    twinSimTimer = null;
+  }
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
+    isPollingActive = false;
+  }
+  closeEvaluationModal();
+}
+
