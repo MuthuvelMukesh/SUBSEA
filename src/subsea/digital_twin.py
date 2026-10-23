@@ -35,6 +35,18 @@ class TwinScenario(StrEnum):
     RECOVERY = "recovery"
 
 
+SCENARIO_GROUND_TRUTH: dict[TwinScenario, dict[str, Any]] = {
+    TwinScenario.NORMAL_OPERATION: {"t_event": None, "event_description": "Nominal operations: no disturbance"},
+    TwinScenario.APPROACHING_VESSEL: {"t_event": 15.9, "event_description": "Vessel approaches interaction corridor (<15m)"},
+    TwinScenario.LOW_LEVEL_VIBRATION: {"t_event": 0.3, "event_description": "Subtle vibration anomaly onset"},
+    TwinScenario.INCREASING_DISTURBANCE: {"t_event": 15.0, "event_description": "Ramp to persistent critical disturbance"},
+    TwinScenario.SEVERE_DISTURBANCE: {"t_event": 1.5, "event_description": "Direct anchor/trawl strike event"},
+    TwinScenario.SENSOR_DEGRADATION: {"t_event": 6.0, "event_description": "Telemetry degradation and stale channel fault"},
+    TwinScenario.RECOVERY: {"t_event": 0.0, "event_description": "Exponential disturbance decay and recovery"},
+}
+
+
+
 @dataclass(frozen=True)
 class DigitalTwinFrame:
     """A synchronized multi-channel telemetry snapshot from the Digital Twin."""
@@ -79,6 +91,12 @@ class DigitalTwinSimulator:
         self.condition_index = 1.0
         self.vibration_rms = 0.08
         self.phase = "NORMAL"
+
+    @property
+    def ground_truth_t_event(self) -> float | None:
+        """Returns the ground-truth disturbance event onset time in elapsed seconds, if applicable."""
+        info = SCENARIO_GROUND_TRUTH.get(self.current_scenario)
+        return info.get("t_event") if info else None
 
     def set_scenario(self, scenario: TwinScenario | str, seed: int | None = None) -> None:
         """Configures and resets the simulator state for a specific scenario."""

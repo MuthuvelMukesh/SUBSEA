@@ -20,12 +20,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import yaml
 
 from subsea.web_export import (
+    export_early_warning_eval,
     export_meta,
     export_scenario_catalog,
     generate_geometry_kinematics,
     generate_scenario_runs,
     generate_signal_waveforms,
     generate_timelines,
+    generate_twin_runs,
     unavailable_payload,
 )
 
@@ -409,6 +411,19 @@ def main() -> None:
                 print(f"  -> Synced latest HIL decisions to {web_dir / 'hil' / 'decisions.jsonl'}")
         except Exception as e:
             print(f"  -> Note: could not sync HIL decisions ({e})")
+
+    # 16. Digital Twin Precomputed Runs
+    print("  -> Exporting twin_runs.json (seed=42)...")
+    twin_runs_data = {
+        "metadata": export_meta("SIMULATION", "src/subsea/digital_twin.py", seed=42),
+        "twin_runs": generate_twin_runs(seed=42),
+    }
+    (data_dir / "twin_runs.json").write_text(json.dumps(twin_runs_data, indent=2), encoding="utf-8")
+
+    # 17. Early Warning Benchmarks Evaluation
+    print("  -> Exporting early_warning_eval.json...")
+    ew_eval_data = export_early_warning_eval()
+    (data_dir / "early_warning_eval.json").write_text(json.dumps(ew_eval_data, indent=2), encoding="utf-8")
 
     print(f"[Web Exporter] Successfully exported all web data files to {data_dir}!")
 

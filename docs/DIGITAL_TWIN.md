@@ -120,9 +120,25 @@ The demonstrator operates in two distinct, verifiable modes:
 - **`W3 — Urgent`**: High-confidence critical disturbance sustained across >= 5 consecutive frames **and** corroborated by at least two independent sensor groups. A single simulated feature alone cannot jump to W3.
 - **`WX — Unknown / Data Quality`**: Missing, stale (>2.0s), out-of-bounds, or contradictory sensor readings. Warning decisions are suspended to prevent misleading guidance.
 
-### Decoupling from Disturbance Pipeline ($T0-TX$)
+### Decoupling from Disturbance Pipeline ($T0-TX$) & Heuristic Labeling Rule
 
-The $T0/T1/T2/T3/TX$ classification evaluates immediate physical disturbance signatures using multimodal fusion ($C_P, C_A, R, U$), whereas $W0/W1/W2/W3/WX$ provides advance predictive situational awareness. Both outputs run concurrently and are displayed separately.
+- The $T0/T1/T2/T3/TX$ classification evaluates immediate physical disturbance signatures using multimodal fusion ($C_P, C_A, R, U$), whereas $W0/W1/W2/W3/WX$ provides advance predictive situational awareness. Both outputs run concurrently and are displayed separately.
+- In the digital twin testbed (`/api/twin/step` and `twin_runs.json`), simulated frames provide high-level scalar summaries (RMS, distance, strain) rather than raw 50 Hz triaxial accelerometer time series buffers. Therefore, the twin state is evaluated via benchmark heuristic rules and is explicitly labeled:
+  > **`twin_heuristic_state`**: *"Twin heuristic (NOT the fusion classifier)"*
+- This ensures full scientific integrity: simulated benchmark metrics are never misrepresented as outputs of the trained empirical fusion classifier.
+
+### Multi-Tab Session Isolation & API Architecture
+
+- **Per-Session State (`TwinSession`)**: Replaced global simulation instances with per-session state in `scripts/serve_web.py`. Each browser tab generates a UUID session ID (`session_id`) passed in JSON body, `X-Session-ID` header, or `?session=` query parameter.
+- **Concurrency**: Two browser tabs can run simulations, step, and reset completely independently without crosstalk or interleaved step indices.
+- **Lifecycle & TTL**: Inactive sessions expire after 1 hour (TTL). Missing session IDs default to the `"default"` session for backward compatibility.
+- **Endpoints**:
+  - `POST /api/twin/set_scenario`: Configures scenario, operating mode, and seed. Validates scenario (unknown -> 400).
+  - `POST /api/twin/step`: Advances simulation by clamped `dt` (`[0.05, 5.0]`). Returns readings, early warning decision, twin heuristic state, indicator groups, hold progress, ground-truth `t_event`, and config hash.
+  - `POST /api/twin/reset`: Resets simulator and early warning engine for the session.
+  - `GET /api/twin/export?session=<id>`: Streams recorded run as JSONL in `artifacts/digital_twin/*.jsonl` format.
+- **Offline Static Replay**:
+  - `web/data/twin_runs.json` contains precomputed seeded runs for all 7 scenarios. If `/api` is unreachable or reports mode `"static"`, the UI falls back automatically to offline replay with a visible `STATIC REPLAY` badge and integrity verification.
 
 ---
 

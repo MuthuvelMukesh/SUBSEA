@@ -82,10 +82,28 @@ The precomputed JSON files in `web/data/` (~1.5 MB total) are **committed to ver
 
 ---
 
-## 5. Page-to-Data Map (14 Pages)
+## 5. Primary Modules and Route Map
+
+The application interface is structured into three primary operational modules, followed by detailed research deep-dives:
+
+### Primary Operational Modules
+1. **Module 1: Detection (`#/detection`) [Default Landing Page]**: Primary operational console integrating direct ESP32 hardware Web Serial streaming, real-time pipeline classification ($T0-TX$), continuous fusion metrics ($C_P, C_A, R, U$), and telemetry event audit trail.
+2. **Module 2: Early Warning (`#/early-warning`)**: Multi-sensor early warning state machine ($W0-WX$), 6-group corroboration panel with quantitative thresholds, escalation persistence and de-escalation hold meters (seconds/frames), dual-strip timeline (W-state with lead-time calculation vs T-state twin heuristic), 7-scenario digital twin runner, client-side operator alert acknowledgment, and bounded audit log.
+3. **Module 3: Research & Validation (`#/research`)**: Centralized scientific benchmarking laboratory hub featuring 6 interactive sub-tabs:
+   - *1. Framework & Hypotheses (H1–H4)*
+   - *2. Baselines & Ablations*
+   - *3. Adversarial & Robustness*
+   - *4. Real Submarine DAS (Marlinks, EMSO, Oliktok)*
+   - *5. Cryptographic Provenance (In-browser SHA-256 verifier)*
+   - *6. Early Warning Benchmarks (Monte Carlo scorecard, latency/lead-time distributions, flapping rate, ablation comparison, ROC operating curve)*
+
+### Detailed Route Map (14 Pages)
 
 | Page # | View Title | Route | Primary Data File(s) | Key Visualizations & Tables |
 |---|---|---|---|---|
+| - | Detection (Landing) | `#/detection` | Hardware Web Serial / `/api/hil` | Physical sensors, $T0-TX$ states, $C_P, C_A, R, U$ fusion metrics, telemetry buffer |
+| - | Early Warning | `#/early-warning` | `data/twin_runs.json`, `/api/twin` | $W0-WX$ states, indicator groups, hold meters, dual timeline, twin runner, operator audit log |
+| - | Research Hub | `#/research` | `data/*.json`, `data/early_warning_eval.json` | 6 sub-tabs, benchmark scorecards, latency error-bar plots, ROC curve |
 | 1 | Overview & Architecture | `#/overview` | `data/overview.json`, `data/provenance.json` | System KPIs, Decision State semantics table, Cohort breakdown, Scientific disclaimers |
 | 2 | Scenario Explorer | `#/scenarios` | `data/scenarios.json`, `data/scenario_runs.json` | S01–S22 ground-truth selector, Attack & Severity sweeps, Metric bar charts, Kinematics |
 | 3 | Signals & Spectrum | `#/signals` | `data/signals.json` | 3-axis acceleration waveforms, Magnitude, Packet loss markers, FFT spectrum, Spectral CSV export |
@@ -103,23 +121,27 @@ The precomputed JSON files in `web/data/` (~1.5 MB total) are **committed to ver
 
 ---
 
-## 6. How to Serve Locally
+## 6. Backend API & Session Isolation (`scripts/serve_web.py`)
 
-### Option A: Unified Server with Live Python Pipeline Bridge (Recommended for Hardware)
-Runs both the static frontend and the real-time Python research inference pipeline bridge:
-```powershell
-python scripts/serve_web.py --port 8000
-```
-- Web Application: [http://localhost:8000/](http://localhost:8000/)
-- Live Pipeline Endpoint: `http://localhost:8000/api/hil/process_packet`
-- Enables real-time Subsea pipeline execution for incoming Web Serial ESP32 packets.
+The unified server `scripts/serve_web.py` serves static files and provides stateful, multi-session REST API endpoints:
 
-### Option B: Standard Python Static Server
-```powershell
-python -m http.server 8000 --directory web
-```
-Then navigate to: [http://localhost:8000/](http://localhost:8000/)
-In this mode, direct Web Serial connects to the ESP32 in client-only raw mode, and file replay/polling are fully available.
+### Endpoints
+- `GET /api/status` & `GET /api/status.json`: Returns pipeline status, framework version, mode, config hash, and supported scenarios.
+- `POST /api/twin/set_scenario`: Configures scenario (`normal_operation`, `approaching_vessel`, etc.), mode (`HYBRID_DEMO` or `PHYSICAL_ONLY`), and seed. Validates scenario (unknown -> 400).
+- `POST /api/twin/step`: Steps simulation by clamped `dt` (`[0.05, 5.0]`). Returns readings, early warning decision, `twin_heuristic_state` (labeled *"Twin heuristic (NOT the fusion classifier)"*), indicator groups, hold progress, ground-truth `t_event`, and config hash.
+- `POST /api/twin/reset`: Resets simulator and early warning engine for the active session.
+- `GET /api/twin/export?session=<id>`: Streams recorded run as JSONL in `artifacts/digital_twin/*.jsonl` format.
+- `POST /api/hil/process_packet`: Ingests AbyssLink hardware packets, running real physical pipeline inference.
+
+### Multi-Tab Session Isolation
+- State is isolated per client tab using client-generated UUID session keys (`session_id`).
+- Sessions are supplied via `X-Session-ID` header, request body `{"session_id": "..."}`, or query param `?session=`.
+- Inactive sessions are automatically cleaned up after 1 hour (TTL).
+- Backwards compatible: requests without a session ID fall back to the `"default"` session.
+
+### Static / Offline Replay Mode
+- If `/api/status` reports mode `"static"` or if `/api` is unreachable, `early_warning.js` automatically falls back to replaying from `web/data/twin_runs.json` with a visible `STATIC REPLAY` badge (`#static-replay-badge`).
+- Tamper detection validates `twin_runs.json` structure; corrupted payloads trigger a prominent `#twin-integrity-warning` alert.
 
 
 ---
@@ -155,4 +177,29 @@ As specified in the architecture roadmap, an optional in-browser Python executio
 - **Air-Gapped & Offline Requirement**: Hard rules mandate zero remote CDN dependencies, zero web fonts, and zero external network calls.
 - **Payload Footprint**: Vendoring Pyodide offline requires bundling the Emscripten WASM runtime, the Python 3.11/3.12 standard library ZIP, and pre-compiled WebAssembly wheels (`numpy`, etc.), which totals ~45–60 MB.
 - **Coverage Equivalence**: All 22 scenarios across 6 attack vectors and 5 severity levels (over 2,200 trials) are already precomputed with high fidelity and exported to `web/data/*.json`. Users can explore full multi-trace sensor signals, gating pathways, and adversarial sweeps instantly with zero browser lag or memory consumption.
+
+---
+
+## 9. Automated Testing & Smoke Tests
+
+Automated E2E smoke and regression testing uses headless Playwright:
+
+### Prerequisites:
+```bash
+pip install -e ".[test]"
+playwright install chromium
+```
+
+### Running the Web Test Suite:
+```bash
+pytest tests/test_web_export.py -v
+pytest tests/test_web_smoke.py -v
+```
+
+This verifies that:
+1. All static routes render without unhandled JavaScript exceptions or console errors.
+2. The cohort isolation / data-kind banner is displayed on every page.
+3. Interactive visualizations, cards, badges, and controls are mounted properly.
+4. Tamper detection correctly triggers warnings when assets are modified.
+
 

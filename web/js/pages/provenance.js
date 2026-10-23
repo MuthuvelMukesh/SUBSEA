@@ -27,6 +27,8 @@ const SHIPPED_ASSETS = [
   { name: "Calibration Manifest", path: "data/calibration.json", category: "Web JSON" },
   { name: "Real DAS Results", path: "data/real_das.json", category: "Web JSON" },
   { name: "Publication Manifest", path: "data/publications.json", category: "Web JSON" },
+  { name: "Digital Twin Benchmark Runs", path: "data/twin_runs.json", category: "Web JSON" },
+  { name: "Early Warning Evaluation", path: "data/early_warning_eval.json", category: "Web JSON" },
   { name: "Offline Plotly Vendor", path: "vendor/plotly.min.js", category: "JavaScript Vendor" },
   { name: "CSS Design System", path: "assets/style.css", category: "CSS Stylesheet" },
 ];

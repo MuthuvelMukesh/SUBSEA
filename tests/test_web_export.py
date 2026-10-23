@@ -129,6 +129,8 @@ def test_exported_json_files_exist():
         "provenance.json",
         "publications.json",
         "overview.json",
+        "twin_runs.json",
+        "early_warning_eval.json",
     ]
     for fname in expected_files:
         fpath = data_dir / fname
@@ -138,3 +140,59 @@ def test_exported_json_files_exist():
         data = json.loads(fpath.read_text(encoding="utf-8"))
         assert "metadata" in data
         assert "data_kind" in data["metadata"]
+
+
+def test_twin_runs_precomputation_determinism():
+    """Verify precomputed twin runs for all scenarios with seed 42."""
+    from subsea.web_export import generate_twin_runs
+
+    runs1 = generate_twin_runs(seed=42)
+    runs2 = generate_twin_runs(seed=42)
+
+    expected_scenarios = {
+        "normal_operation",
+        "approaching_vessel",
+        "low_level_vibration",
+        "increasing_disturbance",
+        "severe_disturbance",
+        "sensor_degradation",
+        "recovery",
+    }
+    assert set(runs1.keys()) == expected_scenarios
+
+    for scen_id in expected_scenarios:
+        scen1 = runs1[scen_id]
+        scen2 = runs2[scen_id]
+        assert scen1["scenario_id"] == scen_id
+        assert scen1["seed"] == 42
+        assert len(scen1["steps"]) > 0
+        assert len(scen1["steps"]) == len(scen2["steps"])
+
+        # Check determinism on initial and mid steps
+        s1 = scen1["steps"][0]
+        s2 = scen2["steps"][0]
+        assert s1["early_warning"]["state"] == s2["early_warning"]["state"]
+        assert s1["twin_heuristic_state"] == s2["twin_heuristic_state"]
+        assert s1["twin_heuristic_label"] == "Twin heuristic (NOT the fusion classifier)"
+
+    # Approaching vessel must have t_event ~ 15.9s
+    assert runs1["approaching_vessel"]["t_event"] == 15.9
+    # Sensor degradation must trip to WX
+    wx_steps = [s for s in runs1["sensor_degradation"]["steps"] if s["early_warning"]["state"] == "WX"]
+    assert len(wx_steps) > 0
+
+
+def test_early_warning_eval_structure():
+    """Verify early warning evaluation scorecard and metrics structure."""
+    from subsea.web_export import export_early_warning_eval
+
+    res = export_early_warning_eval()
+    assert res["status"] == "AVAILABLE"
+    assert res["metadata"]["data_kind"] == "SIMULATION"
+    assert len(res["scorecard"]) == 7
+    assert "latency_distributions" in res
+    assert "operational_metrics" in res
+    assert "baseline_ablation_comparison" in res
+    assert "operating_curve" in res
+    assert res["operational_metrics"]["false_alarms_per_hour"] == 0.0
+

@@ -187,12 +187,12 @@ export class PipelineBridgeClient {
     }
   }
 
-  async setDigitalTwinScenario(scenario, mode = "HYBRID_DEMO", seed = 42) {
+  async setDigitalTwinScenario(scenario, mode = "HYBRID_DEMO", seed = 42, sessionId = "default") {
     try {
       const resp = await fetch(`${this.baseUrl}/api/twin/set_scenario`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenario, mode, seed }),
+        headers: { "Content-Type": "application/json", "X-Session-ID": sessionId },
+        body: JSON.stringify({ scenario, mode, seed, session_id: sessionId }),
       });
       if (resp.ok) return await resp.json();
     } catch (e) {
@@ -201,16 +201,30 @@ export class PipelineBridgeClient {
     return null;
   }
 
-  async stepDigitalTwin(dt = 0.3) {
+  async stepDigitalTwin(dt = 0.3, sessionId = "default") {
     try {
       const resp = await fetch(`${this.baseUrl}/api/twin/step`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dt }),
+        headers: { "Content-Type": "application/json", "X-Session-ID": sessionId },
+        body: JSON.stringify({ dt, session_id: sessionId }),
       });
       if (resp.ok) return await resp.json();
     } catch (e) {
       console.warn("Failed to step digital twin:", e);
+    }
+    return null;
+  }
+
+  async resetDigitalTwin(sessionId = "default") {
+    try {
+      const resp = await fetch(`${this.baseUrl}/api/twin/reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Session-ID": sessionId },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+      if (resp.ok) return await resp.json();
+    } catch (e) {
+      console.warn("Failed to reset digital twin:", e);
     }
     return null;
   }
@@ -223,3 +237,4 @@ export class PipelineBridgeClient {
     return null;
   }
 }
+

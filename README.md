@@ -2,7 +2,7 @@
 
 > **An Uncertainty-Aware Multimodal Evidence Fusion Framework for Vessel-Associated Subsea Cable Disturbance Assessment under Adversarial Uncertainty**
 
-[![Tests](https://img.shields.io/badge/tests-319%20passed-brightgreen)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-333%20passed-brightgreen)](#test-suite)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://python.org)
 [![Data Kind](https://img.shields.io/badge/data%20kind-SIMULATION%20%2B%20REAL%20DATA-brightgreen)](#scientific-integrity--provenance)
 [![Digital Twin](https://img.shields.io/badge/digital%20twin-7%20scenarios%20%7C%20W0--WX-orange)](docs/DIGITAL_TWIN.md)

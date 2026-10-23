@@ -4,7 +4,7 @@
     "data_kind": "SIMULATION",
     "source_manifest_path": "src/subsea/features.py",
     "seed": 42,
-    "exported_at": "2026-10-18T07:22:22.012580+00:00"
+    "exported_at": "2026-10-23T04:18:12.167728+00:00"
   },
   "waveforms": {
     "S01": {

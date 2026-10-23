@@ -256,3 +256,109 @@ def test_early_warning_page(web_server, browser_instance):
 
     page.close()
 
+
+def test_early_warning_scenario_switch_resets_state(web_server, browser_instance):
+    """Verifies that switching scenarios resets the twin elapsed time and simulation state."""
+    page = browser_instance.new_page()
+    page.goto(f"{BASE_URL}/index.html#/early-warning", wait_until="networkidle")
+
+    step_btn = page.locator("#btn-twin-step")
+    step_btn.wait_for(state="visible", timeout=8000)
+
+    # Step simulation forward
+    step_btn.click()
+    page.wait_for_timeout(400)
+    step_btn.click()
+    page.wait_for_timeout(400)
+
+    # Now change scenario
+    scen_select = page.locator("#select-twin-scenario")
+    scen_select.select_option("severe_disturbance")
+    page.wait_for_timeout(500)
+
+    # Verify time is reset back to t = 0.0s
+    time_badge = page.locator("#twin-time-badge")
+    assert "t = 0.0s" in time_badge.inner_text()
+
+    page.close()
+
+
+def test_early_warning_physical_only_mode(web_server, browser_instance):
+    """Verifies that PHYSICAL_ONLY mode strictly shows WX and isolates all simulated channels."""
+    page = browser_instance.new_page()
+    page.goto(f"{BASE_URL}/index.html#/early-warning", wait_until="networkidle")
+
+    phys_btn = page.locator("#btn-mode-physical")
+    phys_btn.wait_for(state="visible", timeout=8000)
+    phys_btn.click()
+    page.wait_for_timeout(500)
+
+    # Verify mode badge shows PHYSICAL-ONLY
+    mode_badge = page.locator("#early-warning-mode-badge")
+    assert "PHYSICAL-ONLY" in mode_badge.inner_text()
+
+    # Step in physical mode
+    step_btn = page.locator("#btn-twin-step")
+    step_btn.click()
+    page.wait_for_timeout(500)
+
+    # State must be WX
+    state_badge = page.locator("#early-warning-state-badge")
+    assert "WX" in state_badge.inner_text()
+
+    # Explanation must affirm simulated channels are isolated
+    why_explanation = page.locator("#why-explanation")
+    assert "isolated" in why_explanation.inner_text().lower() or "physical hardware" in why_explanation.inner_text().lower()
+
+    page.close()
+
+
+def test_early_warning_static_replay_fallback_when_api_blocked(web_server, browser_instance):
+    """Verifies that early warning falls back cleanly to static replay when /api is blocked."""
+    page = browser_instance.new_page()
+
+    # Block /api routes
+    page.route("**/api/**", lambda route: route.abort("blockedbyclient"))
+
+    page.goto(f"{BASE_URL}/index.html#/early-warning", wait_until="networkidle")
+    page.wait_for_timeout(800)
+
+    # Static replay badge must be visible
+    replay_badge = page.locator("#static-replay-badge")
+    replay_badge.wait_for(state="visible", timeout=8000)
+    assert replay_badge.is_visible()
+    assert "STATIC REPLAY" in replay_badge.inner_text()
+
+    # Stepping still functions using precomputed twin_runs.json
+    step_btn = page.locator("#btn-twin-step")
+    step_btn.click()
+    page.wait_for_timeout(400)
+
+    time_badge = page.locator("#twin-time-badge")
+    assert time_badge.is_visible()
+
+    page.close()
+
+
+def test_early_warning_tamper_warning_on_corrupt_twin_runs(web_server, browser_instance):
+    """Verifies that corrupting twin_runs.json triggers a prominent provenance/integrity warning."""
+    page = browser_instance.new_page()
+
+    # Intercept twin_runs.json with corrupt non-JSON content
+    page.route("**/data/twin_runs.json*", lambda route: route.fulfill(
+        status=200,
+        content_type="application/json",
+        body="INVALID_CORRUPTED_JSON_DATA{{{",
+    ))
+
+    page.goto(f"{BASE_URL}/index.html#/early-warning", wait_until="networkidle")
+    page.wait_for_timeout(800)
+
+    # Tamper/integrity warning must appear
+    integrity_warning = page.locator("#twin-integrity-warning")
+    integrity_warning.wait_for(state="visible", timeout=8000)
+    assert integrity_warning.is_visible()
+    assert "INTEGRITY WARNING" in integrity_warning.inner_text()
+
+    page.close()
+
